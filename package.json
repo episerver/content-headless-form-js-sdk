@@ -4,9 +4,18 @@
   "description": "Workspace root",
   "workspaces": [
     "src/@optimizely/forms-react",
-    "src/@optimizely/forms-sdk"
+    "src/@optimizely/forms-sdk",
+    "samples/sample-react-app"
   ],
   "author": "Optimizely",
   "license": "ISC",
-  "private": true
+  "private": true,
+  "scripts": {
+    "setupapp":"npm install -w sample-react-app",
+    "setupsdk":"npm install -w @optimizely/forms-sdk",
+    "setup":"npm run setupsdk && npm run setupapp",
+    "buildsdk":"npm run build -w @optimizely/forms-sdk",
+    "startapp":"npm start -w sample-react-app",
+    "buildsdk:startapp":"npm run buildsdk && npm run startapp"
+  }
 }

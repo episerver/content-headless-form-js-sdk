@@ -20,10 +20,22 @@ export class ApiClient<T> {
     /**
      * Make a request
      * 
-     * @param path 
+     * @param path API endpoint url
+     * @param method Method type of request, e.g. GET/POST 
+     * @param params Collection of Query string, e.g. language=en
+     * @param headers Collection of Header
+     * @param data Payload data to post
      */
-    async send(path: string, method: string, headers?: Record<string, string>, data?: any): Promise<T> {
-        let requestInfo = `${this.config.baseURL}${path}`;
+    async send(path: string, method: string, params?: Record<string,string>, headers?: Record<string, string>, data?: any): Promise<T> {
+        let tempBase = "http://temp";
+        //tempBase will not use if the url is absolute
+        let url = new URL(`${this.config.baseURL}${path}`, tempBase);
+
+        if(params){
+            for(var key in params){
+                url.searchParams.set(key, params[key]);
+            }
+        }
 
         const requestInit: RequestInit = {
             method,
@@ -33,7 +45,7 @@ export class ApiClient<T> {
         };
 
         return new Promise<T>((resolve, reject) => {
-            fetch(requestInfo, requestInit)
+            fetch(url.href, requestInit)
                 .then(async (response: Response) => {
                     if(response.ok){
                         let json = await response.json();
@@ -52,12 +64,13 @@ export class ApiClient<T> {
     /**
      * Make a GET request
      * 
-     * @param path 
-     * @returns 
+     * @param path Api endpoint url to get
+     * @param params Collection of Query string, e.g. language=en
+     * @returns A promise with a T
      */
-    async get(path: string): Promise<T> {
+    async get(path: string, params?: Record<string, string>): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            this.send(path, "GET").then((response: T) => {
+            this.send(path, "GET", params).then((response: T) => {
                 resolve(response);
             })
             .catch((error: any) => {
@@ -69,12 +82,14 @@ export class ApiClient<T> {
     /**
      * Make a POST request
      * 
-     * @param path 
-     * @returns 
+     * @param path Api endpoint url to post
+     * @param data Payload data to post
+     * @param params Collection of Query string, e.g. language=en
+     * @returns A promise with a T
      */
-    async post(path: string, data: any): Promise<T> {
+    async post(path: string, data: any, params?: Record<string, string>): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            this.send(path, "POST", undefined, data).then((response: T) => {
+            this.send(path, "POST", params, undefined, data).then((response: T) => {
                 resolve(response);
             })
             .catch((error: any) => {

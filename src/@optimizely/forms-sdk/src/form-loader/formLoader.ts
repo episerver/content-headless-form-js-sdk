@@ -1,12 +1,14 @@
 'use strict';
 
+import { FormContainer } from "../models";
 import { ApiClient } from "./apiClient";
 import { ApiClientConfig, defaultConfig } from "./apiClientConfig";
+import { ApiConstant } from "./apiConstant";
 
 /**
  * Class for load Form
  */
-export class FormLoader<T> {
+export class FormLoader<T extends FormContainer> {
     readonly client: ApiClient<T>;
 
     /**
@@ -22,11 +24,12 @@ export class FormLoader<T> {
      * Get a form with a GUID
      * 
      * @param key GUID of form
+     * @param language Localization for form
      * @returns A promise with a form 
      */
-    getForm(key: string): Promise<T> {
+    getForm(key: string, language: string): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            this.client.get(`form/${key}`)
+            this.client.get(`${ApiConstant.apiEndpoint}/${key}`, { language })
                 .then((response: T) => {
                     resolve(response);
                 })
