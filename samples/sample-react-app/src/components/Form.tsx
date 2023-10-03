@@ -9,7 +9,7 @@ interface FormProps {
 export default function Form ({formKey, language}: FormProps) {
 
   const formLoader = new FormLoader({
-    baseURL:"http://localhost:8000/"
+    baseURL: process.env.REACT_APP_HEADLESS_FORM_BASE_URL
   });
 
   const [form, setForm] = useState<FormContainer | null>(null);

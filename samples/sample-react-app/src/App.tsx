@@ -5,7 +5,7 @@ import { extractParams } from './helpers/urlHelper';
 
 function App() {
   const { relativePath, language } = extractParams(window.location.pathname)
-  const url = `http://localhost:8000/api/React/GetFormInPageByUrl?url=${relativePath}`;
+  const url = `${process.env.REACT_APP_ENDPOINT_GET_FORM_BY_PAGE_URL}${relativePath}`;
   const {data, loading} = useFetch(url);
 
   return (
