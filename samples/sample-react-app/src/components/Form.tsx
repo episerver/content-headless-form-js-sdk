@@ -1,5 +1,7 @@
 import { FormContainer, FormLoader } from "@optimizely/forms-sdk";
 import React, { useEffect, useState } from "react";
+import { FormContainerBlock } from "@optimizely/forms-react"
+import { UseFormLoaderProps, useFormLoader } from "../hooks/useFormLoader";
 
 interface FormProps {
     formKey: string,
@@ -7,34 +9,11 @@ interface FormProps {
 }
 
 export default function Form ({formKey, language}: FormProps) {
-
-  const formLoader = new FormLoader({
-    baseURL: process.env.REACT_APP_HEADLESS_FORM_BASE_URL
-  });
-
-  const [form, setForm] = useState<FormContainer | null>(null);
-
-  useEffect(()=>{
-    if(!form){
-      formLoader.getForm(formKey, language ?? "en")
-        .then((res)=>setForm(res));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[formKey]);
+  const {data: formData, error, loading } = useFormLoader({ formKey, language, baseUrl: process.env.REACT_APP_HEADLESS_FORM_BASE_URL } as UseFormLoaderProps)
 
   return (
     <>
-      {form && (
-          <>
-              <h2>{form.properties.title}</h2>
-              <h3>Elements</h3>
-              {form.formElements.map(e => (
-                  <ul>
-                      <li key={e.key}>{`${e.contentType}: ${e.displayName}`}</li>
-                  </ul>
-              ))}
-          </>
-      )}
+        {formData && <FormContainerBlock form={formData} />}
     </>
   );
 }

@@ -11,11 +11,15 @@
   "license": "ISC",
   "private": true,
   "scripts": {
-    "setupapp":"npm install -w sample-react-app",
-    "setupsdk":"npm install -w @optimizely/forms-sdk",
-    "setup":"npm run setupsdk && npm run setupapp",
-    "buildsdk":"npm run build -w @optimizely/forms-sdk",
-    "startapp":"npm start -w sample-react-app",
-    "buildsdk:startapp":"npm run buildsdk && npm run startapp"
+    "setup-react-app":"npm install -w sample-react-app",
+    "setup-forms-sdk":"npm install -w @optimizely/forms-sdk",
+    "setup-forms-react":"npm install -w @optimizely/forms-react",
+    "setup":"npm run setup-forms-sdk && npm run setup-forms-react && npm run setup-react-app",
+
+    "build-forms-sdk":"npm run build -w @optimizely/forms-sdk",
+    "build-forms-react":"npm run build -w @optimizely/forms-react",
+    "build": "npm run build-forms-sdk && npm run build-forms-react",
+
+    "start":"npm start -w sample-react-app"
   }
 }

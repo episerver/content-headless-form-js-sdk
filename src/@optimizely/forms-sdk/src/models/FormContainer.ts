@@ -7,6 +7,7 @@ export interface FormContainer {
     key : string
     properties : FormContainerProperties
     formElements : FormElementBase[]
+    steps: Step[]
 }
 
 export interface FormContainerProperties {
@@ -19,5 +20,12 @@ export interface FormContainerProperties {
     submitSuccessMessage: string
     allowAnonymousSubmission: boolean
     allowMultipleSubmission: boolean
-    showNavigationBar : boolean   
+    showNavigationBar : boolean
+    description: string
+    metadataAttribute: string
+}
+
+export interface Step {
+    formStep: FormElementBase
+    elements: FormElementBase[]
 }
