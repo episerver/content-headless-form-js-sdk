@@ -15,7 +15,8 @@
     "react-scripts": "5.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
-    "@optimizely/forms-sdk": "file:../../src/@optimizely/forms-sdk"
+    "@optimizely/forms-sdk": "file:../../src/@optimizely/forms-sdk",
+    "@optimizely/forms-react": "file:../../src/@optimizely/forms-react"
   },
   "scripts": {
     "start": "react-scripts start",
