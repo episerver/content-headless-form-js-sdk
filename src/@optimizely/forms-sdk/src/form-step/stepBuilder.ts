@@ -1,6 +1,9 @@
 import { newUniqueID } from "../helpers/generateId";
 import { FormContainer, FormElementBase, Step, FormStep } from "../models";
 
+/**
+ * Class to assign elements into step
+ */
 export class StepBuilder {
     _form: FormContainer;
 
@@ -8,6 +11,10 @@ export class StepBuilder {
         this._form = form;
     }
 
+    /**
+     * Function to assign elements into step
+     * @returns Form with a list of steps and elements that are matched
+     */
     buildForm(): FormContainer{
         let steps: Step[] = [];
         let elements: FormElementBase[] = [];
@@ -42,6 +49,11 @@ export class StepBuilder {
         };
     }
 
+    /**
+     * Check if element is FormStep
+     * @param object Element to check
+     * @returns A property of FormStep, if it is undefined then the element is not FormStep, otherwise is FormStep.
+     */
     isFormStep(object: any): object is FormStep {
         return 'attachedContentLink' in object;
     }
