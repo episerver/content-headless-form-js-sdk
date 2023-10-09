@@ -19,5 +19,5 @@ export function RenderElement(props: ElementProps) {
     return (<p>{`Cannot render ${props.name} component`}</p>)
   }
 
-  return React.createElement(FoundElement, { element });
+  return <FoundElement element={element} />
 }

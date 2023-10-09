@@ -11,7 +11,7 @@ export function RenderElementInStep(props: RenderElementInStepProps){
     const {elements} = props;
     return (<>
         {elements.map(e => (
-            <RenderElement name={e.contentType} element={e} />
+            <RenderElement name={e.contentType} element={e} key={e.key} />
         ))}
     </>);
 }

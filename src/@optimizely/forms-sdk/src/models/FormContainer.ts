@@ -8,6 +8,7 @@ export interface FormContainer {
     properties : FormContainerProperties
     formElements : FormElementBase[]
     steps: Step[]
+    localizations: Record<string, string>
 }
 
 export interface FormContainerProperties {

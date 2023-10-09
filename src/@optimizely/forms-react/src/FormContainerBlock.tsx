@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
-import { FormContainer } from "@optimizely/forms-sdk";
-import { buildFormStep } from "./helpers/stepHelper";
+import { FormContainer, StepBuilder } from "@optimizely/forms-sdk";
 import { RenderElementInStep } from "./components/RenderElementInStep";
 import { SubmitButtonType } from "./models/SubmitButtonType";
 import "./FormStyle.scss";
@@ -10,7 +9,8 @@ export interface FormContainerProps {
 }
 
 export function FormContainerBlock(props: FormContainerProps){
-    const form = buildFormStep(props.form);
+    const stepBuilder = new StepBuilder(props.form);
+    const form = stepBuilder.buildForm();
     const formTitleId = `${form.key}_label`;
     const statusDisplay = useRef<string>("hide");
     const stepCount = form.steps.length;
@@ -50,19 +50,23 @@ export function FormContainerBlock(props: FormContainerProps){
     const FormBody = () => {
         return (
             <>
-                {form.properties.title && <h2 className="Form__Title" id={formTitleId}>
-                    {form.properties.title}
-                </h2>}
-                {form.properties.description && <aside className="Form__Description">
-                    {form.properties.description}
-                </aside>}
-                {isReadOnlyMode && readOnlyModeMessage && (
+                {form.properties.title && 
+                    <h2 className="Form__Title" id={formTitleId}>
+                        {form.properties.title}
+                    </h2>
+                }
+                {form.properties.description && 
+                    <aside className="Form__Description">
+                        {form.properties.description}
+                    </aside>
+                }
+                {isReadOnlyMode && readOnlyModeMessage && 
                     <div className="Form__Status">
                         <span className="Form__Readonly__Message" role="alert">
                             {readOnlyModeMessage}
                         </span>
                     </div>
-                )}
+                }
                 {/* area for showing Form's status or validation */}
                 <div className="Form__Status">
                     <div role="status" className={`Form__Status__Message ${statusDisplay}`}>
@@ -77,37 +81,35 @@ export function FormContainerBlock(props: FormContainerProps){
                     {/* render element */}
                     {form.steps.map((e, i)=>{
                         let stepDisplaying = (currentStepIndex === i && !formFinalized && isStepValidToDisplay) ? "" : "hide";
-                        return <>
-                            <section id={e.formStep.key} className={`Form__Element__Step ${stepDisplaying}`}>
+                        return (
+                            <section key={e.formStep.key} id={e.formStep.key} className={`Form__Element__Step ${stepDisplaying}`}>
                                 <RenderElementInStep elements={e.elements} stepIndex={i} />
                             </section>
-                        </>
+                        );
                     })}
 
                     {/* render step navigation */}
-                    {isShowStepNavigation && (
-                        <>
-                            <nav role="navigation" className="Form__NavigationBar">
+                    {isShowStepNavigation && 
+                        <nav role="navigation" className="Form__NavigationBar">
                             <button type="submit" name="submit" value={SubmitButtonType.PreviousStep} className="Form__NavigationBar__Action FormExcludeDataRebind btnPrev"
                                     disabled={prevButtonDisableState}>
-                                Previous
+                                {form.localizations["previousButtonLabel"]}
                             </button>
                             
                             <div className="Form__NavigationBar__ProgressBar">
                                 <div className="Form__NavigationBar__ProgressBar--Progress" style={{width: progressWidth}}></div>
                                 <div className="Form__NavigationBar__ProgressBar--Text">
-                                    <span className="Form__NavigationBar__ProgressBar__ProgressLabel">Page</span>
+                                    <span className="Form__NavigationBar__ProgressBar__ProgressLabel">{form.localizations["pageButtonLabel"]}</span>
                                     <span className="Form__NavigationBar__ProgressBar__CurrentStep">{currentDisplayStepIndex}</span>/
                                     <span className="Form__NavigationBar__ProgressBar__StepsCount">{stepCount}</span>
                                 </div>
                             </div>
                             <button type="submit" name="submit" value={SubmitButtonType.NextStep} className="Form__NavigationBar__Action FormExcludeDataRebind btnNext"
                                     disabled={nextButtonDisableState}>
-                                Next
+                                {form.localizations["nextButtonLabel"]}
                             </button>
                         </nav>
-                        </>
-                    )}
+                    }
                 </div>
             </>
         )
