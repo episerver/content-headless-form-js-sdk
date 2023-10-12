@@ -9,5 +9,6 @@ export interface FormElementBase {
 }
 
 export interface FormElementPropertiesBase {
-
+    label: string
+    localizations: Record<string, string>
 }
