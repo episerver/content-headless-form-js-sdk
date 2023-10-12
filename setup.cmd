@@ -1,4 +1,4 @@
-SET AlloyMVC=sample\EPiServer.Templates.Alloy.Mvc
+SET AlloyMVC=samples\ManagementSite
 
 IF EXIST %AlloyMVC%\App_Data (
     ECHO Remove all files from the app data folder
