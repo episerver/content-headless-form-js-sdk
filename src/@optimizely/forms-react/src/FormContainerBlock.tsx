@@ -3,6 +3,8 @@ import { FormContainer, StepBuilder } from "@optimizely/forms-sdk";
 import { RenderElementInStep } from "./components/RenderElementInStep";
 import { SubmitButtonType } from "./models/SubmitButtonType";
 import "./FormStyle.scss";
+import { FormProvider } from "./context/FormProvider";
+import { initState } from "./context/initState";
 
 export interface FormContainerProps {
     form: FormContainer
@@ -115,15 +117,19 @@ export function FormContainerBlock(props: FormContainerProps){
         )
     }
 
+    const state = initState({formContainer: form});
+
     {/* finally return the form */}
     return (
-        <form method="post" 
-            noValidate={true} 
-            aria-labelledby={formTitleId}
-            encType="multipart/form-data" 
-            className={`EPiServerForms ${validationCssClass}`}
-            id={form.key}>
-                <FormBody />
-        </form>
+        <FormProvider initialState={state}>
+            <form method="post" 
+                noValidate={true} 
+                aria-labelledby={formTitleId}
+                encType="multipart/form-data" 
+                className={`EPiServerForms ${validationCssClass}`}
+                id={form.key}>
+                    <FormBody />
+            </form>
+        </FormProvider>
     )
 }

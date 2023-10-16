@@ -10,9 +10,9 @@ export default function ElementWrapper(props: ElementWrapperProps){
     return (
         <>
             {props.isVisible && (
-                <>
+                <div className={props.className}>
                     {props.children}
-                </>
+                </div>
             )}
         </>
     );
