@@ -1,9 +1,10 @@
 import React from 'react';
-import { TextboxElementBlock } from './elements';
+import { TextareaElementBlock, TextboxElementBlock } from './elements';
 import { FormElementBase } from '@optimizely/forms-sdk';
 
 const components: Record<string, any> = {
-    TextboxElementBlock
+    TextboxElementBlock,
+    TextareaElementBlock
 };
 
 export interface ElementProps {
