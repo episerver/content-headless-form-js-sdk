@@ -1,19 +1,16 @@
 import { Textbox } from "@optimizely/forms-sdk";
 import React, { useRef} from "react";
 import { ValidatorType } from "../../models";
-import { FormValidationModel } from "../../models/FormValidationModel";
 import ElementWrapper from "../ElementWrapper";
+import { useElement } from "../../hooks/useElement";
 
 export interface TextboxElementBlockProps {
     element: Textbox
 }
 
 export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
-    const {element} = props;
-    const formContext = {} as Record<string, object>;
-    const formValidationContext = {} as Record<string, FormValidationModel[]>;
-    const handleChange = () => {}; //TODO: update data to context
-    const handleBlur = () => {}; //TODO: validation, dependency
+    const { element } = props;
+    const { elementContext, handleChange, handleBlur, checkVisible } = useElement(element);
     
     const isRequire = element.properties.validators?.some(v => v.type === ValidatorType.RequiredValidator);
     const validatorClasses = element.properties.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass}`, "");
@@ -30,20 +27,20 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
     }
 
     return (
-        <ElementWrapper className={`FormTextbox ${validatorClasses ?? ""}`} isVisible={true}>
+        <ElementWrapper className={`FormTextbox ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
             <label htmlFor={element.key} className="Form__Element__Caption">
                 {element.properties.label}
             </label>
             <input name={element.key} id={element.key} type="text" className="FormTextbox__Input" 
                 aria-describedby={`${element.key}_desc`}
                 placeholder={element.properties.placeHolder}
-                value={formContext[element.key]}
+                value={elementContext.value}
                 autoComplete={element.properties.autoComplete}
                 {...extraAttr.current}
                 onChange={handleChange}
                 onBlur={handleBlur}/>
             {element.properties.validators?.map((v)=> {
-                let validationResult = formValidationContext[element.key]?.filter(r => r.type == v.type);
+                let validationResult = elementContext.validationResults;
                 let valid = !validationResult || validationResult?.length == 0 || validationResult[0].valid;
                 return (
                     <span key={v.type} className="Form__Element__ValidationError" id={`${element.key}_desc`} role="alert" 
