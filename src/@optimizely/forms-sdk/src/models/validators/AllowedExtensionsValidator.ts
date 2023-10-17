@@ -1,5 +1,4 @@
-import { InternalElementValidatorBase } from "./base/InternalElementValidatorBase";
-import { ValidatorModelBase } from "./base/ValidatorsBase";
+import { InternalElementValidatorBase, ValidatorModelBase } from "./base";
 
 export interface AllowedExtensionsValidator extends InternalElementValidatorBase{
     model: AllowedExtensionsValidatorModel

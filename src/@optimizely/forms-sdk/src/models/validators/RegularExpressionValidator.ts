@@ -1,4 +1,4 @@
-import { RegularExpressionValidatorBase } from "./base/RegularExpressionValidatorBase";
+import { RegularExpressionValidatorBase } from "./base";
 
 export interface RegularExpressionValidator extends RegularExpressionValidatorBase{
 }
