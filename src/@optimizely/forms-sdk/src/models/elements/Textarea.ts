@@ -7,6 +7,5 @@ export interface Textarea extends InputElementBase {
 }
 
 export interface TextareaProperties extends InputElementBaseProperties{
-    forms_ExternalSystemsFieldMappings: string[];
     autoComplete: string;
 }
