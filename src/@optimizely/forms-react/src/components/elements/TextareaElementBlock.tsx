@@ -30,7 +30,6 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
                 id={element.key} 
                 className="FormTextbox__Input" 
                 placeholder={element.properties.placeHolder}
-                data-f-datainput
                 {...extraAttr.current}
                 aria-describedby={`${element.key}_desc`}
                 value={elementContext.value as string}
