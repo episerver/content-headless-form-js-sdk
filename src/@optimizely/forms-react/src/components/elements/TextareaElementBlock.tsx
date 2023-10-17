@@ -21,17 +21,17 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
     }
 
     return (
-        <ElementWrapper className={`FormTextbox ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
             <label htmlFor={element.key} className="Form__Element__Caption">
                 {element.properties.label}
             </label>
             <textarea 
-                name="{element.key}" 
+                name={element.key} 
                 id={element.key} 
                 className="FormTextbox__Input" 
                 placeholder={element.properties.placeHolder}
-                data-f-label="@labelText" 
                 data-f-datainput
+                {...extraAttr.current}
                 aria-describedby={`${element.key}_desc`}
                 value={elementContext.value as string}
                 autoComplete={element.properties.autoComplete}
@@ -49,13 +49,6 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
                     </span>
                 );
             })}
-            {element.properties.forms_ExternalSystemsFieldMappings?.length > 0 && 
-                <datalist id={`${element.key}_datalist`}>
-                    {element.properties.forms_ExternalSystemsFieldMappings?.map(i => 
-                        <option value={i} key={i}></option>
-                    )}
-                </datalist>
-            }
         </ElementWrapper>
     );
 }
