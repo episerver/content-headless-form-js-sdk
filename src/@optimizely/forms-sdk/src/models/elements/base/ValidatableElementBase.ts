@@ -1,4 +1,4 @@
-import { ValidatorBase } from "../../validators/base/ValidatorsBase";
+import { ValidatorBase } from "../../validators/base/";
 import { FormElementBase, FormElementPropertiesBase } from "./FormElementBase";
 
 /**
