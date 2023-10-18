@@ -1,4 +1,4 @@
-import { InputElementBase, InputElementBaseProperties } from "./base/InputElementBase";
+import { InputElementBase, InputElementBaseProperties } from "./base";
 /**
  * Allows users to input and display a url
  */

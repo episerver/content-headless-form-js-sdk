@@ -9,4 +9,5 @@ export interface DataElementBlockBase extends ValidatableElementBase {
 
 export interface DataElementBlockBaseProperties extends ValidatableElementBaseProperties {
     predefinedValue: string
+    forms_ExternalSystemsFieldMappings: string[]
 }

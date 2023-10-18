@@ -9,9 +9,11 @@ export interface RenderElementInStepProps {
 
 export function RenderElementInStep(props: RenderElementInStepProps){
     const {elements} = props;
-    return (<>
-        {elements.map(e => (
-            <RenderElement name={e.contentType} element={e} key={e.key} />
-        ))}
-    </>);
+    return (
+        <>
+            {elements.map(e => (
+                <RenderElement element={e} key={e.key} />
+            ))}
+        </>
+    );
 }

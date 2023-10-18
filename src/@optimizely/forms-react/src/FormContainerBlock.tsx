@@ -71,7 +71,7 @@ export function FormContainerBlock(props: FormContainerProps){
                 }
                 {/* area for showing Form's status or validation */}
                 <div className="Form__Status">
-                    <div role="status" className={`Form__Status__Message ${statusDisplay}`}>
+                    <div role="status" className={`Form__Status__Message ${statusDisplay.current}`}>
                         <div dangerouslySetInnerHTML={{
                                 __html: statusMessage.current
                             }}

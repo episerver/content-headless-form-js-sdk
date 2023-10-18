@@ -5,7 +5,8 @@
   "workspaces": [
     "src/@optimizely/forms-react",
     "src/@optimizely/forms-sdk",
-    "samples/sample-react-app"
+    "samples/sample-react-app",
+    "samples/managementsite"
   ],
   "author": "Optimizely",
   "license": "ISC",
@@ -20,6 +21,7 @@
     "build-forms-react":"npm run build -w @optimizely/forms-react",
     "build": "npm run build-forms-sdk && npm run build-forms-react",
 
-    "start":"npm start -w sample-react-app"
+    "start-backend": "npm start -w managementsite",
+    "start-frontend": "npm start -w sample-react-app"
   }
 }

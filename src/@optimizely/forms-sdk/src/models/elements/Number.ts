@@ -7,5 +7,5 @@ export interface Number extends FormElementBase {
 }
 
 export interface NumberProperties extends InputElementBaseProperties {
-    
+    autoComplete: string
 }

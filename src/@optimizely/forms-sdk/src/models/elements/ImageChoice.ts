@@ -1,4 +1,4 @@
-import { InputElementBase, InputElementBaseProperties } from "./base/InputElementBase"
+import { InputElementBase, InputElementBaseProperties } from "./base"
 /**
  *  Allow users to select from a set of images
  */
