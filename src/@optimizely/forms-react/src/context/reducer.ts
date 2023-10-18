@@ -1,3 +1,4 @@
+import { equals } from "@optimizely/forms-sdk";
 import { FormState } from "../models/FormContext";
 import { FormDependencies } from "../models/FormDependencies";
 import { FormSubmission } from "../models/FormSubmission";
@@ -14,7 +15,7 @@ export function formReducer(formState: FormState, action: any) {
       case ActionType.UpdateValue: {
         return {
             ...formState,
-            formSubmissions: formState.formSubmissions.map(fs => fs.elementKey == action.elementKey ? { 
+            formSubmissions: formState.formSubmissions.map(fs => equals(fs.elementKey, action.elementKey)  ? { 
                 elementKey: action.elementKey, 
                 value: action.value 
             } as FormSubmission : fs)
@@ -23,9 +24,9 @@ export function formReducer(formState: FormState, action: any) {
       case ActionType.UpdateValidation: {
         return {
             ...formState,
-            formValidations: formState.formValidations.map(fv => fv.elementKey == action.elementKey ? {
+            formValidations: formState.formValidations.map(fv => equals(fv.elementKey, action.elementKey) ? {
                 elementKey: action.elementKey,
-                results: fv.results.map(r => r.type == action.validatorType ? {
+                results: fv.results.map(r => equals(r.type, action.validatorType) ? {
                     type: action.validatorType,
                     valid: action.valid
                 } as FormValidationResult : r)
@@ -35,7 +36,7 @@ export function formReducer(formState: FormState, action: any) {
       case ActionType.UpdateDependencies: {
         return {
             ...formState,
-            formDependencies: formState.formDependencies.map(fd => fd.elementKey == action.elementKey ? {
+            formDependencies: formState.formDependencies.map(fd => equals(fd.elementKey, action.elementKey) ? {
                 elementKey: action.elementKey,
                 isSatisfied: action.isSatisfied
             } as FormDependencies : fd)

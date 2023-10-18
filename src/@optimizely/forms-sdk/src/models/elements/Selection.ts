@@ -1,4 +1,4 @@
-import { SelectionBase, SelectionBaseProperties } from "./base/SelectionBase"
+import { SelectionBase, SelectionBaseProperties } from "./base"
 
 /**
  * This element can be rendered as Combobox or Listbox, base on SelectionBase's allowMultiSelect property

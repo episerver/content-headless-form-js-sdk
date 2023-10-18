@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
 import { FormValidationResult } from "../models/FormValidation";
 import { ActionType } from "../context/reducer";
-import { ConditionProperties, FormElementBase } from "@optimizely/forms-sdk";
+import { ConditionProperties, FormElementBase, equals, getDefaultValue, isNull } from "@optimizely/forms-sdk";
 import { SatisfiedActionType } from "../models/SatisfiedActionType";
 
 export interface ElementContext{
-    value: unknown
+    value: any,
+    defaultValue: any,
     isDependenciesSatisfied: boolean
     validationResults: FormValidationResult[]
 }
@@ -14,51 +15,60 @@ export interface ElementContext{
 export const useElement = (element: FormElementBase) => {
     const formContext = useForms();
     const dispatch = useFormsDispatch();
-    const formSubmissions = formContext?.formSubmissions ?? [];
-    const formValidations = formContext?.formValidations ?? [];
-    const formDependencies = formContext?.formDependencies ?? [];
+
+    const defaultValue = getDefaultValue(element);
+
+    const value = (formContext?.formSubmissions ?? [])
+                    .filter(s => equals(s.elementKey, element.key))[0]?.value ?? null;
+    const validationResults = (formContext?.formValidations ?? [])
+                    .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
+    const isDependenciesSatisfied = (formContext?.formDependencies ?? [])
+                    .filter(s => equals(s.elementKey, element.key))[0]?.isSatisfied ?? false;
+
     const [elementContext, setElementContext] = useState<ElementContext>({} as ElementContext);
+
+    useEffect(()=>{
+        setElementContext({
+            ...elementContext,
+            value,
+            defaultValue,
+            validationResults,
+            isDependenciesSatisfied
+        } as ElementContext);
+    },[element.key]);
     
-    useEffect(()=>{
-        let submission = formSubmissions.filter(s => s.elementKey == element.key);
-        
-        if(submission.length > 0){
-            setElementContext({...elementContext, value: submission[0].value});
-        }
-    },[element.key, formSubmissions]);
-
-    useEffect(()=>{
-        let validation = formValidations.filter(s => s.elementKey == element.key);
-        
-        if(validation.length > 0){
-            setElementContext({...elementContext, validationResults: validation[0].results});
-        }
-    },[element.key, formValidations]);
-
-    useEffect(()=>{
-        let dependency = formDependencies.filter(s => s.elementKey == element.key);
-        
-        if(dependency.length > 0){
-            setElementContext({...elementContext, isDependenciesSatisfied: dependency[0].isSatisfied});
-        }
-    },[element.key, formDependencies]);
-
     const handleChange = (e: any) => {
-        const {name, value, type} = e.target;
-        if(type === "checkbox"){
-            dispatch({
-                type: ActionType.UpdateValue,
-                elementKey: name,
-                value: e.target.checked
-            });
+        const {name, value, type, checked} = e.target;
+        let submissionValue = value;
+
+        //get selected value for choice
+        if(/checkbox|radio/.test(type)){
+            let arrayValue = isNull(elementContext.value) || /radio/.test(type) 
+                ? [] 
+                : (elementContext.value as string).split(",");
+
+            if(checked) {
+                arrayValue.push(value);
+            }
+            else {
+                arrayValue = arrayValue.filter(v => !equals(v, value));
+            }
+
+            submissionValue = arrayValue.length > 0 ? arrayValue.join(",") : null;
         }
-        else {
-            dispatch({
-                type: ActionType.UpdateValue,
-                elementKey: name,
-                value
-            });
-        }
+
+        //update form context
+        dispatch({
+            type: ActionType.UpdateValue,
+            elementKey: name,
+            value: submissionValue
+        });
+
+        //update element context
+        setElementContext({
+            ...elementContext, 
+            value: submissionValue
+        } as ElementContext);
     }
     const handleBlur = (e: any) => {
         //call validation from form-sdk
@@ -67,18 +77,18 @@ export const useElement = (element: FormElementBase) => {
 
     const checkVisible = (): boolean => {
         const conditionProps = (element.properties as unknown) as ConditionProperties;
-        if(conditionProps.satisfiedAction === undefined 
-            || elementContext.isDependenciesSatisfied === undefined){
+        if(isNull(conditionProps.satisfiedAction) 
+            || isNull(elementContext.isDependenciesSatisfied)){
             return true;
         }
 
         if(elementContext.isDependenciesSatisfied) {
             //if isDependenciesSatisfied = true, and if SatisfiedAction = show, then show element. otherwise hide element.
-            return conditionProps.satisfiedAction === SatisfiedActionType.Show;
+            return equals(conditionProps.satisfiedAction, SatisfiedActionType.Show);
         }
         else {
-            //if isDependenciesSatisfied = false, and if SatisfiedAction = hide, then show element. otherwise show element.
-            return conditionProps.satisfiedAction === SatisfiedActionType.Hide;
+            //if isDependenciesSatisfied = false, and if SatisfiedAction = hide, then show element. otherwise hide element.
+            return equals(conditionProps.satisfiedAction, SatisfiedActionType.Hide);
         }
     }
 

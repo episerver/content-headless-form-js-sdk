@@ -38,7 +38,7 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
                 autoComplete={element.properties.autoComplete}
                 {...extraAttr.current}
                 onChange={handleChange}
-                onBlur={handleBlur}/>
+                onBlur={handleBlur} />
             {element.properties.validators?.map((v)=> {
                 let validationResult = elementContext.validationResults;
                 let valid = !validationResult || validationResult?.length == 0 || validationResult[0].valid;
