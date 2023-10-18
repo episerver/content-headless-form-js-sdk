@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { TextareaElementBlock, TextboxElementBlock, PredefinedHiddenElementBlock, ChoiceElementBlock, NumberElementBlock } from './elements';
+import { TextareaElementBlock, TextboxElementBlock, PredefinedHiddenElementBlock, ChoiceElementBlock, NumberElementBlock, RangeElementBlock } from './elements';
 import { FormElementBase, isNull } from '@optimizely/forms-sdk';
 
 const components: Record<string, any> = {
@@ -8,7 +8,8 @@ const components: Record<string, any> = {
     TextareaElementBlock,
 	  PredefinedHiddenElementBlock,
     ChoiceElementBlock,
-    NumberElementBlock
+    NumberElementBlock,
+    RangeElementBlock
 };
 
 export interface ElementProps {
