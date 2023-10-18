@@ -1,14 +1,14 @@
-import { Textbox } from "@optimizely/forms-sdk";
-import React, { useRef} from "react";
+import { Textarea } from "@optimizely/forms-sdk"
 import { ValidatorType } from "../../models";
+import React, { useRef} from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 
-export interface TextboxElementBlockProps {
-    element: Textbox
+export interface TextareaElementBlockProps {
+    element: Textarea
 }
 
-export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
+export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
     const { element } = props;
     const { elementContext, handleChange, handleBlur, checkVisible } = useElement(element);
     
@@ -19,26 +19,25 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
     if(isRequire){
         extraAttr.current = {...extraAttr.current, required: isRequire, "aria-required": isRequire };
     }
-    if(element.properties.descripton && element.properties.descripton.trim() !== ""){
-        extraAttr.current = {...extraAttr.current, title: element.properties.descripton }
-    }
-    if(element.properties.forms_ExternalSystemsFieldMappings?.length > 0){
-        extraAttr.current = {...extraAttr.current, list: `${element.key}_datalist` }
-    }
 
     return (
-        <ElementWrapper className={`FormTextbox ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
             <label htmlFor={element.key} className="Form__Element__Caption">
                 {element.properties.label}
             </label>
-            <input name={element.key} id={element.key} type="text" className="FormTextbox__Input" 
-                aria-describedby={`${element.key}_desc`}
+            <textarea 
+                name={element.key} 
+                id={element.key} 
+                className="FormTextbox__Input" 
                 placeholder={element.properties.placeHolder}
-                value={elementContext.value}
-                autoComplete={element.properties.autoComplete}
                 {...extraAttr.current}
+                aria-describedby={`${element.key}_desc`}
+                value={elementContext.value as string}
+                autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
-                onBlur={handleBlur} />
+                onBlur={handleBlur}
+            >
+            </textarea>
             {element.properties.validators?.map((v)=> {
                 let validationResult = elementContext.validationResults;
                 let valid = !validationResult || validationResult?.length == 0 || validationResult[0].valid;
@@ -49,13 +48,6 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
                     </span>
                 );
             })}
-            {element.properties.forms_ExternalSystemsFieldMappings?.length > 0 && 
-                <datalist id={`${element.key}_datalist`}>
-                    {element.properties.forms_ExternalSystemsFieldMappings?.map(i => 
-                        <option value={i} key={i}></option>
-                    )}
-                </datalist>
-            }
         </ElementWrapper>
     );
 }

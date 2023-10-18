@@ -1,23 +1,24 @@
 import React from 'react';
-import { TextboxElementBlock, ChoiceElementBlock } from './elements';
+import { TextareaElementBlock, TextboxElementBlock, PredefinedHiddenElementBlock, ChoiceElementBlock } from './elements';
 import { FormElementBase, isNull } from '@optimizely/forms-sdk';
 
 const components: Record<string, any> = {
     TextboxElementBlock,
+    TextareaElementBlock,
+	  PredefinedHiddenElementBlock,
     ChoiceElementBlock
 };
 
 export interface ElementProps {
-    name: string,
     element: FormElementBase
 }
 
 export function RenderElement(props: ElementProps) {
   const { element } = props;
-  const FoundElement = components[props.name];
+  const FoundElement = components[element.contentType];
 
   if(isNull(FoundElement)){
-    return (<p>{`Cannot render ${props.name} component`}</p>)
+    return (<p>{`Cannot render ${element.contentType} component`}</p>)
   }
 
   return <FoundElement element={element} />

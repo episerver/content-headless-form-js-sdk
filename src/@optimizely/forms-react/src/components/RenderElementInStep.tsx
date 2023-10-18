@@ -12,7 +12,7 @@ export function RenderElementInStep(props: RenderElementInStepProps){
     return (
         <>
             {elements.map(e => (
-                <RenderElement name={e.contentType} element={e} key={e.key} />
+                <RenderElement element={e} key={e.key} />
             ))}
         </>
     );

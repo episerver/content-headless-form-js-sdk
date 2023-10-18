@@ -6,7 +6,7 @@ import { ConditionProperties, FormElementBase, equals, getDefaultValue, isNull }
 import { SatisfiedActionType } from "../models/SatisfiedActionType";
 
 export interface ElementContext{
-    submissionValue: any,
+    value: any,
     defaultValue: any,
     isDependenciesSatisfied: boolean
     validationResults: FormValidationResult[]
@@ -18,7 +18,7 @@ export const useElement = (element: FormElementBase) => {
 
     const defaultValue = getDefaultValue(element);
 
-    const submissionValue = (formContext?.formSubmissions ?? [])
+    const value = (formContext?.formSubmissions ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.value ?? null;
     const validationResults = (formContext?.formValidations ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
@@ -30,7 +30,7 @@ export const useElement = (element: FormElementBase) => {
     useEffect(()=>{
         setElementContext({
             ...elementContext,
-            submissionValue,
+            value,
             defaultValue,
             validationResults,
             isDependenciesSatisfied
@@ -43,9 +43,9 @@ export const useElement = (element: FormElementBase) => {
 
         //get selected value for choice
         if(/checkbox|radio/.test(type)){
-            let arrayValue = isNull(elementContext.submissionValue) || /radio/.test(type) 
+            let arrayValue = isNull(elementContext.value) || /radio/.test(type) 
                 ? [] 
-                : (elementContext.submissionValue as string).split(",");
+                : (elementContext.value as string).split(",");
 
             if(checked) {
                 arrayValue.push(value);
@@ -67,7 +67,7 @@ export const useElement = (element: FormElementBase) => {
         //update element context
         setElementContext({
             ...elementContext, 
-            submissionValue
+            value: submissionValue
         } as ElementContext);
     }
     const handleBlur = (e: any) => {
@@ -87,7 +87,7 @@ export const useElement = (element: FormElementBase) => {
             return equals(conditionProps.satisfiedAction, SatisfiedActionType.Show);
         }
         else {
-            //if isDependenciesSatisfied = false, and if SatisfiedAction = hide, then show element. otherwise show element.
+            //if isDependenciesSatisfied = false, and if SatisfiedAction = hide, then show element. otherwise hide element.
             return equals(conditionProps.satisfiedAction, SatisfiedActionType.Hide);
         }
     }

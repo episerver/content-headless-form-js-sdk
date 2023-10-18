@@ -30,8 +30,8 @@ export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
                 
                 {element.properties.items.map((item, index) => {
                     let isChecked = (!isNullOrEmpty(item.value) 
-                                        && !isNullOrEmpty(elementContext.submissionValue) 
-                                        && (elementContext.submissionValue).split(',').some((s: string) => equals(s, item.value))
+                                        && !isNullOrEmpty(elementContext.value) 
+                                        && (elementContext.value).split(',').some((s: string) => equals(s, item.value))
                                     );
                     let choiceId = `${element.key}_${index}`;
 
