@@ -1,9 +1,10 @@
 import React from 'react';
-import { TextboxElementBlock } from './elements';
-import { FormElementBase } from '@optimizely/forms-sdk';
+import { TextboxElementBlock, ChoiceElementBlock } from './elements';
+import { FormElementBase, isNull } from '@optimizely/forms-sdk';
 
 const components: Record<string, any> = {
-    TextboxElementBlock
+    TextboxElementBlock,
+    ChoiceElementBlock
 };
 
 export interface ElementProps {
@@ -15,7 +16,7 @@ export function RenderElement(props: ElementProps) {
   const { element } = props;
   const FoundElement = components[props.name];
 
-  if(typeof FoundElement === "undefined"){
+  if(isNull(FoundElement)){
     return (<p>{`Cannot render ${props.name} component`}</p>)
   }
 

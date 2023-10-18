@@ -1,3 +1,7 @@
+/**
+ * Function to generate a new GUID
+ * @returns A string of GUID
+ */
 export function newUniqueID () { 
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
     .replace(/[xy]/g, function (c) { 

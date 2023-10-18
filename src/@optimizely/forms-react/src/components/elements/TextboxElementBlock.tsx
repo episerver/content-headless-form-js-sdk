@@ -34,11 +34,11 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
             <input name={element.key} id={element.key} type="text" className="FormTextbox__Input" 
                 aria-describedby={`${element.key}_desc`}
                 placeholder={element.properties.placeHolder}
-                value={elementContext.value}
+                value={elementContext.submissionValue}
                 autoComplete={element.properties.autoComplete}
                 {...extraAttr.current}
                 onChange={handleChange}
-                onBlur={handleBlur}/>
+                onBlur={handleBlur} />
             {element.properties.validators?.map((v)=> {
                 let validationResult = elementContext.validationResults;
                 let valid = !validationResult || validationResult?.length == 0 || validationResult[0].valid;

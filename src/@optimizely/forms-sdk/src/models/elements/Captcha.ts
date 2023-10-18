@@ -9,7 +9,8 @@ export interface Captcha extends ValidatableElementBase {
 export interface CaptchaProperties extends ValidatableElementBaseProperties {
     refreshButtonLabel: string
     captchaImageHandler: string
-    imageHeight: string
+    imageWidth: number
+    imageHeight: number
     captchaImageAlt: string
-    textLength: string
+    textLength: number
 }

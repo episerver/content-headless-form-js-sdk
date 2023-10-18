@@ -1,4 +1,4 @@
-import { ConditionProperties, DataElementBlockBaseProperties, FormContainer, ValidatableElementBaseProperties } from "@optimizely/forms-sdk";
+import { ConditionProperties, DataElementBlockBaseProperties, FormContainer, ValidatableElementBaseProperties, getDefaultValue, isNull } from "@optimizely/forms-sdk";
 import { FormState } from "../models/FormContext";
 import { FormSubmission } from "../models/FormSubmission";
 import { FormValidation, FormValidationResult } from "../models/FormValidation";
@@ -20,15 +20,14 @@ export function initState(props: InitStateProps): FormState{
     formContainer.steps.forEach(s => {
         s.elements.forEach(e => {
             //init form submission
-            let dataProps = e.properties as DataElementBlockBaseProperties;
-            formSubmissions =  formSubmissions.concat({ elementKey: e.key, value: dataProps.predefinedValue ?? null } as FormSubmission)
+            formSubmissions =  formSubmissions.concat({ elementKey: e.key, value: getDefaultValue(e) } as FormSubmission)
 
             //init form validation
             let validatableProps = e.properties as ValidatableElementBaseProperties;
             let formValidationResults = [] as FormValidationResult[];
 
             //some elements don't have validator
-            if(validatableProps.validators)
+            if(!isNull(validatableProps.validators))
             {
                 validatableProps.validators.forEach(v => {
                     formValidationResults = formValidationResults.concat({type: v.type, valid: true}); //default valid = true to hide message
@@ -41,7 +40,7 @@ export function initState(props: InitStateProps): FormState{
             let conditionProps = (e.properties as unknown) as ConditionProperties;
 
             //Captcha, ResetButton don't have condition
-            if(conditionProps.conditions){
+            if(!isNull(conditionProps.conditions)){
                 conditionProps.conditions.forEach(c => {
                     formDependencies = formDependencies.concat({ elementKey: e.key, isSatisfied: false }); //default isSatisfied = false to do reverse action
                 });
