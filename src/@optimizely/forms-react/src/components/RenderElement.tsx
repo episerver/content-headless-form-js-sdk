@@ -6,7 +6,8 @@ import {
   PredefinedHiddenElementBlock, 
   ChoiceElementBlock, 
   NumberElementBlock,
-  FormStepBlock } from './elements';
+  FormStepBlock,
+  RangeElementBlock } from './elements';
 import { FormElementBase, isNull } from '@optimizely/forms-sdk';
 
 const components: Record<string, any> = {
@@ -15,6 +16,7 @@ const components: Record<string, any> = {
 	  PredefinedHiddenElementBlock,
     ChoiceElementBlock,
     NumberElementBlock,
+    RangeElementBlock,
     FormStepBlock
 };
 
