@@ -13,7 +13,7 @@ export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
     const { elementContext, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
 
     return (
-        <ElementWrapper className={`FormChoice ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormChoice ${validatorClasses}`} isVisible={checkVisible()}>
             <fieldset aria-describedby={`${element.key}_desc`}>
                 
                 {isNullOrEmpty(element.properties.label) && 

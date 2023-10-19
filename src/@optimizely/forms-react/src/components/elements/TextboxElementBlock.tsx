@@ -13,7 +13,7 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
     const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
     
     return (
-        <ElementWrapper className={`FormTextbox ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormTextbox ${validatorClasses}`} isVisible={checkVisible()}>
             <ElementCaption element={element} />
 
             <input name={element.key} id={element.key} type="text" className="FormTextbox__Input" 
