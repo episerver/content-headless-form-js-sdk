@@ -2,7 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
 import { FormValidationResult } from "../models/FormValidation";
 import { ActionType } from "../context/reducer";
-import { ConditionProperties, DataElementBlockBaseProperties, FormElementBase, ValidatableElementBaseProperties, equals, getDefaultValue, isNull, isNullOrEmpty } from "@optimizely/forms-sdk";
+import { 
+    //models
+    ConditionProperties, 
+    DataElementBlockBaseProperties, 
+    FormElementBase, 
+    ValidatableElementBaseProperties, 
+    //functions
+    equals, 
+    getDefaultValue, 
+    isNull, 
+    isNullOrEmpty } from "@optimizely/forms-sdk";
 import { SatisfiedActionType } from "../models/SatisfiedActionType";
 import { ValidatorType } from "../models";
 

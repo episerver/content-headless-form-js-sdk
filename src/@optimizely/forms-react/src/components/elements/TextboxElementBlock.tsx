@@ -12,8 +12,6 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
     const { element } = props;
     const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
     
-    
-
     return (
         <ElementWrapper className={`FormTextbox ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
             <ElementCaption element={element} />
@@ -25,7 +23,8 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
                 autoComplete={element.properties.autoComplete}
                 {...extraAttr}
                 onChange={handleChange}
-                onBlur={handleBlur} />
+                onBlur={handleBlur} 
+            />
 
             <ValidationMessage element={element} validationResults={elementContext.validationResults} />
 

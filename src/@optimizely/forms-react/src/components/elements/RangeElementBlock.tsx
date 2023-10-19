@@ -38,9 +38,9 @@ export const RangeElementBlock = (props: RangeElementBlockProps) => {
             <span className="FormRange__Wrapper">
                 <span className="FormRange__Slider__Wrapper">
                     {elementContext.value > element.properties.min ?
-                        <button className="FormRange__Slider__Button" type="button" aria-label="@decrement" title="@decrement" data-action="decrement" onClick={handleDecrement}>&lt;</button>
+                        <button className="FormRange__Slider__Button" type="button" aria-label="decrement" title="decrement" data-action="decrement" onClick={handleDecrement}>&lt;</button>
                         :
-                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="@decrement" title="@decrement" data-action="decrement">&lt;</button>
+                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="decrement" title="decrement" data-action="decrement">&lt;</button>
                     }
                     <span className="FormRange__Min">{element.properties.min}</span>
                     <input
@@ -61,9 +61,9 @@ export const RangeElementBlock = (props: RangeElementBlockProps) => {
                     />
                     <span className="FormRange__Max">{element.properties.max}</span>
                     {elementContext.value < element.properties.max ?
-                        <button className="FormRange__Slider__Button" type="button" aria-label="@increment" title="@increment" data-action="increment" onClick={handleIncrement}>&gt;</button>
+                        <button className="FormRange__Slider__Button" type="button" aria-label="increment" title="increment" data-action="increment" onClick={handleIncrement}>&gt;</button>
                         :
-                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="@increment" title="@increment" data-action="increment">&gt;</button>
+                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="increment" title="increment" data-action="increment">&gt;</button>
                     }
                 </span>
                 <span className="FormRange__Output__Wrapper">
