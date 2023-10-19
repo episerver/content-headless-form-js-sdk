@@ -13,7 +13,7 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
     const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
 
     return (
-        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses}`} isVisible={checkVisible()}>
             <ElementCaption element={element} />
             
             <textarea 

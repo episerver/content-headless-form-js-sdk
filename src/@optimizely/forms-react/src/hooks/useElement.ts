@@ -43,14 +43,14 @@ export const useElement = (element: FormElementBase) => {
     //build extra attributes for element
     const validatableProps = (element.properties as unknown) as ValidatableElementBaseProperties;
     const isRequire = validatableProps.validators?.some(v => v.type === ValidatorType.RequiredValidator);
-    const validatorClasses = validatableProps.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass}`, "");
+    const validatorClasses = validatableProps.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass ?? ""}`, "") ?? "";
 
     if(isRequire){
         extraAttr.current = {...extraAttr.current, required: isRequire, "aria-required": isRequire };
     }
 
-    if(!isNullOrEmpty(element.properties.descripton)){
-        extraAttr.current = {...extraAttr.current, title: element.properties.descripton }
+    if(!isNullOrEmpty(element.properties.description)){
+        extraAttr.current = {...extraAttr.current, title: element.properties.description }
     }
 
     const dataProps = element.properties as DataElementBlockBaseProperties;

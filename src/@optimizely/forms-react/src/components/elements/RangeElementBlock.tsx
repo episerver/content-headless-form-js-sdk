@@ -33,7 +33,7 @@ export const RangeElementBlock = (props: RangeElementBlockProps) => {
     }
 
     return (
-        <ElementWrapper className={`FormRange ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormRange ${validatorClasses}`} isVisible={checkVisible()}>
             <ElementCaption element={element} />
             <span className="FormRange__Wrapper">
                 <span className="FormRange__Slider__Wrapper">

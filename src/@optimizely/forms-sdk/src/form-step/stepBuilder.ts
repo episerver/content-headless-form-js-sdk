@@ -1,3 +1,4 @@
+import { equals } from "../helpers";
 import { newUniqueID } from "../helpers/generateId";
 import { FormContainer, FormElementBase, Step, FormStep } from "../models";
 
@@ -33,11 +34,8 @@ export class StepBuilder {
                 elements = [];
                 currentStep = {...e};
             }
-            else {
-                //add element to list of element of current step
-                elements.push(e);
-            }
-            
+
+            elements.push(e);
         });
     
         //if there is only one step, save list element to step
@@ -51,10 +49,10 @@ export class StepBuilder {
 
     /**
      * Check if element is FormStep
-     * @param object Element to check
-     * @returns A property of FormStep, if it is undefined then the element is not FormStep, otherwise is FormStep.
+     * @param element Element to check
+     * @returns True or false.
      */
-    isFormStep(object: any): object is FormStep {
-        return 'attachedContentLink' in object;
+    isFormStep(element: FormElementBase): boolean {
+        return equals(element.contentType, "FormStepBlock");
     }
 }
