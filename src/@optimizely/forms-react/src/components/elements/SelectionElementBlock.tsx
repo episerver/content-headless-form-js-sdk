@@ -1,8 +1,8 @@
-import { Selection, extractParams } from "@optimizely/forms-sdk"
-import { ValidatorType } from "../../models";
-import React, { useRef } from "react";
+import { Selection } from "@optimizely/forms-sdk"
+import React from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
+import { ElementCaption, ValidationMessage } from "./shared";
 
 export interface SelectionElementBlockProps {
     element: Selection
@@ -10,27 +10,16 @@ export interface SelectionElementBlockProps {
 
 export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
     const { element } = props;
-    const { elementContext, handleChange, handleBlur, checkVisible } = useElement(element);
-
-    const isRequire = element.properties.validators?.some(v => v.type === ValidatorType.RequiredValidator);
-    const validatorClasses = element.properties.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass}`, "");
-
-    const extraAttr = useRef<any>({});
-
-    if (isRequire) {
-        extraAttr.current = { ...extraAttr.current, required: isRequire, "aria-required": isRequire };
-    }
-
+    const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
     return (
-        <ElementWrapper className={`FormSelection ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
-            <label htmlFor={element.key} className="Form__Element__Caption">
-                {element.properties.label}
-            </label>
+        <ElementWrapper className={`FormSelection ${validatorClasses}`} isVisible={checkVisible()}>
+            <ElementCaption element={element}></ElementCaption>
             <select
                 name={element.key}
                 id={element.key}
                 multiple={element.properties.allowMultiSelect}
                 aria-describedby={element.displayName + "_desc"}
+                {...extraAttr}
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -42,6 +31,7 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                     <option key={feed.value} value={feed.value} defaultChecked={feed.checked}>{feed.caption}</option>
                 ))}
             </select>
+            <ValidationMessage element={element} validationResults={elementContext.validationResults}></ValidationMessage>
         </ElementWrapper>
     );
 }
