@@ -11,6 +11,7 @@ export interface FormStepProperties extends FormElementPropertiesBase {
     dependField: DependField
     dependCondition: number
     dependValue: string
+    description: string
 }
 
 export interface DependField {
