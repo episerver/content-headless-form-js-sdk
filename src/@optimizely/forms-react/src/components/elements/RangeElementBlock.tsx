@@ -1,9 +1,8 @@
-import { Number, Range, extractParams, getDefaultValue } from "@optimizely/forms-sdk"
-import { ValidatorType } from "../../models";
-import React, { useRef, useState } from "react";
+import { Range } from "@optimizely/forms-sdk"
+import React from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
-import { FormContext } from "../../context/store";
+import { ElementCaption, ValidationMessage } from "./shared";
 
 export interface RangeElementBlockProps {
     element: Range
@@ -11,15 +10,7 @@ export interface RangeElementBlockProps {
 
 export const RangeElementBlock = (props: RangeElementBlockProps) => {
     const { element } = props;
-    const { elementContext, handleChange, handleBlur, checkVisible } = useElement(element);
-
-    const isRequire = element.properties.validators?.some(v => v.type === ValidatorType.RequiredValidator);
-    const validatorClasses = element.properties.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass}`, "");
-
-    const extraAttr = useRef<any>({});
-    if (isRequire) {
-        extraAttr.current = { ...extraAttr.current, required: isRequire, "aria-required": isRequire };
-    }
+    const { elementContext, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
 
     const handleDecrement = () => {
         handleChange({
@@ -43,15 +34,13 @@ export const RangeElementBlock = (props: RangeElementBlockProps) => {
 
     return (
         <ElementWrapper className={`FormRange ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
-            <label htmlFor={element.key} className="Form__Element__Caption">
-                {element.properties.label}
-            </label>
+            <ElementCaption element={element} />
             <span className="FormRange__Wrapper">
                 <span className="FormRange__Slider__Wrapper">
                     {elementContext.value > element.properties.min ?
-                        <button className="FormRange__Slider__Button" type="button" aria-label="@decrement" title="@decrement" data-action="decrement" onClick={handleDecrement}>&lt;</button>
+                        <button className="FormRange__Slider__Button" type="button" aria-label="decrement" title="decrement" data-action="decrement" onClick={handleDecrement}>&lt;</button>
                         :
-                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="@decrement" title="@decrement" data-action="decrement">&lt;</button>
+                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="decrement" title="decrement" data-action="decrement">&lt;</button>
                     }
                     <span className="FormRange__Min">{element.properties.min}</span>
                     <input
@@ -72,15 +61,16 @@ export const RangeElementBlock = (props: RangeElementBlockProps) => {
                     />
                     <span className="FormRange__Max">{element.properties.max}</span>
                     {elementContext.value < element.properties.max ?
-                        <button className="FormRange__Slider__Button" type="button" aria-label="@increment" title="@increment" data-action="increment" onClick={handleIncrement}>&gt;</button>
+                        <button className="FormRange__Slider__Button" type="button" aria-label="increment" title="increment" data-action="increment" onClick={handleIncrement}>&gt;</button>
                         :
-                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="@increment" title="@increment" data-action="increment">&gt;</button>
+                        <button className="FormRange__Slider__Button FormRange__Slider__Button__Disable" type="button" aria-label="increment" title="increment" data-action="increment">&gt;</button>
                     }
                 </span>
                 <span className="FormRange__Output__Wrapper">
                     <output htmlFor={element.key} className="FormRange__Output">{elementContext.value}</output>
                 </span>
             </span>
+            <ValidationMessage element={element} validationResults={elementContext.validationResults} />
         </ElementWrapper>
     );
 }

@@ -7,6 +7,5 @@ export interface Textbox extends InputElementBase {
 }
 
 export interface TextboxProperties extends InputElementBaseProperties {
-    descripton: string
     autoComplete: string
 }

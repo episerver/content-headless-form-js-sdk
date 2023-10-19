@@ -1,9 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
 import { FormValidationResult } from "../models/FormValidation";
 import { ActionType } from "../context/reducer";
-import { ConditionProperties, FormElementBase, equals, getDefaultValue, isNull } from "@optimizely/forms-sdk";
+import { 
+    //models
+    ConditionProperties, 
+    DataElementBlockBaseProperties, 
+    FormElementBase, 
+    ValidatableElementBaseProperties, 
+    //functions
+    equals, 
+    getDefaultValue, 
+    isNull, 
+    isNullOrEmpty } from "@optimizely/forms-sdk";
 import { SatisfiedActionType } from "../models/SatisfiedActionType";
+import { ValidatorType } from "../models";
 
 export interface ElementContext{
     value: any,
@@ -15,17 +26,37 @@ export interface ElementContext{
 export const useElement = (element: FormElementBase) => {
     const formContext = useForms();
     const dispatch = useFormsDispatch();
-
+    const extraAttr = useRef<any>({});
+    
     const defaultValue = getDefaultValue(element);
 
+    //build element context
     const value = (formContext?.formSubmissions ?? [])
-                    .filter(s => equals(s.elementKey, element.key))[0]?.value ?? null;
+                    .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue;
     const validationResults = (formContext?.formValidations ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
     const isDependenciesSatisfied = (formContext?.formDependencies ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.isSatisfied ?? false;
 
-    const [elementContext, setElementContext] = useState<ElementContext>({} as ElementContext);
+    const [elementContext, setElementContext] = useState<ElementContext>({ value } as ElementContext);
+
+    //build extra attributes for element
+    const validatableProps = (element.properties as unknown) as ValidatableElementBaseProperties;
+    const isRequire = validatableProps.validators?.some(v => v.type === ValidatorType.RequiredValidator);
+    const validatorClasses = validatableProps.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass}`, "");
+
+    if(isRequire){
+        extraAttr.current = {...extraAttr.current, required: isRequire, "aria-required": isRequire };
+    }
+
+    if(!isNullOrEmpty(element.properties.descripton)){
+        extraAttr.current = {...extraAttr.current, title: element.properties.descripton }
+    }
+
+    const dataProps = element.properties as DataElementBlockBaseProperties;
+    if(dataProps.forms_ExternalSystemsFieldMappings?.length > 0){
+        extraAttr.current = {...extraAttr.current, list: `${element.key}_datalist` }
+    }
 
     useEffect(()=>{
         setElementContext({
@@ -92,5 +123,5 @@ export const useElement = (element: FormElementBase) => {
         }
     }
 
-    return { elementContext, handleChange, handleBlur, checkVisible };
+    return { elementContext, extraAttr: extraAttr.current, validatorClasses, handleChange, handleBlur, checkVisible };
 }
