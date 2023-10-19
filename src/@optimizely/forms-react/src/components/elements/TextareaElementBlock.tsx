@@ -32,7 +32,7 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
                 placeholder={element.properties.placeHolder}
                 {...extraAttr.current}
                 aria-describedby={`${element.key}_desc`}
-                value={elementContext.value as string}
+                value={elementContext.value}
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
                 onBlur={handleBlur}
