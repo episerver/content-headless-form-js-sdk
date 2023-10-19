@@ -22,7 +22,7 @@ export const NumberElementBlock = (props: NumberElementBlockProps) => {
     }
 
     return (
-        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses}`} isVisible={checkVisible()}>
             <div lang={language}>
                 <label htmlFor={element.key} className="Form__Element__Caption">
                     {element.properties.label}

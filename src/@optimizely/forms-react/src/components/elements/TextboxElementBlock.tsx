@@ -27,10 +27,9 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
     }
 
     return (
-        <ElementWrapper className={`FormTextbox ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
-            <label htmlFor={element.key} className="Form__Element__Caption">
-                {element.properties.label}
-            </label>
+        <ElementWrapper className={`FormTextbox ${validatorClasses}`} isVisible={checkVisible()}>
+            <ElementCaption element={element} />
+
             <input name={element.key} id={element.key} type="text" className="FormTextbox__Input" 
                 aria-describedby={`${element.key}_desc`}
                 placeholder={element.properties.placeHolder}

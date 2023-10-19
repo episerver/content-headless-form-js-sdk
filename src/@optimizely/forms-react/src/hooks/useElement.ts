@@ -25,7 +25,25 @@ export const useElement = (element: FormElementBase) => {
     const isDependenciesSatisfied = (formContext?.formDependencies ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.isSatisfied ?? false;
 
-    const [elementContext, setElementContext] = useState<ElementContext>({} as ElementContext);
+    const [elementContext, setElementContext] = useState<ElementContext>({ value } as ElementContext);
+
+    //build extra attributes for element
+    const validatableProps = (element.properties as unknown) as ValidatableElementBaseProperties;
+    const isRequire = validatableProps.validators?.some(v => v.type === ValidatorType.RequiredValidator);
+    const validatorClasses = validatableProps.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass ?? ""}`, "") ?? "";
+
+    if(isRequire){
+        extraAttr.current = {...extraAttr.current, required: isRequire, "aria-required": isRequire };
+    }
+
+    if(!isNullOrEmpty(element.properties.descripton)){
+        extraAttr.current = {...extraAttr.current, title: element.properties.descripton }
+    }
+
+    const dataProps = element.properties as DataElementBlockBaseProperties;
+    if(dataProps.forms_ExternalSystemsFieldMappings?.length > 0){
+        extraAttr.current = {...extraAttr.current, list: `${element.key}_datalist` }
+    }
 
     useEffect(()=>{
         setElementContext({

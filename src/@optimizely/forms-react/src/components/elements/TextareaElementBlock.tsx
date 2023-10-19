@@ -21,10 +21,9 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
     }
 
     return (
-        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
-            <label htmlFor={element.key} className="Form__Element__Caption">
-                {element.properties.label}
-            </label>
+        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses}`} isVisible={checkVisible()}>
+            <ElementCaption element={element} />
+            
             <textarea 
                 name={element.key} 
                 id={element.key} 

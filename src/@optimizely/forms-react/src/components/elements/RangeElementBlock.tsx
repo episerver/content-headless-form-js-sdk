@@ -42,10 +42,8 @@ export const RangeElementBlock = (props: RangeElementBlockProps) => {
     }
 
     return (
-        <ElementWrapper className={`FormRange ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
-            <label htmlFor={element.key} className="Form__Element__Caption">
-                {element.properties.label}
-            </label>
+        <ElementWrapper className={`FormRange ${validatorClasses}`} isVisible={checkVisible()}>
+            <ElementCaption element={element} />
             <span className="FormRange__Wrapper">
                 <span className="FormRange__Slider__Wrapper">
                     {elementContext.value > element.properties.min ?
