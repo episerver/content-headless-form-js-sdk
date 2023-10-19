@@ -8,7 +8,7 @@ export interface SelectionBase extends InputElementBase {
 }
 
 export interface SelectionBaseProperties extends InputElementBaseProperties {
-    allowMultiSelect: string
+    allowMultiSelect: boolean
     feed: string
     items: FeedItem[]
     predefinedValue: string
