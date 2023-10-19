@@ -1,8 +1,8 @@
 import { Choice, equals, isNullOrEmpty } from "@optimizely/forms-sdk";
-import React, { useRef} from "react";
-import { ValidatorType } from "../../models";
+import React from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
+import { ValidationMessage } from "./shared";
 
 export interface ChoiceElementBlockProps {
     element: Choice
@@ -10,15 +10,7 @@ export interface ChoiceElementBlockProps {
 
 export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
     const { element } = props;
-    const { elementContext, handleChange, handleBlur, checkVisible } = useElement(element);
-    
-    const isRequire = element.properties.validators?.some(v => v.type === ValidatorType.RequiredValidator);
-    const validatorClasses = element.properties.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass}`, "");
-    
-    const extraAttr = useRef<any>({});
-    if(isRequire){
-        extraAttr.current = {...extraAttr.current, required: isRequire, "aria-required": isRequire };
-    }
+    const { elementContext, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
 
     return (
         <ElementWrapper className={`FormChoice ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
@@ -69,16 +61,7 @@ export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
                 })}
             </fieldset>
 
-            {element.properties.validators?.map((v)=> {
-                let validationResult = elementContext.validationResults;
-                let valid = !validationResult || validationResult?.length == 0 || validationResult[0].valid;
-                return (
-                    <span key={v.type} className="Form__Element__ValidationError" id={`${element.key}_desc`} role="alert" 
-                        style={{display: valid ? "none" : ""}}>
-                            {v.model.message}
-                    </span>
-                );
-            })}
+            <ValidationMessage element={element} validationResults={elementContext.validationResults} />
         </ElementWrapper>
     );
 }
