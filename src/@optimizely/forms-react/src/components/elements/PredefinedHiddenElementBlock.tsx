@@ -14,7 +14,7 @@ export const PredefinedHiddenElementBlock = (props: PredefinedHiddenElementBlock
     return (
         <ElementWrapper className={`Form__Element FormHidden FormHideInSummarized`} isVisible={checkVisible()}>
             <input
-                value={elementContext.value as string}
+                value={elementContext.value}
                 name={element.key}
                 id={element.key}
                 type="hidden"

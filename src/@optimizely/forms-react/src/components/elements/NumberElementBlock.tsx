@@ -14,7 +14,7 @@ export const NumberElementBlock = (props: NumberElementBlockProps) => {
     const { language } = extractParams(window.location.pathname)
 
     return (
-        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+        <ElementWrapper className={`FormTextbox FormTextbox--Number ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
             <div lang={language}>
                 <ElementCaption element={element} />
                 
