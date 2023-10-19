@@ -7,5 +7,8 @@ export interface Range extends InputElementBase {
 }
 
 export interface RangeProperties extends InputElementBaseProperties {
-
+    min: number
+    max: number
+    step: number
+    predefinedValue: string
 }

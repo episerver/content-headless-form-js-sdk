@@ -4,3 +4,4 @@ export * from "./NumberElementBlock";
 export * from "./PredefinedHiddenElementBlock";
 export * from "./ChoiceElementBlock";
 export * from "./FormStepBlock";
+export * from "./RangeElementBlock";
