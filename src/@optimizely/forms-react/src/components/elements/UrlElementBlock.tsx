@@ -1,4 +1,4 @@
-import { Textarea, Url } from "@optimizely/forms-sdk"
+import { Url } from "@optimizely/forms-sdk"
 import React from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
