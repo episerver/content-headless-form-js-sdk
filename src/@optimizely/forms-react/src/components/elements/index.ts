@@ -5,6 +5,7 @@ import { PredefinedHiddenElementBlock } from "./PredefinedHiddenElementBlock";
 import { ChoiceElementBlock } from "./ChoiceElementBlock";
 import { RangeElementBlock } from "./RangeElementBlock";
 import { FormStepBlock } from "./FormStepBlock";
+import { CaptchaElementBlock } from "./CaptchaElementBlock";
 
 export const components: Record<string, any> = {
     TextboxElementBlock,
@@ -13,5 +14,6 @@ export const components: Record<string, any> = {
     ChoiceElementBlock,
     NumberElementBlock,
     RangeElementBlock,
-    FormStepBlock
+    FormStepBlock,
+    CaptchaElementBlock
 };

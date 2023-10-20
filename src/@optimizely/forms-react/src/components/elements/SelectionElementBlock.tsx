@@ -18,7 +18,7 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                 name={element.key}
                 id={element.key}
                 multiple={element.properties.allowMultiSelect}
-                aria-describedby={element.displayName + "_desc"}
+                aria-describedby={`${element.key}_desc`}
                 {...extraAttr}
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
