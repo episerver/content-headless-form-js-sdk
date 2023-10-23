@@ -21,6 +21,9 @@
     "build-forms-react":"npm run build -w @optimizely/forms-react",
     "build": "npm run build-forms-sdk && npm run build-forms-react",
 
+    "test-forms-sdk":"npm run test -w @optimizely/forms-sdk",
+    "test": "npm run test-forms-sdk",
+
     "start-backend": "npm start -w managementsite",
     "start-frontend": "npm start -w sample-react-app"
   }
