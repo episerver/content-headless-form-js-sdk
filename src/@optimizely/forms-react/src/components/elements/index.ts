@@ -7,6 +7,7 @@ import { RangeElementBlock } from "./RangeElementBlock";
 import { FormStepBlock } from "./FormStepBlock";
 import { SelectionElementBlock } from "./SelectionElementBlock";
 import { UrlElementBlock } from "./UrlElementBlock";
+import { ImageChoiceElementBlock } from "./ImageChoiceElementBlock";
 
 export const components: Record<string, any> = {
     TextboxElementBlock,
@@ -17,5 +18,6 @@ export const components: Record<string, any> = {
     RangeElementBlock,
     FormStepBlock,
     SelectionElementBlock,
-    UrlElementBlock
+    UrlElementBlock,
+    ImageChoiceElementBlock
 };
