@@ -12,8 +12,10 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
     const { element } = props;
     const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
     let allowedTypes = ""
-    element.properties.fileTypes.split(",").forEach(ext => {
-        allowedTypes += "." + ext + ","
+    element.properties.fileTypes && element.properties.fileTypes.split(",").forEach(ext => {
+        if (ext[0] != ".")
+            allowedTypes += "."
+        allowedTypes += ext + ","
     });
     return (
         <ElementWrapper className={`FormFileUpload ${validatorClasses}`} isVisible={checkVisible()}>
