@@ -1,5 +1,5 @@
 import React, { ReactNode, useReducer } from "react";
-import { FormState } from "../models/FormContext";
+import { FormState } from "@optimizely/forms-sdk";
 import { formReducer } from "./reducer";
 import { FormContext, FormDispatchContext } from "./store";
 

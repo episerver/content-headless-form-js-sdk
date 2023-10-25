@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { FormState } from '../models/FormContext';
+import { FormState } from '@optimizely/forms-sdk';
 
 export const FormContext = createContext<FormState | null>(null);
 

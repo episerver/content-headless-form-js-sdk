@@ -1,2 +1,1 @@
-export * from "./SubmitButtonType"
-export * from "./ValidatorType"
+export * from "./SubmitButtonType";
