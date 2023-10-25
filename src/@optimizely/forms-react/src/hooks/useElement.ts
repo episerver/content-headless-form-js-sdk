@@ -36,7 +36,7 @@ export const useElement = (element: FormElementBase) => {
     const formValidation = new FormValidator(element);
     const defaultValue = getDefaultValue(element);
 
-    //build element context
+    //build element state
     const value = (formContext?.formSubmissions ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue;
     const validationResults = (formContext?.formValidations ?? [])
@@ -64,7 +64,7 @@ export const useElement = (element: FormElementBase) => {
         extraAttr.current = {...extraAttr.current, list: `${element.key}_datalist` }
     }
 
-    //init element context
+    //init element state
     useEffect(()=>{
         setElementContext({
             ...elementContext,
@@ -102,7 +102,7 @@ export const useElement = (element: FormElementBase) => {
             value: submissionValue
         });
 
-        //update element context
+        //update element state
         setElementContext({
             ...elementContext, 
             value: submissionValue
@@ -126,7 +126,7 @@ export const useElement = (element: FormElementBase) => {
             validationResults
         });
 
-        //update element context
+        //update element state
         setElementContext({
             ...elementContext, 
             validationResults
