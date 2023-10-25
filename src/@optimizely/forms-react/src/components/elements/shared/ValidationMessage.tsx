@@ -1,6 +1,5 @@
-import { ValidatableElementBase } from "@optimizely/forms-sdk";
+import { ValidatableElementBase, FormValidationResult, isNull } from "@optimizely/forms-sdk";
 import React from "react";
-import { FormValidationResult } from "../../../models/FormValidation";
 
 interface ValidationMessageProps {
     element: ValidatableElementBase,
@@ -12,8 +11,8 @@ export const ValidationMessage = (props: ValidationMessageProps) => {
     
     return (
         <>
-            {element.properties.validators?.map((v)=> {
-                let valid = !validationResults || validationResults?.length == 0 || validationResults[0].valid;
+            {element.properties.validators?.map((v, i)=> {
+                let valid = isNull(validationResults) || validationResults.length === 0 || isNull(validationResults[i]?.valid) || validationResults[i].valid;
                 return (
                     <span key={v.type} className="Form__Element__ValidationError" id={`${element.key}_desc`} role="alert" 
                         style={{display: valid ? "none" : ""}}>

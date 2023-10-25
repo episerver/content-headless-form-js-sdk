@@ -1,8 +1,8 @@
-import { equals } from "@optimizely/forms-sdk";
-import { FormState } from "../models/FormContext";
-import { FormDependencies } from "../models/FormDependencies";
-import { FormSubmission } from "../models/FormSubmission";
-import { FormValidation, FormValidationResult } from "../models/FormValidation";
+import { equals,
+  FormState, 
+  FormDependencies, 
+  FormSubmission, 
+  FormValidation } from "@optimizely/forms-sdk";
 
 export enum ActionType {
     UpdateValue = "UpdateValue",
@@ -26,10 +26,7 @@ export function formReducer(formState: FormState, action: any) {
             ...formState,
             formValidations: formState.formValidations.map(fv => equals(fv.elementKey, action.elementKey) ? {
                 elementKey: action.elementKey,
-                results: fv.results.map(r => equals(r.type, action.validatorType) ? {
-                    type: action.validatorType,
-                    valid: action.valid
-                } as FormValidationResult : r)
+                results: action.validationResults
             } as FormValidation : fv)
         } as FormState;
       }

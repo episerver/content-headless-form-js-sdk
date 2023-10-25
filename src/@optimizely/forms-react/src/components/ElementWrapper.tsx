@@ -10,7 +10,7 @@ export default function ElementWrapper(props: ElementWrapperProps){
     return (
         <>
             {props.isVisible && (
-                <div className={props.className}>
+                <div className={`Form__Element ${props.className}`}>
                     {props.children}
                 </div>
             )}

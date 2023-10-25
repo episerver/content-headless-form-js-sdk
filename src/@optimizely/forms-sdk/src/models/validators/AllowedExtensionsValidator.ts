@@ -5,5 +5,5 @@ export interface AllowedExtensionsValidator extends InternalElementValidatorBase
 }
 
 export interface AllowedExtensionsValidatorModel extends ValidatorModelBase {
-
+    accept: string
 }
