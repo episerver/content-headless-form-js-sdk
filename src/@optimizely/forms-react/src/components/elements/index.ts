@@ -8,6 +8,7 @@ import { FormStepBlock } from "./FormStepBlock";
 import { SelectionElementBlock } from "./SelectionElementBlock";
 import { UrlElementBlock } from "./UrlElementBlock";
 import { ImageChoiceElementBlock } from "./ImageChoiceElementBlock";
+import { FileUploadElementBlock } from "./FileUploadElementBlock";
 
 export const components: Record<string, any> = {
     TextboxElementBlock,
@@ -19,5 +20,6 @@ export const components: Record<string, any> = {
     FormStepBlock,
     SelectionElementBlock,
     UrlElementBlock,
-    ImageChoiceElementBlock
+    ImageChoiceElementBlock,
+    FileUploadElementBlock
 };
