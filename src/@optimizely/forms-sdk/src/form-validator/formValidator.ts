@@ -5,7 +5,7 @@ import { AllowedExtensionsValidatorModel,
     MaxFileSizeValidationModel, 
     RegularExpressionValidatorModel, 
     ValidatableElementBaseProperties, 
-    ValidatorModelBase, 
+    ElementValidatorModelBase, 
     ValidatorType } from "../models";
 
 /**
@@ -27,7 +27,7 @@ export class FormValidator {
     validateRequired(value: any): boolean{
         if (isNullOrEmpty(value)
                 // for FileUpload element
-                || (value && !value.length)) {
+                || (value instanceof Array && value.length === 0)) {
                 return false;
             }
         return true;
@@ -39,7 +39,7 @@ export class FormValidator {
      * @param model A validator model
      * @returns True or false
      */
-    validateRegex(value: any, model: ValidatorModelBase): boolean{
+    validateRegex(value: any, model: ElementValidatorModelBase): boolean{
         let regexModel = model as RegularExpressionValidatorModel;
         if(isNull(regexModel?.jsPattern) 
             || isNullOrEmpty(value)){
@@ -58,7 +58,7 @@ export class FormValidator {
      * @param model A validator model
      * @returns True or false
      */
-    validateFileExtension(value: any, model: ValidatorModelBase): boolean{
+    validateFileExtension(value: any, model: ElementValidatorModelBase): boolean{
         if(isNullOrEmpty(value) 
             || (value instanceof Array && value.length === 0)){
                 return true;
@@ -93,7 +93,7 @@ export class FormValidator {
      * @param model A validator model
      * @returns True or false
      */
-    validateFileSize(value: any, model: ValidatorModelBase): boolean{
+    validateFileSize(value: any, model: ElementValidatorModelBase): boolean{
         if(isNull(value)){
             return true;
         }
