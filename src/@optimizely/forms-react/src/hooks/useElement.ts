@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
-import { FormValidationResult } from "../models/FormValidation";
 import { ActionType } from "../context/reducer";
 import { 
     //models
@@ -8,13 +7,20 @@ import {
     DataElementBlockBaseProperties, 
     FormElementBase, 
     ValidatableElementBaseProperties, 
+    ValidatorType,
+    SatisfiedActionType,
+    FormValidationResult,
+    FormSubmission,
+    FormValidation,
+    FormDependencies,
     //functions
     equals, 
     getDefaultValue, 
     isNull, 
-    isNullOrEmpty } from "@optimizely/forms-sdk";
-import { SatisfiedActionType } from "../models/SatisfiedActionType";
-import { ValidatorType } from "../models";
+    isNullOrEmpty, 
+    //class
+    FormValidator
+    } from "@optimizely/forms-sdk";
 
 export interface ElementContext{
     value: any,
@@ -27,10 +33,10 @@ export const useElement = (element: FormElementBase) => {
     const formContext = useForms();
     const dispatch = useFormsDispatch();
     const extraAttr = useRef<any>({});
-    
+    const formValidation = new FormValidator(element);
     const defaultValue = getDefaultValue(element);
 
-    //build element context
+    //build element state
     const value = (formContext?.formSubmissions ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue;
     const validationResults = (formContext?.formValidations ?? [])
@@ -43,7 +49,7 @@ export const useElement = (element: FormElementBase) => {
     //build extra attributes for element
     const validatableProps = (element.properties as unknown) as ValidatableElementBaseProperties;
     const isRequire = validatableProps.validators?.some(v => v.type === ValidatorType.RequiredValidator);
-    const validatorClasses = validatableProps.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass ?? ""}`, "") ?? "";
+    const validatorClasses = useRef<string>(validatableProps.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass ?? ""}`, "") ?? "");
 
     if(isRequire){
         extraAttr.current = {...extraAttr.current, required: isRequire, "aria-required": isRequire };
@@ -58,6 +64,7 @@ export const useElement = (element: FormElementBase) => {
         extraAttr.current = {...extraAttr.current, list: `${element.key}_datalist` }
     }
 
+    //init element state
     useEffect(()=>{
         setElementContext({
             ...elementContext,
@@ -95,15 +102,38 @@ export const useElement = (element: FormElementBase) => {
             value: submissionValue
         });
 
-        //update element context
+        //update element state
         setElementContext({
             ...elementContext, 
             value: submissionValue
         } as ElementContext);
     }
     const handleBlur = (e: any) => {
+        const {name} = e.target;
         //call validation from form-sdk
+        doValidate(name);
+
         //call dependencies from form-sdk
+    }
+
+    const doValidate = (elementKey: string) => {
+        let validationResults = formValidation.validate(elementContext.value);
+
+        //update form context
+        dispatch({
+            type: ActionType.UpdateValidation,
+            elementKey,
+            validationResults
+        });
+
+        //update element state
+        setElementContext({
+            ...elementContext, 
+            validationResults
+        } as ElementContext);
+
+        let isValidationFail = !isNull(validationResults) && validationResults.some(r => !r.valid);
+        validatorClasses.current = `${isValidationFail ? "ValidationFail" : ""} ${validatorClasses.current}`
     }
 
     const checkVisible = (): boolean => {
@@ -123,5 +153,5 @@ export const useElement = (element: FormElementBase) => {
         }
     }
 
-    return { elementContext, extraAttr: extraAttr.current, validatorClasses, handleChange, handleBlur, checkVisible };
+    return { elementContext, extraAttr: extraAttr.current, validatorClasses: validatorClasses.current, handleChange, handleBlur, checkVisible };
 }

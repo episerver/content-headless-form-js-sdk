@@ -31,3 +31,44 @@ export function equals(value1: string, value2: string, ignoreCase: boolean = fal
         return value1 === value2;
     }
 }
+
+/**
+ * Function to check if string is matched with regex pattern
+ * @param value A string to check
+ * @param pattern A regex pattern
+ * @returns True or false
+ */
+export function isMatchedReg(value: string, pattern: string): boolean{
+    try {
+        var rx = new RegExp(pattern), // default settings: global = false, multiline = false (causes ^ and $ to match begin and end of string), ignoreCase = false
+            matches = rx.exec(value);
+        return (matches != null && matches.length > 0);
+    } catch (e: any) {
+        console.debug(e.message);
+        return false;
+    }
+}
+
+/**
+ * Function to check if a value is a numeric
+ * @param value A value to check
+ * @returns True or false
+ */
+export function isNumeric (value: any): boolean {
+    return !isNaN(parseFloat(value)) && isFinite(value);
+};
+
+/**
+ * Function to check if an array of string contains a value
+ * @param value A string of value
+ * @param arrayString A array of string
+ * @param ignoreCase Ignore case sensitive. Default false.
+ * @returns True or false
+ */
+export function isInArray (value: string, arrayString: string[], ignoreCase: boolean = false): boolean {
+    if(ignoreCase){
+        value = value.toLowerCase();
+        arrayString = arrayString.map(s => s.toLowerCase());
+    }
+    return arrayString.indexOf(value) > -1;
+}
