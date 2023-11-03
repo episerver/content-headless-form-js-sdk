@@ -1,4 +1,12 @@
 export interface ElementValidatorBase {
-    validationOrder: number,
+    type: string
+    validationOrder: number
     description: string
+    model: ElementValidatorModelBase
+}
+
+export interface ElementValidatorModelBase {
+    message: string
+    validationCssClass: string
+    additionalAttributes: any
 }

@@ -1,4 +1,4 @@
-import { ValidatorBase } from "../../validators/base/";
+import { ElementValidatorBase } from "../../validators/base/";
 import { FormElementBase, FormElementPropertiesBase } from "./FormElementBase";
 
 /**
@@ -11,6 +11,6 @@ export interface ValidatableElementBase extends FormElementBase {
 }
 
 export interface ValidatableElementBaseProperties extends FormElementPropertiesBase {
-    validators: ValidatorBase[]
+    validators: ElementValidatorBase[]
     validatorMessages: string
 }

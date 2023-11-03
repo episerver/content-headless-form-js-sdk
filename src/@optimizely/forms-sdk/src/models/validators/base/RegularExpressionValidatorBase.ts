@@ -1,11 +1,10 @@
-import { ElementValidatorBase } from "./ElementValidatorBase";
-import { ValidatorModelBase } from "./ValidatorsBase";
+import { ElementValidatorBase, ElementValidatorModelBase } from "./ElementValidatorBase";
 
 export interface RegularExpressionValidatorBase extends ElementValidatorBase{
     model: RegularExpressionValidatorModel
 }
 
-export interface RegularExpressionValidatorModel extends ValidatorModelBase {
+export interface RegularExpressionValidatorModel extends ElementValidatorModelBase {
     jsPattern: string,
     dotNetPattern: string
 }

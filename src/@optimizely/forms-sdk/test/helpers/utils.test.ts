@@ -56,3 +56,43 @@ describe("Test equals function",()=>{
         expect(utils.equals(value1, value2, true)).toBe(true);
     });
 });
+
+describe("Test isMatchedReg function", ()=>{
+    test("String that match the regex, should return true", ()=>{
+        let regex = "^[a-zA-Z ]*$"; //text only
+        let value = "test";
+        expect(utils.isMatchedReg(value, regex)).toBeTruthy();
+    });
+
+    test("String that not match the regex, should return false", ()=>{
+        let regex = "^[a-zA-Z ]*$"; //text only
+        let value = "12345";
+        expect(utils.isMatchedReg(value, regex)).toBeFalsy();
+    });
+});
+
+describe("Test isNumeric function", ()=>{
+    test("Value of number, should return true", ()=>{
+        let value = 12;
+        expect(utils.isNumeric(value)).toBeTruthy();
+    });
+
+    test("String that not a number, should return false", ()=>{
+        let value = "test";
+        expect(utils.isNumeric(value)).toBeFalsy();
+    });
+});
+
+describe("Test isInArray function", ()=>{
+    test("A string that is included in array, should return true", ()=>{
+        let array = ["test","ok"];
+        let value = "test";
+        expect(utils.isInArray(value, array)).toBeTruthy();
+    });
+
+    test("A string that is included in array, should return true", ()=>{
+        let array = ["test","ok"];
+        let value = "abc";
+        expect(utils.isInArray(value, array)).toBeFalsy();
+    });
+});
