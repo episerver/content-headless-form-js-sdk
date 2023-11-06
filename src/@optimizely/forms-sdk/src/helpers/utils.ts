@@ -3,7 +3,7 @@
  * @param value A string value to check
  * @returns True or false
  */
-export function isNullOrEmpty(value: string): boolean{
+export function isNullOrEmpty(value: string | undefined): boolean{
     return isNull(value) || value === "";
 }
 

@@ -1,5 +1,5 @@
-import { DataElementBlockBaseProperties, FormElementBase, SelectionProperties } from "../models";
-import { isNull, isNullOrEmpty } from "./utils";
+import { DataElementBlockBaseProperties, FormElementBase, RangeProperties, SelectionProperties } from "../models";
+import { isNull, isNullOrEmpty, isNumeric } from "./utils";
 
 /**
  * Get a default value of element. The value can be predefinedValue, the first value of autofill data, or values of items are checked.
@@ -9,7 +9,7 @@ import { isNull, isNullOrEmpty } from "./utils";
 export function getDefaultValue(element: FormElementBase): string | undefined{
     const dataProps = element.properties as DataElementBlockBaseProperties;
     const autoFillData = dataProps?.forms_ExternalSystemsFieldMappings ?? [];
-    let defaultValue = !isNullOrEmpty(dataProps?.predefinedValue)
+    let defaultValue: any = !isNullOrEmpty(dataProps?.predefinedValue)
                         ? dataProps.predefinedValue 
                         : autoFillData.length > 0 
                         ? autoFillData[0] 
@@ -23,6 +23,18 @@ export function getDefaultValue(element: FormElementBase): string | undefined{
 
         if(selectedArr.length > 0) {
             defaultValue = selectedArr.join(",");
+        }
+    }
+
+    //check if element is range
+    const rangeProps = element.properties as RangeProperties
+    if(!isNull(rangeProps?.min)){
+        if(isNullOrEmpty(defaultValue) || !isNumeric(defaultValue)){
+            defaultValue = rangeProps.min;
+        }
+        else{
+            let rangeValue = parseInt(defaultValue);
+            defaultValue = rangeValue > rangeProps.max || rangeValue < rangeProps.min ? rangeProps.min : rangeValue;
         }
     }
     return defaultValue;
