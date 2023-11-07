@@ -10,14 +10,12 @@ import {
     ValidatorType,
     SatisfiedActionType,
     FormValidationResult,
-    FormSubmission,
-    FormValidation,
-    FormDependencies,
     //functions
     equals, 
     getDefaultValue, 
     isNull, 
-    isNullOrEmpty, 
+    isNullOrEmpty,
+    isInArray,
     //class
     FormValidator
     } from "@optimizely/forms-sdk";
@@ -133,7 +131,19 @@ export const useElement = (element: FormElementBase) => {
         } as ElementContext);
 
         let isValidationFail = !isNull(validationResults) && validationResults.some(r => !r.valid);
-        validatorClasses.current = `${isValidationFail ? "ValidationFail" : ""} ${validatorClasses.current}`
+        let arrClass = validatorClasses.current.split(" ");
+        let failClass = "ValidationFail";
+        if(isValidationFail){
+            if(!isInArray(failClass, arrClass)){
+                arrClass.push(failClass);
+            }
+        }
+        else {
+            if(isInArray(failClass, arrClass)){
+                arrClass = arrClass.filter(c => c !== failClass);
+            }
+        }
+        validatorClasses.current = arrClass.join(" ");
     }
 
     const checkVisible = (): boolean => {

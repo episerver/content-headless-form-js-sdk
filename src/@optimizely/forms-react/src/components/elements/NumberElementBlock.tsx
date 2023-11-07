@@ -1,4 +1,4 @@
-import { Number, extractParams } from "@optimizely/forms-sdk"
+import { Number } from "@optimizely/forms-sdk"
 import React from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
@@ -11,11 +11,10 @@ export interface NumberElementBlockProps {
 export const NumberElementBlock = (props: NumberElementBlockProps) => {
     const { element } = props;
     const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
-    const { language } = extractParams(window.location.pathname)
 
     return (
         <ElementWrapper className={`FormTextbox FormTextbox--Number ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
-            <div lang={language}>
+            <div lang={element.locale}>
                 <ElementCaption element={element} />
                 
                 <input

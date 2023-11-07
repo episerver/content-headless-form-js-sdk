@@ -6,10 +6,11 @@ export interface FormElementBase {
     contentType: string
     displayName: string
     properties: FormElementPropertiesBase
+    localizations: Record<string, string>
+    locale: string
 }
 
 export interface FormElementPropertiesBase {
     description: string
     label: string
-    localizations: Record<string, string>
 }
