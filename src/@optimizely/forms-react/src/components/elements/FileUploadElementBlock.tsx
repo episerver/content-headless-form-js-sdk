@@ -10,13 +10,12 @@ export interface FileUploadElementBlockProps {
 
 export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
     const { element } = props;
-    const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
-    let allowedTypes = ""
-    element.properties.fileTypes && element.properties.fileTypes.split(",").forEach(ext => {
-        if (ext[0] != ".")
-            allowedTypes += "."
-        allowedTypes += ext + ","
-    });
+    const { elementContext, extraAttr, validatorClasses, handleChange, checkVisible } = useElement(element);
+    let allowedTypes = element.properties.fileTypes ? element.properties.fileTypes.split(",").map((ext) => {
+        ext = ext.trim();
+        return (ext[0] != ".") ? `.${ext}` : ext;
+    }).join(",") : "";
+
     return (
         <ElementWrapper className={`FormFileUpload ${validatorClasses}`} isVisible={checkVisible()}>
             <ElementCaption element={element} />
@@ -29,9 +28,8 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
                 multiple={element.properties.allowMultiple}
                 className="FormFileUpload__Input"
                 accept={allowedTypes}
-                aria-describedby={element.displayName + "_desc"}
+                aria-describedby={element.key + "_desc"}
                 onChange={handleChange}
-                onBlur={handleBlur}
             />
             <div className="FormFileUpload__PostedFile"></div>
 

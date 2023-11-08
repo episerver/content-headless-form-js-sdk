@@ -72,10 +72,26 @@ export const useElement = (element: FormElementBase) => {
             isDependenciesSatisfied
         } as ElementContext);
     },[element.key]);
+
+    const dispatchUpdateValidation = (validationResults: FormValidationResult[]) => {
+        dispatch({
+            type: ActionType.UpdateValidation,
+            elementKey: element.key,
+            validationResults
+        });
+    }
+    const dispatchUpdateValue = (value: any) => {
+        dispatch({
+            type: ActionType.UpdateValue,
+            elementKey: element.key,
+            value
+        });
+    }
     
     const handleChange = (e: any) => {
-        const {name, value, type, checked} = e.target;
+        const {name, value, type, checked, files} = e.target;
         let submissionValue = value;
+        let validationResults = [...elementContext.validationResults];
 
         //get selected value for choice
         if(/checkbox|radio/.test(type)){
@@ -92,43 +108,43 @@ export const useElement = (element: FormElementBase) => {
 
             submissionValue = arrayValue.length > 0 ? arrayValue.join(",") : null;
         }
+        
+        if(/file/.test(type)){
+            submissionValue = files;
+            validationResults = doValidate(name, files);
+            dispatchUpdateValidation(validationResults);
+        }
 
         //update form context
-        dispatch({
-            type: ActionType.UpdateValue,
-            elementKey: name,
-            value: submissionValue
-        });
+        dispatchUpdateValue(submissionValue);
 
         //update element state
         setElementContext({
             ...elementContext, 
-            value: submissionValue
+            value: submissionValue,
+            validationResults
         } as ElementContext);
     }
+
     const handleBlur = (e: any) => {
         const {name} = e.target;
         //call validation from form-sdk
-        doValidate(name);
+        let validationResults = doValidate(name, elementContext.value);
 
         //call dependencies from form-sdk
-    }
-
-    const doValidate = (elementKey: string) => {
-        let validationResults = formValidation.validate(elementContext.value);
 
         //update form context
-        dispatch({
-            type: ActionType.UpdateValidation,
-            elementKey,
-            validationResults
-        });
+        dispatchUpdateValidation(validationResults);
 
         //update element state
         setElementContext({
             ...elementContext, 
             validationResults
         } as ElementContext);
+    }
+
+    const doValidate = (elementKey: string, value: any) => {
+        let validationResults = formValidation.validate(value);
 
         let isValidationFail = !isNull(validationResults) && validationResults.some(r => !r.valid);
         let arrClass = validatorClasses.current.split(" ");
@@ -144,6 +160,8 @@ export const useElement = (element: FormElementBase) => {
             }
         }
         validatorClasses.current = arrClass.join(" ");
+
+        return validationResults;
     }
 
     const checkVisible = (): boolean => {
