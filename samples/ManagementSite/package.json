@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "dotnet run"
+    "start": "dotnet run",
+    "setup": "dotnet restore",
+    "build": "dotnet build"
   },
   "keywords": [],
   "author": "",
