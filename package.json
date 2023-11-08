@@ -22,7 +22,7 @@
     "build-backend":"npm run build -w managementsite",
     "build-forms-sdk":"npm run build -w @optimizely/forms-sdk",
     "build-forms-react":"npm run build -w @optimizely/forms-react",
-    "build": "npm run build-forms-sdk && npm run build-forms-react && npm run build-backend",
+    "build": "npm run build-forms-sdk && npm run build-forms-react",
 
     "test-forms-sdk":"npm run test -w @optimizely/forms-sdk",
     "test": "npm run test-forms-sdk",
