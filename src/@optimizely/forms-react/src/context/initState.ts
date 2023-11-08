@@ -11,7 +11,7 @@ import { ConditionProperties,
     StepDependencies } from "@optimizely/forms-sdk";
 
 interface InitStateProps{
-    formContainer: FormContainer
+    formContainer: FormContainer | undefined
 }
 
 export function initState(props: InitStateProps): FormState{
@@ -22,7 +22,7 @@ export function initState(props: InitStateProps): FormState{
     let formDependencies = [] as FormDependencies[];
     let stepDependencies = [] as StepDependencies[];
 
-    formContainer.steps.forEach(s => {
+    formContainer?.steps.forEach(s => {
         s.elements.forEach(e => {
             //init form submission
             formSubmissions =  formSubmissions.concat({ elementKey: e.key, value: getDefaultValue(e) } as FormSubmission)
@@ -57,6 +57,6 @@ export function initState(props: InitStateProps): FormState{
 
 
     return {
-        formSubmissions, formDependencies, formValidations, stepDependencies
+        isReset: false, formSubmissions, formDependencies, formValidations, stepDependencies, formContainer
     } as FormState;
 }
