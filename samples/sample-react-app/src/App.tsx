@@ -1,6 +1,6 @@
 import './App.css';
 import { useFetch } from './hooks/useFetch';
-import Form from './components/Form';
+import { Form } from '@optimizely/forms-react';
 import { extractParams } from './helpers/urlHelper';
 
 function App() {
@@ -16,9 +16,10 @@ function App() {
             <h1>{pageData.title}</h1>
             {pageData.childrens.map((c: any) => (
               <Form 
+                key={c.reference.key}
                 formKey={c.reference.key} 
-                key={c.reference.key} 
-                language={language ?? "en"}/>
+                language={language ?? "en"}
+                baseUrl={process.env.REACT_APP_HEADLESS_FORM_BASE_URL}/>
             ))}
           </>
       )}
