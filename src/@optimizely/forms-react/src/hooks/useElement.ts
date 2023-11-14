@@ -19,6 +19,7 @@ import {
     //class
     FormValidator
     } from "@optimizely/forms-sdk";
+import { initState } from "../context/initState";
 
 export interface ElementContext{
     value: any,
@@ -33,10 +34,11 @@ export const useElement = (element: FormElementBase) => {
     const extraAttr = useRef<any>({});
     const formValidation = new FormValidator(element);
     const defaultValue = getDefaultValue(element);
+    const failClass = "ValidationFail";
 
     //build element state
     const value = (formContext?.formSubmissions ?? [])
-                    .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue;
+                    .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
     const validationResults = (formContext?.formValidations ?? [])
                     .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
     const isDependenciesSatisfied = (formContext?.formDependencies ?? [])
@@ -72,6 +74,26 @@ export const useElement = (element: FormElementBase) => {
             isDependenciesSatisfied
         } as ElementContext);
     },[element.key]);
+
+    //reset form
+    useEffect(()=>{
+        if(formContext?.isReset){
+            //reset class
+            validatorClasses.current = validatorClasses.current.split(" ").filter(c => c !== failClass).join(" ");
+            //reset element state
+            setElementContext({
+                ...elementContext,
+                value,
+                defaultValue,
+                validationResults,
+                isDependenciesSatisfied
+            } as ElementContext);
+            //update form state
+            dispatch({
+                type: ActionType.ResetedForm
+            });
+        }
+    },[formContext?.isReset]);
 
     const dispatchUpdateValidation = (validationResults: FormValidationResult[]) => {
         dispatch({
@@ -111,7 +133,7 @@ export const useElement = (element: FormElementBase) => {
         
         if(/file/.test(type)){
             submissionValue = files;
-            validationResults = doValidate(name, files);
+            validationResults = doValidate(files);
             dispatchUpdateValidation(validationResults);
         }
 
@@ -129,7 +151,7 @@ export const useElement = (element: FormElementBase) => {
     const handleBlur = (e: any) => {
         const {name} = e.target;
         //call validation from form-sdk
-        let validationResults = doValidate(name, elementContext.value);
+        let validationResults = doValidate(elementContext.value);
 
         //call dependencies from form-sdk
 
@@ -143,12 +165,22 @@ export const useElement = (element: FormElementBase) => {
         } as ElementContext);
     }
 
-    const doValidate = (elementKey: string, value: any) => {
+    const handleReset = () => {
+        dispatch({
+            type: ActionType.ResetForm,
+            formState: {
+                ...initState({formContainer: formContext?.formContainer}),
+                isReset: true
+            }
+        });
+    }
+
+    const doValidate = (value: any) => {
         let validationResults = formValidation.validate(value);
 
         let isValidationFail = !isNull(validationResults) && validationResults.some(r => !r.valid);
         let arrClass = validatorClasses.current.split(" ");
-        let failClass = "ValidationFail";
+        
         if(isValidationFail){
             if(!isInArray(failClass, arrClass)){
                 arrClass.push(failClass);
@@ -181,5 +213,8 @@ export const useElement = (element: FormElementBase) => {
         }
     }
 
-    return { elementContext, extraAttr: extraAttr.current, validatorClasses: validatorClasses.current, handleChange, handleBlur, checkVisible };
+    return { 
+        elementContext, extraAttr: extraAttr.current, validatorClasses: validatorClasses.current, 
+        handleChange, handleBlur, checkVisible, handleReset 
+    };
 }

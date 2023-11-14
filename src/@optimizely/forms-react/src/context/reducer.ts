@@ -7,7 +7,9 @@ import { equals,
 export enum ActionType {
     UpdateValue = "UpdateValue",
     UpdateValidation = "UpdateValidation",
-    UpdateDependencies = "UpdateDependencies"
+    UpdateDependencies = "UpdateDependencies",
+    ResetForm = "ResetForm",
+    ResetedForm = "ResetedForm"
 }
 
 export function formReducer(formState: FormState, action: any) {
@@ -37,6 +39,15 @@ export function formReducer(formState: FormState, action: any) {
                 elementKey: action.elementKey,
                 isSatisfied: action.isSatisfied
             } as FormDependencies : fd)
+        } as FormState;
+      }
+      case ActionType.ResetForm: {
+        return action.formState;
+      }
+      case ActionType.ResetedForm: {
+        return {
+          ...formState,
+          isReset: false
         } as FormState;
       }
       default: {

@@ -4,14 +4,14 @@ import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ElementCaption, ValidationMessage } from "./shared";
 
-export interface SelectionElementBlockProps {
+interface SelectionElementBlockProps {
     element: Selection
 }
 
 export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
     const { element } = props;
     const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
-    const defaultOptionSelected = !element.properties.allowMultiSelect && !element.properties.items.some(i => i.checked);
+    
     return (
         <ElementWrapper className={`FormSelection ${validatorClasses}`} isVisible={checkVisible()}>
             <ElementCaption element={element}></ElementCaption>
@@ -24,8 +24,9 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                value={elementContext.value}
             >
-                <option disabled selected={defaultOptionSelected} value="">
+                <option value="" disabled={elementContext.value !== ""}>
                     {isNullOrEmpty(element.properties.placeHolder) 
                         ? element.localizations["selectionDefaultPlaceholder"]
                         : element.properties.placeHolder
