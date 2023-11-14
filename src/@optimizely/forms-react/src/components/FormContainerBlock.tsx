@@ -1,10 +1,9 @@
 import React, { useRef } from "react";
 import { FormContainer, StepBuilder } from "@optimizely/forms-sdk";
-import { RenderElementInStep } from "./components/RenderElementInStep";
-import { SubmitButtonType } from "./models/SubmitButtonType";
-import "./FormStyle.scss";
-import { FormProvider } from "./context/FormProvider";
-import { initState } from "./context/initState";
+import { RenderElementInStep } from "./RenderElementInStep";
+import { SubmitButtonType } from "../models/SubmitButtonType";
+import { FormProvider } from "../context/FormProvider";
+import { initState } from "../context/initState";
 
 export interface FormContainerProps {
     form: FormContainer
