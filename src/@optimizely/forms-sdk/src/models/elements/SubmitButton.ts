@@ -8,5 +8,6 @@ export interface SubmitButton extends ButtonBase {
 }
 
 export interface SubmitButtonProperties extends ButtonBaseProperties, ConditionProperties {
-
+    finalizeForm: boolean;
+    image: string;
 }

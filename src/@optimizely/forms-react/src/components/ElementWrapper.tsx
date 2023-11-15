@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 
 export interface ElementWrapperProps{
-    className: string
+    className?: string
     isVisible: boolean,
     children: ReactNode
 }
