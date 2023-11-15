@@ -1,0 +1,4 @@
+{
+    "jestrunner.jestCommand": "npm run test --",
+    "jest.rootPath": "src/@optimizely/forms-sdk",
+}

@@ -43,8 +43,6 @@ export const useElement = (element: FormElementBase) => {
         .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
     const validationResults = (formContext?.formValidations ?? [])
         .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
-    const isDependenciesSatisfied = (formContext?.formDependencies ?? [])
-        .filter(s => equals(s.elementKey, element.key))[0]?.isSatisfied ?? false;
 
 
     const [elementContext, setElementContext] = useState<ElementContext>({ value } as ElementContext);
@@ -88,7 +86,6 @@ export const useElement = (element: FormElementBase) => {
                 value,
                 defaultValue,
                 validationResults,
-                isDependenciesSatisfied
             } as ElementContext);
             //update form state
             dispatch({
@@ -102,14 +99,6 @@ export const useElement = (element: FormElementBase) => {
             type: ActionType.UpdateValidation,
             elementKey: element.key,
             validationResults
-        });
-    }
-
-    const dispatchUpdateSatifiedCondition = (isSatisfied: any) => {
-        dispatch({
-            type: ActionType.UpdateDependencies,
-            elementKey: element.key,
-            isSatisfied
         });
     }
 
@@ -203,7 +192,6 @@ export const useElement = (element: FormElementBase) => {
                 arrClass = arrClass.filter(c => c !== failClass);
             }
         }
-        validatorClasses.current = arrClass.join(" ");
 
         return validationResults;
     }
@@ -216,8 +204,6 @@ export const useElement = (element: FormElementBase) => {
         }
 
         const checkConditions = formCondition.checkConditions(formContext?.formSubmissions as FormSubmission[]);
-        // dispatchUpdateSatifiedCondition(checkConditions);
-        
         if (checkConditions) {
             //if isDependenciesSatisfied = true, and if SatisfiedAction = show, then show element. otherwise hide element.
             return equals(conditionProps.satisfiedAction, SatisfiedActionType.Show);
