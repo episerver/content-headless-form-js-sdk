@@ -4,11 +4,9 @@ import { ConditionCombinationType, ConditionFunctionType, ConditionProperties, F
 
 export class FormDependConditions {
     readonly _element: FormElementBase;
-
     constructor(element: FormElementBase) {
         this._element = element;
     }
-
     checkConditions = (formSubmissions: FormSubmission[]): boolean => {
         if (!isNull(formSubmissions)) {
             const conditionProps = (this._element.properties as unknown) as ConditionProperties;
@@ -53,59 +51,58 @@ export class FormDependConditions {
         }
         return false
     }
-
     Equals(actualValue: Object, expectedValue: string): boolean {
-        // Summary:
-        //      Compare whether user input data equals depend value or not.
-        // actualValue: [Object]
-        //      Value that user has input
-        // expectedValue: string
-        //      The depend value need to be verified.
-        // returns: [Boolean]
+        /** 
+        *   Summary:
+        *       Compare whether user input data equals depend value or not.
+        *   actualValue: [Object]
+        *       Value that user has input
+        *   expectedValue: string
+        *       The depend value need to be verified.
+        *   returns: [Boolean] 
+        */
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
         expectedValue = !expectedValue ? "" : expectedValue.toUpperCase();
         return _actualValue === expectedValue;
     }
-
     NotEquals(actualValue: Object, expectedValue: string): boolean {
-        // Summary:
-        //      Compare whether user input data does NOT equal depend value or not.
-        // actualValue: [Object]
-        //      Value that user has input
-        // expectedValue: string
-        //      The depend value need to be verified.
-        // returns: [Boolean]
+        /**
+        *   Summary:
+        *      Compare whether user input data does NOT equal depend value or not.
+        *   actualValue: [Object]
+        *       Value that user has input
+        *   expectedValue: string
+        *       The depend value need to be verified.
+        *   returns: [Boolean] 
+        */
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
         expectedValue = !expectedValue ? "" : expectedValue.toUpperCase();
         return _actualValue !== expectedValue;
     }
-
     Contains(actualValue: Object, expectedValue: string): boolean {
-        // summary:
-        //      Compare whether user input data contains depend value or not.
-        // actualValue: [Object]
-        //      Value that user has input
-        // expectedValue: string
-        //      The depend value need to be verified.
-        // returns: [Boolean]
-        // tags:
-        //      private
+        /**
+        *   Summary:
+        *       Compare whether user input data contains depend value or not.
+        *   actualValue: [Object]
+        *       Value that user has input
+        *   expectedValue: string
+        *       The depend value need to be verified.
+        *   returns: [Boolean]
+        */
         const _actualValue = isNull(actualValue) ? "" : getConcatString(actualValue, ",").toUpperCase();
         expectedValue = !expectedValue ? "" : expectedValue.toUpperCase();
         return _actualValue.indexOf(expectedValue) >= 0;
     }
-
     NotContains(actualValue: Object, expectedValue: string): boolean {
-        // summary:
-        //      Compare whether user input data does NOT contain depend value or not.
-        // actualValue: [Object]
-        //      Value that user has input
-        // expectedValue: string
-        //      The depend value need to be verified.
-        // returns: [Boolean]
-        // tags:
-        //      private
-
+        /**
+        *   Summary:
+        *      Compare whether user input data does NOT contain depend value or not.
+        *   actualValue: [Object]
+        *       Value that user has input
+        *   expectedValue: string
+        *       The depend value need to be verified.
+        *   returns: [Boolean]
+        */
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
         const actualValueNull = isNullOrEmpty(_actualValue)
         const expectedValueNull = isNullOrEmpty(expectedValue)
@@ -113,17 +110,16 @@ export class FormDependConditions {
             (actualValueNull && !expectedValueNull) ||
             (!actualValueNull && !expectedValueNull && _actualValue.toUpperCase().indexOf(expectedValue.toUpperCase()) < 0);
     }
-
     MatchRegularExpression(actualValue: Object, patternOfExpected: string): boolean {
-        // summary:
-        //      Compare user input with a pattern. Return true if pattern matchs actualUserValue
-        // userValue: [Object]
-        //      Value that user has input
-        // pattern: [Object]
-        //      The depend value need to be verified.
-        // returns: [Boolean]
-        // tags:
-        //      private
+        /**
+        *   Summary:
+        *       Compare user input with a pattern. Return true if actualValue matchs patternOfExpected
+        *   actualValue: [Object]
+        *       Value that user has input
+        *   patternOfExpected: [Object]
+        *       The depend value need to be verified.
+        *   returns: [Boolean]
+        */
         var regex = new RegExp(patternOfExpected, "igm");
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
         return isNullOrEmpty(patternOfExpected) || (!isNullOrEmpty(patternOfExpected) && regex.test(_actualValue));
