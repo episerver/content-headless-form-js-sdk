@@ -181,7 +181,6 @@ export const useElement = (element: FormElementBase) => {
         let isValidationFail = !isNull(validationResults) && validationResults.some(r => !r.valid);
         let arrClass = validatorClasses.current.split(" ");
 
-        let failClass = "ValidationFail";
         if (isValidationFail) {
             if (!isInArray(failClass, arrClass)) {
                 arrClass.push(failClass);
@@ -192,6 +191,8 @@ export const useElement = (element: FormElementBase) => {
                 arrClass = arrClass.filter(c => c !== failClass);
             }
         }
+
+        validatorClasses.current = arrClass.join(" ");
 
         return validationResults;
     }

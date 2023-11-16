@@ -51,75 +51,45 @@ export class FormDependConditions {
         }
         return false
     }
-    Equals(actualValue: Object, expectedValue: string): boolean {
-        /** 
-        *   Summary:
-        *       Compare whether user input data equals depend value or not.
-        *   actualValue: [Object]
-        *       Value that user has input
-        *   expectedValue: string
-        *       The depend value need to be verified.
-        *   returns: [Boolean] 
-        */
+    /** 
+    *   Compare whether user input data equals depend value or not.
+    */
+    Equals(actualValue: Object, dependencyFieldValue: string): boolean {
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
-        expectedValue = !expectedValue ? "" : expectedValue.toUpperCase();
-        return _actualValue === expectedValue;
+        dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toUpperCase();
+        return _actualValue === dependencyFieldValue;
     }
-    NotEquals(actualValue: Object, expectedValue: string): boolean {
-        /**
-        *   Summary:
-        *      Compare whether user input data does NOT equal depend value or not.
-        *   actualValue: [Object]
-        *       Value that user has input
-        *   expectedValue: string
-        *       The depend value need to be verified.
-        *   returns: [Boolean] 
-        */
+    /**
+    *   Compare whether user input data does NOT equal depend value or not.
+    */
+    NotEquals(actualValue: Object, dependencyFieldValue: string): boolean {
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
-        expectedValue = !expectedValue ? "" : expectedValue.toUpperCase();
-        return _actualValue !== expectedValue;
+        dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toUpperCase();
+        return _actualValue !== dependencyFieldValue;
     }
-    Contains(actualValue: Object, expectedValue: string): boolean {
-        /**
-        *   Summary:
-        *       Compare whether user input data contains depend value or not.
-        *   actualValue: [Object]
-        *       Value that user has input
-        *   expectedValue: string
-        *       The depend value need to be verified.
-        *   returns: [Boolean]
-        */
+    /**
+    *   Compare whether user input data contains depend value or not.
+    */
+    Contains(actualValue: Object, dependencyFieldValue: string): boolean {
         const _actualValue = isNull(actualValue) ? "" : getConcatString(actualValue, ",").toUpperCase();
-        expectedValue = !expectedValue ? "" : expectedValue.toUpperCase();
-        return _actualValue.indexOf(expectedValue) >= 0;
+        dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toUpperCase();
+        return _actualValue.indexOf(dependencyFieldValue) >= 0;
     }
-    NotContains(actualValue: Object, expectedValue: string): boolean {
-        /**
-        *   Summary:
-        *      Compare whether user input data does NOT contain depend value or not.
-        *   actualValue: [Object]
-        *       Value that user has input
-        *   expectedValue: string
-        *       The depend value need to be verified.
-        *   returns: [Boolean]
-        */
+    /**
+    *   Compare whether user input data does NOT contain depend value or not.
+    */
+    NotContains(actualValue: Object, dependencyFieldValue: string): boolean {
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
         const actualValueNull = isNullOrEmpty(_actualValue)
-        const expectedValueNull = isNullOrEmpty(expectedValue)
-        return (!actualValueNull && expectedValueNull) ||
-            (actualValueNull && !expectedValueNull) ||
-            (!actualValueNull && !expectedValueNull && _actualValue.toUpperCase().indexOf(expectedValue.toUpperCase()) < 0);
+        const dependencyFieldValueNull = isNullOrEmpty(dependencyFieldValue)
+        return (!actualValueNull && dependencyFieldValueNull) ||
+            (actualValueNull && !dependencyFieldValueNull) ||
+            (!actualValueNull && !dependencyFieldValueNull && _actualValue.toUpperCase().indexOf(dependencyFieldValue.toUpperCase()) < 0);
     }
+    /**
+    *   Compare user input with a pattern. Return true if actualValue matchs patternOfExpected
+    */
     MatchRegularExpression(actualValue: Object, patternOfExpected: string): boolean {
-        /**
-        *   Summary:
-        *       Compare user input with a pattern. Return true if actualValue matchs patternOfExpected
-        *   actualValue: [Object]
-        *       Value that user has input
-        *   patternOfExpected: [Object]
-        *       The depend value need to be verified.
-        *   returns: [Boolean]
-        */
         var regex = new RegExp(patternOfExpected, "igm");
         const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
         return isNullOrEmpty(patternOfExpected) || (!isNullOrEmpty(patternOfExpected) && regex.test(_actualValue));
