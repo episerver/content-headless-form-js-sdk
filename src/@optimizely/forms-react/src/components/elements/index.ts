@@ -10,6 +10,7 @@ import { UrlElementBlock } from "./UrlElementBlock";
 import { ImageChoiceElementBlock } from "./ImageChoiceElementBlock";
 import { FileUploadElementBlock } from "./FileUploadElementBlock";
 import { ResetButtonElementBlock } from "./ResetButtonElementBlock";
+import { SubmitButtonElementBlock } from "./SubmitButtonElementBlock";
 
 export const components: Record<string, any> = {
     TextboxElementBlock,
@@ -23,5 +24,6 @@ export const components: Record<string, any> = {
     UrlElementBlock,
     ImageChoiceElementBlock,
     FileUploadElementBlock,
-    ResetButtonElementBlock
+    ResetButtonElementBlock,
+    SubmitButtonElementBlock
 };
