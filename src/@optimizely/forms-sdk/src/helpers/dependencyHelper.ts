@@ -1,3 +1,4 @@
 export function getConcatString(srcObject: any, seperator: string): string {
-    return (srcObject instanceof Array) ? srcObject.join(seperator) : srcObject as string;
+    let str =  (srcObject instanceof Array) ? srcObject.join(seperator) : srcObject as string;
+    return str.toLocaleUpperCase();
 }
