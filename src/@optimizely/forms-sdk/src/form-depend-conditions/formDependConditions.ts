@@ -10,11 +10,9 @@ export class FormDependConditions {
     checkConditions = (formSubmissions: FormSubmission[]): boolean => {
         if (!isNull(formSubmissions)) {
             const conditionProps = (this._element.properties as unknown) as ConditionProperties;
-
             if (isNull(conditionProps?.conditions)) {
                 return false;
             }
-
             let conditionArr = conditionProps.conditions.map(condition => {
                 const fieldValue = formSubmissions.filter(s => equals(s.elementKey, condition.field))[0]?.value as string
                 if (!isNull(fieldValue)) {
@@ -33,7 +31,6 @@ export class FormDependConditions {
                 }
                 return false
             });
-
             for (let i = 0; i < conditionArr.length; i++) {
                 const result = conditionArr[i]
                 if (conditionProps.conditionCombination === ConditionCombinationType.Any && result) {
@@ -43,11 +40,10 @@ export class FormDependConditions {
                     return false
                 }
             }
-
-            // when reach here, there are two cases
-            // 1 : Not all conditions are statisfied and ConditionCombination === ConditionCombinations.All
-            // 2 : None condition is statisfied and ConditionCombination === ConditionCombinations.Any
-            return !(conditionProps.conditionCombination === ConditionCombinationType.Any);
+            // When reach here, there are two cases
+            // 1 : All conditions are statisfied and ConditionCombination === ConditionCombinations.All
+            // 2 : No condition is statisfied and ConditionCombination === ConditionCombinations.Any
+            return conditionProps.conditionCombination === ConditionCombinationType.All;
         }
         return false
     }
