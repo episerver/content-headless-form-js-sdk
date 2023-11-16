@@ -1,30 +1,31 @@
 import { useEffect, useRef, useState } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
 import { ActionType } from "../context/reducer";
-import { 
+import {
     //models
-    ConditionProperties, 
-    DataElementBlockBaseProperties, 
-    FormElementBase, 
-    ValidatableElementBaseProperties, 
+    ConditionProperties,
+    DataElementBlockBaseProperties,
+    FormElementBase,
+    ValidatableElementBaseProperties,
     ValidatorType,
     SatisfiedActionType,
     FormValidationResult,
     //functions
-    equals, 
-    getDefaultValue, 
-    isNull, 
+    equals,
+    getDefaultValue,
+    isNull,
     isNullOrEmpty,
     isInArray,
     //class
-    FormValidator
+    FormValidator,
+    FormSubmission,
+    FormDependConditions,
     } from "@optimizely/forms-sdk";
 import { initState } from "../context/initState";
 
-export interface ElementContext{
+export interface ElementContext {
     value: any,
     defaultValue: any,
-    isDependenciesSatisfied: boolean
     validationResults: FormValidationResult[]
 }
 
@@ -33,16 +34,16 @@ export const useElement = (element: FormElementBase) => {
     const dispatch = useFormsDispatch();
     const extraAttr = useRef<any>({});
     const formValidation = new FormValidator(element);
+    const formCondition = new FormDependConditions(element)
     const defaultValue = getDefaultValue(element);
     const failClass = "ValidationFail";
 
     //build element state
     const value = (formContext?.formSubmissions ?? [])
-                    .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
+        .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
     const validationResults = (formContext?.formValidations ?? [])
-                    .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
-    const isDependenciesSatisfied = (formContext?.formDependencies ?? [])
-                    .filter(s => equals(s.elementKey, element.key))[0]?.isSatisfied ?? false;
+        .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
+
 
     const [elementContext, setElementContext] = useState<ElementContext>({ value } as ElementContext);
 
@@ -51,29 +52,28 @@ export const useElement = (element: FormElementBase) => {
     const isRequire = validatableProps.validators?.some(v => v.type === ValidatorType.RequiredValidator);
     const validatorClasses = useRef<string>(validatableProps.validators?.reduce((acc, obj) => `${acc} ${obj.model.validationCssClass ?? ""}`, "") ?? "");
 
-    if(isRequire){
-        extraAttr.current = {...extraAttr.current, required: isRequire, "aria-required": isRequire };
+    if (isRequire) {
+        extraAttr.current = { ...extraAttr.current, required: isRequire, "aria-required": isRequire };
     }
 
-    if(!isNullOrEmpty(element.properties.description)){
-        extraAttr.current = {...extraAttr.current, title: element.properties.description }
+    if (!isNullOrEmpty(element.properties.description)) {
+        extraAttr.current = { ...extraAttr.current, title: element.properties.description }
     }
 
     const dataProps = element.properties as DataElementBlockBaseProperties;
-    if(dataProps.forms_ExternalSystemsFieldMappings?.length > 0){
-        extraAttr.current = {...extraAttr.current, list: `${element.key}_datalist` }
+    if (dataProps.forms_ExternalSystemsFieldMappings?.length > 0) {
+        extraAttr.current = { ...extraAttr.current, list: `${element.key}_datalist` }
     }
 
     //init element state
-    useEffect(()=>{
+    useEffect(() => {
         setElementContext({
             ...elementContext,
             value,
             defaultValue,
-            validationResults,
-            isDependenciesSatisfied
+            validationResults
         } as ElementContext);
-    },[element.key]);
+    }, [element.key]);
 
     //reset form
     useEffect(()=>{
@@ -86,7 +86,6 @@ export const useElement = (element: FormElementBase) => {
                 value,
                 defaultValue,
                 validationResults,
-                isDependenciesSatisfied
             } as ElementContext);
             //update form state
             dispatch({
@@ -102,6 +101,7 @@ export const useElement = (element: FormElementBase) => {
             validationResults
         });
     }
+
     const dispatchUpdateValue = (value: any) => {
         dispatch({
             type: ActionType.UpdateValue,
@@ -109,19 +109,19 @@ export const useElement = (element: FormElementBase) => {
             value
         });
     }
-    
+
     const handleChange = (e: any) => {
-        const {name, value, type, checked, files} = e.target;
+        const { name, value, type, checked, files } = e.target;
         let submissionValue = value;
         let validationResults = [...elementContext.validationResults];
 
         //get selected value for choice
-        if(/checkbox|radio/.test(type)){
-            let arrayValue = isNull(elementContext.value) || /radio/.test(type) 
-                ? [] 
+        if (/checkbox|radio/.test(type)) {
+            let arrayValue = isNull(elementContext.value) || /radio/.test(type)
+                ? []
                 : (elementContext.value as string).split(",");
 
-            if(checked) {
+            if (checked) {
                 arrayValue.push(value);
             }
             else {
@@ -130,8 +130,8 @@ export const useElement = (element: FormElementBase) => {
 
             submissionValue = arrayValue.length > 0 ? arrayValue.join(",") : null;
         }
-        
-        if(/file/.test(type)){
+
+        if (/file/.test(type)) {
             submissionValue = files;
             validationResults = doValidate(files);
             dispatchUpdateValidation(validationResults);
@@ -142,14 +142,14 @@ export const useElement = (element: FormElementBase) => {
 
         //update element state
         setElementContext({
-            ...elementContext, 
+            ...elementContext,
             value: submissionValue,
             validationResults
         } as ElementContext);
     }
 
     const handleBlur = (e: any) => {
-        const {name} = e.target;
+        const { name } = e.target;
         //call validation from form-sdk
         let validationResults = doValidate(elementContext.value);
 
@@ -160,7 +160,7 @@ export const useElement = (element: FormElementBase) => {
 
         //update element state
         setElementContext({
-            ...elementContext, 
+            ...elementContext,
             validationResults
         } as ElementContext);
     }
@@ -180,17 +180,18 @@ export const useElement = (element: FormElementBase) => {
 
         let isValidationFail = !isNull(validationResults) && validationResults.some(r => !r.valid);
         let arrClass = validatorClasses.current.split(" ");
-        
-        if(isValidationFail){
-            if(!isInArray(failClass, arrClass)){
+
+        if (isValidationFail) {
+            if (!isInArray(failClass, arrClass)) {
                 arrClass.push(failClass);
             }
         }
         else {
-            if(isInArray(failClass, arrClass)){
+            if (isInArray(failClass, arrClass)) {
                 arrClass = arrClass.filter(c => c !== failClass);
             }
         }
+
         validatorClasses.current = arrClass.join(" ");
 
         return validationResults;
@@ -198,12 +199,13 @@ export const useElement = (element: FormElementBase) => {
 
     const checkVisible = (): boolean => {
         const conditionProps = (element.properties as unknown) as ConditionProperties;
-        if(isNull(conditionProps.satisfiedAction) 
-            || isNull(elementContext.isDependenciesSatisfied)){
+
+        if (isNull(conditionProps.satisfiedAction)) {
             return true;
         }
 
-        if(elementContext.isDependenciesSatisfied) {
+        const checkConditions = formCondition.checkConditions(formContext?.formSubmissions as FormSubmission[]);
+        if (checkConditions) {
             //if isDependenciesSatisfied = true, and if SatisfiedAction = show, then show element. otherwise hide element.
             return equals(conditionProps.satisfiedAction, SatisfiedActionType.Show);
         }
