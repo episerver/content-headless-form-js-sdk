@@ -18,8 +18,8 @@ export const ConditionFunctions: ConditionFunctionRecord = {
  * @returns 
  */
 function Equals(actualValue: Object, dependencyFieldValue: string): boolean {
-    const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
-    dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toUpperCase();
+    const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
+    dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toLocaleUpperCase();
     return _actualValue === dependencyFieldValue;
 }
 /**
@@ -29,8 +29,8 @@ function Equals(actualValue: Object, dependencyFieldValue: string): boolean {
  * @returns 
 */
 function NotEquals(actualValue: Object, dependencyFieldValue: string): boolean {
-    const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
-    dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toUpperCase();
+    const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
+    dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toLocaleUpperCase();
     return _actualValue !== dependencyFieldValue;
 }
 /**
@@ -40,8 +40,8 @@ function NotEquals(actualValue: Object, dependencyFieldValue: string): boolean {
  * @returns 
  */
 function Contains(actualValue: Object, dependencyFieldValue: string): boolean {
-    const _actualValue = isNull(actualValue) ? "" : getConcatString(actualValue, ",").toUpperCase();
-    dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toUpperCase();
+    const _actualValue = isNull(actualValue) ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
+    dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toLocaleUpperCase();
     return _actualValue.indexOf(dependencyFieldValue) >= 0;
 }
 /**
@@ -51,12 +51,12 @@ function Contains(actualValue: Object, dependencyFieldValue: string): boolean {
  * @returns 
  */
 function NotContains(actualValue: Object, dependencyFieldValue: string): boolean {
-    const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
+    const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
     const actualValueNull = isNullOrEmpty(_actualValue)
     const dependencyFieldValueNull = isNullOrEmpty(dependencyFieldValue)
     return (!actualValueNull && dependencyFieldValueNull) ||
         (actualValueNull && !dependencyFieldValueNull) ||
-        (!actualValueNull && !dependencyFieldValueNull && _actualValue.toUpperCase().indexOf(dependencyFieldValue.toUpperCase()) < 0);
+        (!actualValueNull && !dependencyFieldValueNull && _actualValue.indexOf(dependencyFieldValue.toLocaleUpperCase()) < 0);
 }
 /**
  * Compare user input with a pattern. Return true if actualValue matchs patternOfExpected
@@ -69,4 +69,3 @@ function MatchRegularExpression(actualValue: Object, patternOfExpected: string):
     const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
     return isNullOrEmpty(patternOfExpected) || (!isNullOrEmpty(patternOfExpected) && regex.test(_actualValue));
 }
-
