@@ -1,6 +1,5 @@
 import { equals,
   FormState, 
-  FormDependencies, 
   FormSubmission, 
   FormValidation } from "@optimizely/forms-sdk";
 
@@ -35,10 +34,7 @@ export function formReducer(formState: FormState, action: any) {
       case ActionType.UpdateDependencies: {
         return {
             ...formState,
-            formDependencies: formState.formDependencies.map(fd => equals(fd.elementKey, action.elementKey) ? {
-                elementKey: action.elementKey,
-                isSatisfied: action.isSatisfied
-            } as FormDependencies : fd)
+            dependencyInactiveElements: action.dependencyInactiveElements
         } as FormState;
       }
       case ActionType.ResetForm: {

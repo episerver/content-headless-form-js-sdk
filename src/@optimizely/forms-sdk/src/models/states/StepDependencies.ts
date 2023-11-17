@@ -1,4 +1,4 @@
-import { FormDependencies } from "./FormDependencies"
-
-export interface StepDependencies extends FormDependencies{
+export interface StepDependencies{
+    elementKey: string
+    isSatisfied: boolean
 }
