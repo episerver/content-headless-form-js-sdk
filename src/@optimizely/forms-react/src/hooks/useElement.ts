@@ -37,6 +37,7 @@ export const useElement = (element: FormElementBase) => {
     const formCondition = new FormDependConditions(element)
     const defaultValue = getDefaultValue(element);
     const failClass = "ValidationFail";
+    const isVisible = useRef<boolean>(true);
 
     //build element state
     const value = (formContext?.formSubmissions ?? [])
@@ -94,6 +95,36 @@ export const useElement = (element: FormElementBase) => {
         }
     },[formContext?.isReset]);
 
+    //update visible
+    useEffect(()=>{
+        const conditionProps = (element.properties as unknown) as ConditionProperties;
+
+        if (isNull(conditionProps.satisfiedAction)) {
+            return;
+        }
+
+        //check form field dependencies
+        const checkConditions = formCondition.checkConditions(formContext?.formSubmissions as FormSubmission[]);
+        if (checkConditions) {
+            //if isDependenciesSatisfied = true, and if SatisfiedAction = show, then show element. otherwise hide element.
+            isVisible.current = equals(conditionProps.satisfiedAction, SatisfiedActionType.Show);
+        }
+        else {
+            //if isDependenciesSatisfied = false, and if SatisfiedAction = hide, then show element. otherwise hide element.
+            isVisible.current = equals(conditionProps.satisfiedAction, SatisfiedActionType.Hide);
+        }
+
+        //update form state
+        let inactives = formContext?.dependencyInactiveElements ?? [];
+        if(isVisible.current){
+            inactives = inactives.filter(ek => !equals(ek, element.key));
+        }
+        else {
+            !isInArray(element.key, inactives) && inactives.push(element.key);
+        }
+        dispatchUpdateDependencies(inactives);
+    },[formContext?.formSubmissions]);
+
     const dispatchUpdateValidation = (validationResults: FormValidationResult[]) => {
         dispatch({
             type: ActionType.UpdateValidation,
@@ -107,6 +138,13 @@ export const useElement = (element: FormElementBase) => {
             type: ActionType.UpdateValue,
             elementKey: element.key,
             value
+        });
+    }
+
+    const dispatchUpdateDependencies = (dependencyInactiveElements: string[]) => {
+        dispatch({
+            type: ActionType.UpdateDependencies,
+            dependencyInactiveElements
         });
     }
 
@@ -153,8 +191,6 @@ export const useElement = (element: FormElementBase) => {
         //call validation from form-sdk
         let validationResults = doValidate(elementContext.value);
 
-        //call dependencies from form-sdk
-
         //update form context
         dispatchUpdateValidation(validationResults);
 
@@ -198,21 +234,7 @@ export const useElement = (element: FormElementBase) => {
     }
 
     const checkVisible = (): boolean => {
-        const conditionProps = (element.properties as unknown) as ConditionProperties;
-
-        if (isNull(conditionProps.satisfiedAction)) {
-            return true;
-        }
-
-        const checkConditions = formCondition.checkConditions(formContext?.formSubmissions as FormSubmission[]);
-        if (checkConditions) {
-            //if isDependenciesSatisfied = true, and if SatisfiedAction = show, then show element. otherwise hide element.
-            return equals(conditionProps.satisfiedAction, SatisfiedActionType.Show);
-        }
-        else {
-            //if isDependenciesSatisfied = false, and if SatisfiedAction = hide, then show element. otherwise hide element.
-            return equals(conditionProps.satisfiedAction, SatisfiedActionType.Hide);
-        }
+        return isVisible.current;
     }
 
     return { 

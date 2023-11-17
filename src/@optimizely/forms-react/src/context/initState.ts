@@ -7,7 +7,6 @@ import { ConditionProperties,
     FormSubmission, 
     FormValidation, 
     FormValidationResult, 
-    FormDependencies, 
     StepDependencies } from "@optimizely/forms-sdk";
 
 interface InitStateProps{
@@ -19,7 +18,6 @@ export function initState(props: InitStateProps): FormState{
     
     let formSubmissions = [] as FormSubmission[];
     let formValidations = [] as FormValidation[];
-    let formDependencies = [] as FormDependencies[];
     let stepDependencies = [] as StepDependencies[];
 
     formContainer?.steps.forEach(s => {
@@ -40,16 +38,6 @@ export function initState(props: InitStateProps): FormState{
             }
 
             formValidations = formValidations.concat({elementKey: e.key, results: formValidationResults});
-
-            //init form dependencies
-            let conditionProps = (e.properties as unknown) as ConditionProperties;
-
-            //Captcha, ResetButton don't have condition
-            if(!isNull(conditionProps.conditions)){
-                conditionProps.conditions.forEach(c => {
-                    formDependencies = formDependencies.concat({ elementKey: e.key, isSatisfied: false }); //default isSatisfied = false to do reverse action
-                });
-            }
         });
         stepDependencies = stepDependencies.concat({elementKey: s.formStep.key, isSatisfied: false });
     });
@@ -57,6 +45,6 @@ export function initState(props: InitStateProps): FormState{
 
 
     return {
-        isReset: false, formSubmissions, formDependencies, formValidations, stepDependencies, formContainer
+        isReset: false, formSubmissions, formValidations, stepDependencies, formContainer, dependencyInactiveElements: []
     } as FormState;
 }
