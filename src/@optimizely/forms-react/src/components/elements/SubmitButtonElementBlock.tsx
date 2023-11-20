@@ -1,7 +1,7 @@
 import { SubmitButton, isNullOrEmpty } from "@optimizely/forms-sdk";
 import React, { useMemo } from "react";
 import { useElement } from "../../hooks/useElement";
-import ElementWrapper from "../ElementWrapper";
+import ElementWrapper from "./shared/ElementWrapper";
 
 interface SubmitButtonElementBlockProps{
     element: SubmitButton

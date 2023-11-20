@@ -1,6 +1,6 @@
 import { FileUpload } from "@optimizely/forms-sdk"
 import React, { useMemo } from "react";
-import ElementWrapper from "../ElementWrapper";
+import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ElementCaption, ValidationMessage } from "./shared";
 

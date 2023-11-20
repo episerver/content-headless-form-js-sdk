@@ -9,7 +9,7 @@ export interface ElementWrapperProps{
 }
 
 export default function ElementWrapper(props: ElementWrapperProps){
-    const failClass = props.validationResults?.some(r => !r.valid) ? "ValidationFail" : "";
+    const failClass = props.validationResults?.some(r => !r.valid) ? "ValidationFail" : "ValidationSuccess";
 
     return (
         <>
