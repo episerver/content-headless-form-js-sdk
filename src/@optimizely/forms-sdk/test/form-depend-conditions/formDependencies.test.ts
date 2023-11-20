@@ -9,19 +9,27 @@ describe("Test FormDependConditions class", () => {
             formSubmissions = [
                 {
                     elementKey: "1490ca1deeb744f1aa7c33db0aefe5a8",
-                    value: "11"
+                    value: "aaaa"
                 },
                 {
                     elementKey: "2490ca1deeb744f1aa7c33db0aefe5a8",
-                    value: "22"
+                    value: "bbbb"
                 },
                 {
                     elementKey: "3490ca1deeb744f1aa7c33db0aefe5a8",
-                    value: "33"
+                    value: "cccc"
                 },
                 {
                     elementKey: "4490ca1deeb744f1aa7c33db0aefe5a8",
-                    value: "44"
+                    value: "dddd"
+                },
+                {
+                    elementKey: "5490ca1deeb744f1aa7c33db0aefe5a8",
+                    value: "eeee"
+                },
+                {
+                    elementKey: "6490ca1deeb744f1aa7c33db0aefe5a8",
+                    value: "ffff"
                 }
             ]
         });
@@ -36,7 +44,7 @@ describe("Test FormDependConditions class", () => {
                                 {
                                     "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "Contains",
-                                    "fieldValue": "1"
+                                    "fieldValue": "a"
                                 }
                             ]
                         }
@@ -72,7 +80,7 @@ describe("Test FormDependConditions class", () => {
                                 {
                                     "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "NotContains",
-                                    "fieldValue": "1"
+                                    "fieldValue": "a"
                                 }
                             ]
                         }
@@ -108,7 +116,7 @@ describe("Test FormDependConditions class", () => {
                                 {
                                     "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "Equals",
-                                    "fieldValue": "11"
+                                    "fieldValue": "aaaa"
                                 }
                             ]
                         }
@@ -144,7 +152,7 @@ describe("Test FormDependConditions class", () => {
                                 {
                                     "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "NotEquals",
-                                    "fieldValue": "11"
+                                    "fieldValue": "aaaa"
                                 }
                             ]
                         }
@@ -180,7 +188,7 @@ describe("Test FormDependConditions class", () => {
                                 {
                                     "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "MatchRegularExpression",
-                                    "fieldValue": "1+"
+                                    "fieldValue": "a+"
                                 }
                             ]
                         }
@@ -206,42 +214,6 @@ describe("Test FormDependConditions class", () => {
                     expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
                 });
             });
-            describe("NotApplicable", () => {
-                test("When conditionCombination is Any, should return False", () => {
-                    element = {
-                        properties: {
-                            satisfiedAction: "show",
-                            conditionCombination: "Any",
-                            conditions: [
-                                {
-                                    "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
-                                    "operator": "NotApplicable",
-                                    "fieldValue": ""
-                                }
-                            ]
-                        }
-                    } as InputElementBase;
-                    formDependConditions = new FormDependConditions(element)
-                    expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
-                });
-                test("When conditionCombination is All, should return False", () => {
-                    element = {
-                        properties: {
-                            satisfiedAction: "show",
-                            conditionCombination: "All",
-                            conditions: [
-                                {
-                                    "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
-                                    "operator": "NotApplicable",
-                                    "fieldValue": ""
-                                }
-                            ]
-                        }
-                    } as InputElementBase;
-                    formDependConditions = new FormDependConditions(element)
-                    expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
-                });
-            });
         });
         describe("Multiple conditions", () => {
             describe("All conditionCombination", () => {
@@ -254,28 +226,28 @@ describe("Test FormDependConditions class", () => {
                                 {
                                     "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "Contains",
-                                    "fieldValue": "1" 
+                                    "fieldValue": "a"
                                 },
                                 {
                                     "field": "2490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "NotEqual",
-                                    "fieldValue": "3"
+                                    "fieldValue": "vvvvv"
                                 },
                                 {
                                     "field": "3490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "Equals",
-                                    "fieldValue": "33"
+                                    "fieldValue": "cccc"
                                 },
                                 {
                                     "field": "4490ca1deeb744f1aa7c33db0aefe5a8",
                                     "operator": "Contains",
-                                    "fieldValue": "4"
+                                    "fieldValue": "ddd"
                                 }
                             ]
                         }
                     } as InputElementBase;
                     formDependConditions = new FormDependConditions(element)
-                    expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
+                    expect(formDependConditions.checkConditions(formSubmissions)).toBeTruthy();
                 });
                 test("When a condition is not met, should return False", () => {
                     element = {
@@ -376,86 +348,76 @@ describe("Test FormDependConditions class", () => {
                     expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
                 });
             });
-            
+
         });
         describe("Nullable variables", () => {
-            test("When field of condition is null or not found in formSubmissions, should return False", () => {
+            test("When properties is null, should return True", () => {
+                element = {
+                    properties: {
+                    }
+                } as InputElementBase;
+                formDependConditions = new FormDependConditions(element)
+                expect(formDependConditions.checkConditions(formSubmissions)).toBeTruthy();
+            });
+            test("When field of condition only consit of NotApplicable or unknown operator and conditionCombination is Any, should return False", () => {
                 element = {
                     properties: {
                         satisfiedAction: "show",
                         conditionCombination: "Any",
                         conditions: [
                             {
-                                "field": "1",
-                                "operator": "Contains",
+                                "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
+                                "operator": "NotApplicable",
                                 "fieldValue": "1"
-                            }
-                        ]
-                    }
-                } as InputElementBase;
-
-                let element2 = {
-                    properties: {
-                        satisfiedAction: "show",
-                        conditionCombination: "Any",
-                        conditions: [
+                            },
                             {
-                                "operator": "Contains",
+                                "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
+                                "operator": "NotApplicable",
                                 "fieldValue": "1"
                             }
                         ]
                     }
                 } as InputElementBase;
 
-                formDependConditions = new FormDependConditions(element)
-                expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
-
-                const formDependConditions2 = new FormDependConditions(element2)
+                const formDependConditions2 = new FormDependConditions(element)
                 expect(formDependConditions2.checkConditions(formSubmissions)).toBeFalsy();
             });
-            test("When operator of condition is null or not found in formSubmissions, should return False", () => {
+            test("When field of condition only consit of NotApplicable or unknown operator and conditionCombination is All, should return True", () => {
                 element = {
                     properties: {
                         satisfiedAction: "show",
-                        conditionCombination: "Any",
+                        conditionCombination: "All",
                         conditions: [
                             {
                                 "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
-                                "operator": "DontExistOperator",
+                                "operator": "NotApplicable",
+                                "fieldValue": "1"
+                            },
+                            {
+                                "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
+                                "operator": "NotFoundOperator",
                                 "fieldValue": "1"
                             }
                         ]
                     }
                 } as InputElementBase;
 
-                let element2 = {
-                    properties: {
-                        satisfiedAction: "show",
-                        conditionCombination: "Any",
-                        conditions: [
-                            {
-                                "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
-                                "fieldValue": "1"
-                            }
-                        ]
-                    }
-                } as InputElementBase;
-
-                formDependConditions = new FormDependConditions(element)
-                expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
-
-                const formDependConditions2 = new FormDependConditions(element2)
-                expect(formDependConditions2.checkConditions(formSubmissions)).toBeFalsy();
+                const formDependConditions2 = new FormDependConditions(element)
+                expect(formDependConditions2.checkConditions(formSubmissions)).toBeTruthy();
             });
-            test("When conditionCombination is not All or Any, should return False", () => {
+            test("When conditionCombination is not All or Any, should return True", () => {
                 element = {
                     properties: {
                         satisfiedAction: "show",
-                        conditionCombination: "NotFoundConditionCombination",
                         conditions: [
                             {
                                 "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
-                                "operator": "Contains",
+                                "operator": "NotApplicable",
+                                "fieldValue": "1"
+                            },
+                            {
+                                "field": "1490ca1deeb744f1aa7c33db0aefe5a8",
+                                "operator": "NotFoundOperator",
                                 "fieldValue": "1"
                             }
                         ]
@@ -463,7 +425,7 @@ describe("Test FormDependConditions class", () => {
                 } as InputElementBase;
 
                 formDependConditions = new FormDependConditions(element)
-                expect(formDependConditions.checkConditions(formSubmissions)).toBeFalsy();
+                expect(formDependConditions.checkConditions(formSubmissions)).toBeTruthy();
             });
         });
     });
