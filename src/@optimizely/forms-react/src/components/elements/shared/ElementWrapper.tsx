@@ -9,12 +9,12 @@ export interface ElementWrapperProps{
 }
 
 export default function ElementWrapper(props: ElementWrapperProps){
-    const failClass = props.validationResults?.some(r => !r.valid) ? "ValidationFail" : "ValidationSuccess";
+    const isFail = props.validationResults?.some(r => !r.valid);
 
     return (
         <>
             {props.isVisible && (
-                <div className={`Form__Element ${props.className} ${failClass}`}>
+                <div className={`Form__Element ${props.className} ${isFail ? "ValidationFail" : "ValidationSuccess"}`}>
                     {props.children}
                 </div>
             )}
