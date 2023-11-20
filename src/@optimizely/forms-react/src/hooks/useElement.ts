@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
-import { ActionType } from "../context/reducer";
 import {
     //models
     ConditionProperties,
@@ -21,12 +20,15 @@ import {
     FormSubmission,
     FormDependConditions,
     } from "@optimizely/forms-sdk";
-import { initState } from "../context/initState";
+import { DispatchFunctions } from "../context/dispatchFunctions";
 
 export interface ElementContext {
     value: any,
     defaultValue: any,
-    validationResults: FormValidationResult[]
+    validationResults: FormValidationResult[],
+    extraAttr: any,
+    validatorClasses: string,
+    isVisible: boolean
 }
 
 export const useElement = (element: FormElementBase) => {
@@ -36,17 +38,14 @@ export const useElement = (element: FormElementBase) => {
     const formValidation = new FormValidator(element);
     const formCondition = new FormDependConditions(element)
     const defaultValue = getDefaultValue(element);
-    const failClass = "ValidationFail";
     const isVisible = useRef<boolean>(true);
+    const dispatchFuncs = new DispatchFunctions(dispatch);
 
     //build element state
     const value = (formContext?.formSubmissions ?? [])
         .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
     const validationResults = (formContext?.formValidations ?? [])
         .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
-
-
-    const [elementContext, setElementContext] = useState<ElementContext>({ value } as ElementContext);
 
     //build extra attributes for element
     const validatableProps = (element.properties as unknown) as ValidatableElementBaseProperties;
@@ -66,32 +65,11 @@ export const useElement = (element: FormElementBase) => {
         extraAttr.current = { ...extraAttr.current, list: `${element.key}_datalist` }
     }
 
-    //init element state
-    useEffect(() => {
-        setElementContext({
-            ...elementContext,
-            value,
-            defaultValue,
-            validationResults
-        } as ElementContext);
-    }, [element.key]);
-
     //reset form
     useEffect(()=>{
         if(formContext?.isReset){
-            //reset class
-            validatorClasses.current = validatorClasses.current.split(" ").filter(c => c !== failClass).join(" ");
-            //reset element state
-            setElementContext({
-                ...elementContext,
-                value,
-                defaultValue,
-                validationResults,
-            } as ElementContext);
             //update form state
-            dispatch({
-                type: ActionType.ResetedForm
-            });
+            dispatchFuncs.dispatchResetedForm();
         }
     },[formContext?.isReset]);
 
@@ -122,123 +100,60 @@ export const useElement = (element: FormElementBase) => {
         else {
             !isInArray(element.key, inactives) && inactives.push(element.key);
         }
-        dispatchUpdateDependencies(inactives);
+        dispatchFuncs.dispatchUpdateDependencies(inactives);
     },[formContext?.formSubmissions]);
 
-    const dispatchUpdateValidation = (validationResults: FormValidationResult[]) => {
-        dispatch({
-            type: ActionType.UpdateValidation,
-            elementKey: element.key,
-            validationResults
-        });
-    }
-
-    const dispatchUpdateValue = (value: any) => {
-        dispatch({
-            type: ActionType.UpdateValue,
-            elementKey: element.key,
-            value
-        });
-    }
-
-    const dispatchUpdateDependencies = (dependencyInactiveElements: string[]) => {
-        dispatch({
-            type: ActionType.UpdateDependencies,
-            dependencyInactiveElements
-        });
-    }
-
     const handleChange = (e: any) => {
-        const { name, value, type, checked, files } = e.target;
-        let submissionValue = value;
-        let validationResults = [...elementContext.validationResults];
+        const { name, value: inputValue, type, checked, files } = e.target;
+        let submissionValue = inputValue;
 
         //get selected value for choice
         if (/checkbox|radio/.test(type)) {
-            let arrayValue = isNull(elementContext.value) || /radio/.test(type)
+            let arrayValue = isNull(value) || /radio/.test(type)
                 ? []
-                : (elementContext.value as string).split(",");
+                : (value as string).split(",");
 
             if (checked) {
-                arrayValue.push(value);
+                arrayValue.push(inputValue);
             }
             else {
-                arrayValue = arrayValue.filter(v => !equals(v, value));
+                arrayValue = arrayValue.filter(v => !equals(v, inputValue));
             }
 
-            submissionValue = arrayValue.length > 0 ? arrayValue.join(",") : null;
+            submissionValue = arrayValue.length > 0 ? arrayValue.filter(v => !isNullOrEmpty(v)).join(",") : null;
         }
 
         if (/file/.test(type)) {
             submissionValue = files;
-            validationResults = doValidate(files);
-            dispatchUpdateValidation(validationResults);
+            let validationResults = formValidation.validate(files)
+            dispatchFuncs.dispatchUpdateValidation(element.key, validationResults);
         }
 
         //update form context
-        dispatchUpdateValue(submissionValue);
-
-        //update element state
-        setElementContext({
-            ...elementContext,
-            value: submissionValue,
-            validationResults
-        } as ElementContext);
+        dispatchFuncs.dispatchUpdateValue(element.key, submissionValue);
     }
 
     const handleBlur = (e: any) => {
-        const { name } = e.target;
         //call validation from form-sdk
-        let validationResults = doValidate(elementContext.value);
+        let validationResults = formValidation.validate(value);
 
         //update form context
-        dispatchUpdateValidation(validationResults);
-
-        //update element state
-        setElementContext({
-            ...elementContext,
-            validationResults
-        } as ElementContext);
+        dispatchFuncs.dispatchUpdateValidation(element.key, validationResults);
     }
 
     const handleReset = () => {
-        dispatch({
-            type: ActionType.ResetForm,
-            formState: {
-                ...initState({formContainer: formContext?.formContainer}),
-                isReset: true
-            }
-        });
-    }
-
-    const doValidate = (value: any) => {
-        let validationResults = formValidation.validate(value);
-
-        let isValidationFail = !isNull(validationResults) && validationResults.some(r => !r.valid);
-        let arrClass = validatorClasses.current.split(" ");
-
-        if (isValidationFail) {
-            if (!isInArray(failClass, arrClass)) {
-                arrClass.push(failClass);
-            }
-        }
-        else {
-            if (isInArray(failClass, arrClass)) {
-                arrClass = arrClass.filter(c => c !== failClass);
-            }
-        }
-
-        validatorClasses.current = arrClass.join(" ");
-
-        return validationResults;
-    }
-
-    const checkVisible = (): boolean => {
-        return isVisible.current;
+        dispatchFuncs.dispatchResetForm(formContext?.formContainer);
     }
 
     return { 
-        elementContext, extraAttr: extraAttr.current, validatorClasses: validatorClasses.current, 
-        handleChange, handleBlur, checkVisible, handleReset 
+        elementContext: {
+            value,
+            defaultValue,
+            validationResults,
+            validatorClasses: validatorClasses.current,
+            extraAttr: extraAttr.current,
+            isVisible: isVisible.current
+        } as ElementContext, 
+        handleChange, handleBlur, handleReset 
     };
 }

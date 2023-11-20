@@ -1,5 +1,5 @@
 import { SubmitButton, isNullOrEmpty } from "@optimizely/forms-sdk";
-import React from "react";
+import React, { useMemo } from "react";
 import { useElement } from "../../hooks/useElement";
 import ElementWrapper from "../ElementWrapper";
 
@@ -9,12 +9,13 @@ interface SubmitButtonElementBlockProps{
 
 export const SubmitButtonElementBlock = (props: SubmitButtonElementBlockProps) => {
     const { element } = props;
-    const { validatorClasses, extraAttr, checkVisible } = useElement(element);
+    const { elementContext } = useElement(element);
+    const { isVisible, extraAttr, validatorClasses } = elementContext;
     //TODO: Need to get submittable status from API
     const buttonDisableState = false;
 
-    return (
-        <ElementWrapper isVisible={checkVisible()}>
+    return useMemo(()=>(
+        <ElementWrapper isVisible={isVisible}>
             <button id={element.key}
                 name="submit"
                 type="submit"
@@ -31,5 +32,5 @@ export const SubmitButtonElementBlock = (props: SubmitButtonElementBlockProps) =
                 )}
             </button>
         </ElementWrapper>
-    );
+    ),[isVisible]);
 }

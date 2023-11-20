@@ -8,15 +8,16 @@ interface PredefinedHiddenElementBlockProps {
 
 export const PredefinedHiddenElementBlock = (props: PredefinedHiddenElementBlockProps) => {
     const { element } = props;
-    const { elementContext, extraAttr } = useElement(element);
-
+    const { elementContext } = useElement(element);
+    const { value, extraAttr } = elementContext;
+    
     return (
         <>
             <input 
                 name={element.key} 
                 id={element.key} 
                 type="hidden"
-                value={elementContext.value}
+                value={value}
                 className="Form__Element FormHidden FormHideInSummarized" 
                 {...extraAttr} 
             />

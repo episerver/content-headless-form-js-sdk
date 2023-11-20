@@ -1,5 +1,5 @@
 import { ImageChoice, equals, isNullOrEmpty } from "@optimizely/forms-sdk";
-import React from "react";
+import React, { useMemo } from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ValidationMessage } from "./shared";
@@ -10,10 +10,12 @@ export interface ImageChoiceElementBlockProps {
 
 export const ImageChoiceElementBlock = (props: ImageChoiceElementBlockProps) => {
     const { element } = props;
-    const { elementContext, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
+    const { elementContext, handleChange, handleBlur } = useElement(element);
     const sShouldBeVisible = element.properties.showSelectionInputControl ? "" : "visually-hidden";
-    return (
-        <ElementWrapper className={`FormChoice FormChoice--Image ${validatorClasses}`} isVisible={checkVisible()}>
+    const { isVisible, validationResults, value, validatorClasses } = elementContext;
+
+    return useMemo(()=>(
+        <ElementWrapper className={`FormChoice FormChoice--Image ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <fieldset aria-describedby={`${element.key}_desc`}>
                 {
                     isNullOrEmpty(element.properties.label) &&
@@ -21,8 +23,8 @@ export const ImageChoiceElementBlock = (props: ImageChoiceElementBlockProps) => 
                 }
                 {element.properties.items.map((item, index) => {
                     let isChecked = (!isNullOrEmpty(item.text)
-                        && !isNullOrEmpty(elementContext.value)
-                        && (elementContext.value).split(',').some((s: string) => equals(s, item.text))
+                        && !isNullOrEmpty(value)
+                        && (value).split(',').some((s: string) => equals(s, item.text))
                     );
                     var imageChoiceId = element.key + index;
                     return <label htmlFor={imageChoiceId} className="FormChoice--Image__Item" key={element.key + item.text}>
@@ -59,7 +61,7 @@ export const ImageChoiceElementBlock = (props: ImageChoiceElementBlockProps) => 
                     </label>;
                 })}
             </fieldset>
-            <ValidationMessage element={element} validationResults={elementContext.validationResults} />
+            <ValidationMessage element={element} validationResults={validationResults} />
         </ElementWrapper>
-    );
+    ),[isVisible, validationResults, value]);
 }

@@ -1,5 +1,5 @@
 import { Number } from "@optimizely/forms-sdk"
-import React from "react";
+import React, { useMemo } from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ValidationMessage, ElementCaption } from "./shared";
@@ -10,10 +10,11 @@ export interface NumberElementBlockProps {
 
 export const NumberElementBlock = (props: NumberElementBlockProps) => {
     const { element } = props;
-    const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
+    const { elementContext, handleChange, handleBlur } = useElement(element);
+    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
 
-    return (
-        <ElementWrapper className={`FormTextbox FormTextbox--Number ${validatorClasses ?? ""}`} isVisible={checkVisible()}>
+    return useMemo(()=>(
+        <ElementWrapper className={`FormTextbox FormTextbox--Number ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <div lang={element.locale}>
                 <ElementCaption element={element} />
                 
@@ -24,15 +25,15 @@ export const NumberElementBlock = (props: NumberElementBlockProps) => {
                     step="any"
                     placeholder={element.properties.placeHolder}
                     {...extraAttr}
-                    value={elementContext.value}
+                    value={value}
                     aria-describedby={`${element.key}_desc`}
                     autoComplete={element.properties.autoComplete}
                     onChange={handleChange}
                     onBlur={handleBlur}
                 />
                 
-                <ValidationMessage element={element} validationResults={elementContext.validationResults} />
+                <ValidationMessage element={element} validationResults={validationResults} />
             </div>
         </ElementWrapper>
-    );
+    ),[isVisible, validationResults, value]);
 }

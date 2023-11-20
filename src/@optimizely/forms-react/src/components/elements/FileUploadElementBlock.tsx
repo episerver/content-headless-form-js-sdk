@@ -1,5 +1,5 @@
 import { FileUpload } from "@optimizely/forms-sdk"
-import React from "react";
+import React, { useMemo } from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ElementCaption, ValidationMessage } from "./shared";
@@ -10,14 +10,15 @@ export interface FileUploadElementBlockProps {
 
 export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
     const { element } = props;
-    const { elementContext, extraAttr, validatorClasses, handleChange, checkVisible } = useElement(element);
+    const { elementContext, handleChange } = useElement(element);
     let allowedTypes = element.properties.fileTypes ? element.properties.fileTypes.split(",").map((ext) => {
         ext = ext.trim();
         return (ext[0] != ".") ? `.${ext}` : ext;
     }).join(",") : "";
+    const { isVisible, validationResults, extraAttr, validatorClasses } = elementContext;
 
-    return (
-        <ElementWrapper className={`FormFileUpload ${validatorClasses}`} isVisible={checkVisible()}>
+    return useMemo(()=>(
+        <ElementWrapper className={`FormFileUpload ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <ElementCaption element={element} />
 
             <input
@@ -33,7 +34,7 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
             />
             <div className="FormFileUpload__PostedFile"></div>
 
-            <ValidationMessage element={element} validationResults={elementContext.validationResults} />
+            <ValidationMessage element={element} validationResults={validationResults} />
         </ElementWrapper>
-    );
+    ),[isVisible, validationResults]);
 }

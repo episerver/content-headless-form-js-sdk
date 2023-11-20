@@ -1,5 +1,5 @@
 import { Choice, equals, isNullOrEmpty } from "@optimizely/forms-sdk";
-import React from "react";
+import React, { useMemo } from "react";
 import ElementWrapper from "../ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ValidationMessage } from "./shared";
@@ -10,10 +10,11 @@ export interface ChoiceElementBlockProps {
 
 export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
     const { element } = props;
-    const { elementContext, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
+    const { elementContext, handleChange, handleBlur } = useElement(element);
+    const { isVisible, validationResults, value, validatorClasses } = elementContext;
 
-    return (
-        <ElementWrapper className={`FormChoice ${validatorClasses}`} isVisible={checkVisible()}>
+    return useMemo(()=>(
+        <ElementWrapper className={`FormChoice ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <fieldset aria-describedby={`${element.key}_desc`}>
                 
                 {!isNullOrEmpty(element.properties.label) && 
@@ -22,8 +23,8 @@ export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
                 
                 {element.properties.items.map((item, index) => {
                     let isChecked = (!isNullOrEmpty(item.value) 
-                                        && !isNullOrEmpty(elementContext.value) 
-                                        && (elementContext.value).split(',').some((s: string) => equals(s, item.value))
+                                        && !isNullOrEmpty(value) 
+                                        && (value).split(',').some((s: string) => equals(s, item.value))
                                     );
                     let choiceId = `${element.key}_${index}`;
 
@@ -61,7 +62,7 @@ export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
                 })}
             </fieldset>
 
-            <ValidationMessage element={element} validationResults={elementContext.validationResults} />
+            <ValidationMessage element={element} validationResults={validationResults} />
         </ElementWrapper>
-    );
+    ),[isVisible, validationResults, value]);
 }
