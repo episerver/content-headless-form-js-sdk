@@ -1,6 +1,6 @@
 import { Textarea } from "@optimizely/forms-sdk"
-import React from "react";
-import ElementWrapper from "../ElementWrapper";
+import React, { useMemo } from "react";
+import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ElementCaption, ValidationMessage } from "./shared";
 
@@ -10,10 +10,10 @@ export interface TextareaElementBlockProps {
 
 export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
     const { element } = props;
-    const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
-
-    return (
-        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses}`} isVisible={checkVisible()}>
+    const { elementContext, handleChange, handleBlur } = useElement(element);
+    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
+    return useMemo(()=>(
+        <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <ElementCaption element={element} />
             
             <textarea 
@@ -23,14 +23,14 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
                 placeholder={element.properties.placeHolder}
                 {...extraAttr}
                 aria-describedby={`${element.key}_desc`}
-                value={elementContext.value}
+                value={value}
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
                 onBlur={handleBlur}
             >
             </textarea>
             
-            <ValidationMessage element={element} validationResults={elementContext.validationResults} />
+            <ValidationMessage element={element} validationResults={validationResults} />
         </ElementWrapper>
-    );
+    ),[isVisible, validationResults, value]);
 }

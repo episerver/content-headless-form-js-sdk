@@ -1,6 +1,6 @@
 import { Selection, isNullOrEmpty } from "@optimizely/forms-sdk"
-import React from "react";
-import ElementWrapper from "../ElementWrapper";
+import React, { useMemo } from "react";
+import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ElementCaption, ValidationMessage } from "./shared";
 
@@ -10,10 +10,11 @@ interface SelectionElementBlockProps {
 
 export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
     const { element } = props;
-    const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
-    
-    return (
-        <ElementWrapper className={`FormSelection ${validatorClasses}`} isVisible={checkVisible()}>
+    const { elementContext, handleChange, handleBlur } = useElement(element);
+    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
+
+    return useMemo(()=>(
+        <ElementWrapper className={`FormSelection ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <ElementCaption element={element}></ElementCaption>
             <select
                 name={element.key}
@@ -24,9 +25,9 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={elementContext.value}
+                value={value}
             >
-                <option value="" disabled={elementContext.value !== ""}>
+                <option value="" disabled={value !== ""}>
                     {isNullOrEmpty(element.properties.placeHolder) 
                         ? element.localizations["selectionDefaultPlaceholder"]
                         : element.properties.placeHolder
@@ -36,7 +37,7 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                     <option key={feed.value} value={feed.value} defaultChecked={feed.checked}>{feed.caption}</option>
                 ))}
             </select>
-            <ValidationMessage element={element} validationResults={elementContext.validationResults}></ValidationMessage>
+            <ValidationMessage element={element} validationResults={validationResults}></ValidationMessage>
         </ElementWrapper>
-    );
+    ),[isVisible, validationResults, value]);
 }

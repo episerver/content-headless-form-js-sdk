@@ -1,6 +1,6 @@
 import { Url } from "@optimizely/forms-sdk"
-import React from "react";
-import ElementWrapper from "../ElementWrapper";
+import React, { useMemo } from "react";
+import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ElementCaption, ValidationMessage } from "./shared";
 
@@ -10,10 +10,10 @@ export interface UrlElementBlockProps {
 
 export const UrlElementBlock = (props: UrlElementBlockProps) => {
     const { element } = props;
-    const { elementContext, extraAttr, validatorClasses, handleChange, handleBlur, checkVisible } = useElement(element);
-
-    return (
-        <ElementWrapper className={`FormTextbox__Input FormUrl__Input ${validatorClasses}`} isVisible={checkVisible()}>
+    const { elementContext, handleChange, handleBlur } = useElement(element);
+    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
+    return useMemo(()=>(
+        <ElementWrapper className={`FormTextbox__Input FormUrl__Input ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <ElementCaption element={element} />
 
             <input
@@ -21,14 +21,14 @@ export const UrlElementBlock = (props: UrlElementBlockProps) => {
                 id={element.key}
                 type="url"
                 placeholder={element.properties.placeHolder}
-                value={elementContext.value}
+                value={value}
                 {...extraAttr}
                 aria-describedby={`${element.key}_desc`}
                 onChange={handleChange}
                 onBlur={handleBlur}
             />
 
-            <ValidationMessage element={element} validationResults={elementContext.validationResults} />
+            <ValidationMessage element={element} validationResults={validationResults} />
         </ElementWrapper>
-    );
+    ),[isVisible, validationResults, value]);
 }

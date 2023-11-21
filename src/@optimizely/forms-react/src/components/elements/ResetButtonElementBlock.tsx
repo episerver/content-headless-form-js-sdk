@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { ResetButton } from "@optimizely/forms-sdk";
 import { useElement } from "../../hooks/useElement";
 
@@ -8,9 +8,10 @@ interface ResetButtonElementBlockProps {
 
 export const ResetButtonElementBlock = (props: ResetButtonElementBlockProps) => {
     const { element } = props;
-    const { extraAttr, handleReset } = useElement(element);
-    
-    return (
+    const { elementContext, handleReset } = useElement(element);
+    const { extraAttr } = elementContext;
+
+    return useMemo(()=>(
         <>
             <input 
                 type="reset" 
@@ -20,5 +21,5 @@ export const ResetButtonElementBlock = (props: ResetButtonElementBlockProps) => 
                 onClick={handleReset}
             />
         </>
-    );
+    ),[]);
 }
