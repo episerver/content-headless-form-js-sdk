@@ -15,7 +15,7 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
         ext = ext.trim();
         return (ext[0] != ".") ? `.${ext}` : ext;
     }).join(",") : "";
-    const { isVisible, validationResults, extraAttr, validatorClasses } = elementContext;
+    const { isVisible, validationResults, extraAttr, validatorClasses, elementRef } = elementContext;
 
     return useMemo(()=>(
         <ElementWrapper className={`FormFileUpload ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
@@ -31,6 +31,7 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
                 accept={allowedTypes}
                 aria-describedby={element.key + "_desc"}
                 onChange={handleChange}
+                ref={elementRef}
             />
             <div className="FormFileUpload__PostedFile"></div>
 

@@ -11,7 +11,7 @@ export interface UrlElementBlockProps {
 export const UrlElementBlock = (props: UrlElementBlockProps) => {
     const { element } = props;
     const { elementContext, handleChange, handleBlur } = useElement(element);
-    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
+    const { isVisible, validationResults, value, extraAttr, validatorClasses, elementRef } = elementContext;
     return useMemo(()=>(
         <ElementWrapper className={`FormTextbox__Input FormUrl__Input ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <ElementCaption element={element} />
@@ -26,6 +26,7 @@ export const UrlElementBlock = (props: UrlElementBlockProps) => {
                 aria-describedby={`${element.key}_desc`}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                ref={elementRef}
             />
 
             <ValidationMessage element={element} validationResults={validationResults} />

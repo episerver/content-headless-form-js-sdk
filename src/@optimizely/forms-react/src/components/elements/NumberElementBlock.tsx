@@ -11,7 +11,7 @@ export interface NumberElementBlockProps {
 export const NumberElementBlock = (props: NumberElementBlockProps) => {
     const { element } = props;
     const { elementContext, handleChange, handleBlur } = useElement(element);
-    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
+    const { isVisible, validationResults, value, extraAttr, validatorClasses, elementRef } = elementContext;
 
     return useMemo(()=>(
         <ElementWrapper className={`FormTextbox FormTextbox--Number ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
@@ -30,6 +30,7 @@ export const NumberElementBlock = (props: NumberElementBlockProps) => {
                     autoComplete={element.properties.autoComplete}
                     onChange={handleChange}
                     onBlur={handleBlur}
+                    ref={elementRef}
                 />
                 
                 <ValidationMessage element={element} validationResults={validationResults} />

@@ -11,7 +11,7 @@ export interface TextareaElementBlockProps {
 export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
     const { element } = props;
     const { elementContext, handleChange, handleBlur } = useElement(element);
-    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
+    const { isVisible, validationResults, value, extraAttr, validatorClasses, elementRef } = elementContext;
     return useMemo(()=>(
         <ElementWrapper className={`FormTextbox FormTextbox--Textarea ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <ElementCaption element={element} />
@@ -27,6 +27,7 @@ export const TextareaElementBlock = (props: TextareaElementBlockProps) => {
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                ref={elementRef}
             >
             </textarea>
             

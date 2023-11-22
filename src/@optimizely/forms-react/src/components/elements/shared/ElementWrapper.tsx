@@ -1,11 +1,11 @@
-import { FormValidationResult, isInArray, isNull } from "@optimizely/forms-sdk";
+import { ElementValidationResult } from "@optimizely/forms-sdk";
 import React, { ReactNode } from "react";
 
 export interface ElementWrapperProps{
     className?: string
     isVisible: boolean,
     children: ReactNode,
-    validationResults?: FormValidationResult[]
+    validationResults?: ElementValidationResult[]
 }
 
 export default function ElementWrapper(props: ElementWrapperProps){

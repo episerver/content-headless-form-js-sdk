@@ -1,4 +1,4 @@
-import { FormContainer, FormValidationResult } from "@optimizely/forms-sdk";
+import { FormContainer, ElementValidationResult, FormValidationResult } from "@optimizely/forms-sdk";
 import { ActionType } from "./reducer";
 import { initState } from "./initState";
 
@@ -8,11 +8,18 @@ export class DispatchFunctions {
         this._dispatch = dispatch;
     }
 
-    dispatchUpdateValidation = (elementKey: string, validationResults: FormValidationResult[]) => {
+    dispatchUpdateValidation = (elementKey: string, validationResults: ElementValidationResult[]) => {
         this._dispatch({
             type: ActionType.UpdateValidation,
             elementKey: elementKey,
             validationResults
+        });
+    }
+
+    dispatchUpdateAllValidation = (formValidationResults: FormValidationResult[]) => {
+        this._dispatch({
+            type: ActionType.UpdateAllValidation,
+            formValidationResults
         });
     }
 
@@ -44,6 +51,13 @@ export class DispatchFunctions {
                 ...initState({formContainer}),
                 isReset: true
             }
+        });
+    }
+
+    dispatchFocusOn = (focusOn: string) => {
+        this._dispatch({
+            type: ActionType.UpdateFocusOn,
+            focusOn
         });
     }
 }

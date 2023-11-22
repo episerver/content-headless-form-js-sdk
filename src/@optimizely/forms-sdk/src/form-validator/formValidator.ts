@@ -1,7 +1,7 @@
 import { isMatchedReg, isNull, isNullOrEmpty, isNumeric, isFileValid } from "../helpers";
 import { AllowedExtensionsValidatorModel, 
     FormElementBase, 
-    FormValidationResult, 
+    ElementValidationResult, 
     MaxFileSizeValidationModel, 
     RegularExpressionValidatorModel, 
     ValidatableElementBaseProperties, 
@@ -130,7 +130,7 @@ export class FormValidator {
      * @param value Value of field to validate
      * @returns An object that contains validate result
      */
-    validate(value: any): FormValidationResult[]{
+    validate(value: any): ElementValidationResult[]{
         let validatorProps = this._element.properties as ValidatableElementBaseProperties;
         if(isNull(validatorProps?.validators)){
             return [];
@@ -167,7 +167,7 @@ export class FormValidator {
             return {
                 type: v.type,
                 valid
-            } as FormValidationResult;
+            } as ElementValidationResult;
         })
     }
 }

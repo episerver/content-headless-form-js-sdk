@@ -1,14 +1,16 @@
 import { equals,
   FormState, 
   FormSubmission, 
-  FormValidation } from "@optimizely/forms-sdk";
+  FormValidationResult } from "@optimizely/forms-sdk";
 
 export enum ActionType {
     UpdateValue = "UpdateValue",
     UpdateValidation = "UpdateValidation",
     UpdateDependencies = "UpdateDependencies",
     ResetForm = "ResetForm",
-    ResetedForm = "ResetedForm"
+    ResetedForm = "ResetedForm",
+    UpdateAllValidation = "UpdateAllValidation",
+    UpdateFocusOn = "UpdateFocusOn"
 }
 
 export function formReducer(formState: FormState, action: any) {
@@ -25,11 +27,17 @@ export function formReducer(formState: FormState, action: any) {
       case ActionType.UpdateValidation: {
         return {
             ...formState,
-            formValidations: formState.formValidations.map(fv => equals(fv.elementKey, action.elementKey) ? {
+            formValidationResults: formState.formValidationResults.map(fv => equals(fv.elementKey, action.elementKey) ? {
                 elementKey: action.elementKey,
                 results: action.validationResults
-            } as FormValidation : fv)
+            } as FormValidationResult : fv)
         } as FormState;
+      }
+      case ActionType.UpdateAllValidation: {
+        return {
+          ...formState,
+          formValidationResults: action.formValidationResults
+      } as FormState;
       }
       case ActionType.UpdateDependencies: {
         return {
@@ -44,6 +52,12 @@ export function formReducer(formState: FormState, action: any) {
         return {
           ...formState,
           isReset: false
+        } as FormState;
+      }
+      case ActionType.UpdateFocusOn: {
+        return {
+          ...formState,
+          focusOn: action.focusOn
         } as FormState;
       }
       default: {
