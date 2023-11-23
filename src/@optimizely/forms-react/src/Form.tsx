@@ -11,11 +11,11 @@ interface FormProps {
     /**
      * The code of the form language
      */
-    language: string | undefined,
+    language?: string,
     /**
      * The base url of Headless Form API
      */
-    baseUrl: string | undefined
+    baseUrl?: string
 }
 
 export const Form = ({formKey, language, baseUrl}: FormProps) => {

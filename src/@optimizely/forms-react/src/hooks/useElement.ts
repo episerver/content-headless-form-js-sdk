@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
 import {
     //models
+    FormContainer,
     ConditionProperties,
     DataElementBlockBaseProperties,
     FormElementBase,
@@ -153,7 +154,7 @@ export const useElement = (element: FormElementBase) => {
     }
 
     const handleReset = () => {
-        dispatchFuncs.dispatchResetForm(formContext?.formContainer);
+        dispatchFuncs.dispatchResetForm(formContext?.formContainer ?? {} as FormContainer);
     }
 
     return { 
