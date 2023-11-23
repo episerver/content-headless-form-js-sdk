@@ -11,7 +11,7 @@ export interface TextboxElementBlockProps {
 export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
     const { element } = props;
     const { elementContext, handleChange, handleBlur } = useElement(element);
-    const { isVisible, validationResults, value, validatorClasses, extraAttr } = elementContext;
+    const { isVisible, validationResults, value, elementRef, validatorClasses, extraAttr } = elementContext;
     return useMemo(()=>(
         <ElementWrapper className={`FormTextbox ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
             <ElementCaption element={element} />
@@ -24,6 +24,7 @@ export const TextboxElementBlock = (props: TextboxElementBlockProps) => {
                 {...extraAttr}
                 onChange={handleChange}
                 onBlur={handleBlur} 
+                ref={elementRef}
             />
 
             <ValidationMessage element={element} validationResults={validationResults} />

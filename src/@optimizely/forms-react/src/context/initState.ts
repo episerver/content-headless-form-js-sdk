@@ -1,11 +1,11 @@
-import { ConditionProperties, 
+import {
     FormContainer, 
     ValidatableElementBaseProperties, 
     getDefaultValue, 
     isNull,
     FormState, 
     FormSubmission, 
-    FormValidation, 
+    ElementValidationResult, 
     FormValidationResult, 
     StepDependencies } from "@optimizely/forms-sdk";
 
@@ -17,7 +17,7 @@ export function initState(props: InitStateProps): FormState{
     const { formContainer } = props;
     
     let formSubmissions = [] as FormSubmission[];
-    let formValidations = [] as FormValidation[];
+    let formValidationResults = [] as FormValidationResult[];
     let stepDependencies = [] as StepDependencies[];
 
     formContainer?.steps.forEach(s => {
@@ -27,24 +27,22 @@ export function initState(props: InitStateProps): FormState{
 
             //init form validation
             let validatableProps = e.properties as ValidatableElementBaseProperties;
-            let formValidationResults = [] as FormValidationResult[];
+            let elementValidationResults = [] as ElementValidationResult[];
 
             //some elements don't have validator
             if(!isNull(validatableProps.validators))
             {
                 validatableProps.validators.forEach(v => {
-                    formValidationResults = formValidationResults.concat({type: v.type, valid: true}); //default valid = true to hide message
+                    elementValidationResults = elementValidationResults.concat({type: v.type, valid: true}); //default valid = true to hide message
                 });
             }
 
-            formValidations = formValidations.concat({elementKey: e.key, results: formValidationResults});
+            formValidationResults = formValidationResults.concat({elementKey: e.key, results: elementValidationResults});
         });
         stepDependencies = stepDependencies.concat({elementKey: s.formStep.key, isSatisfied: false });
     });
 
-
-
     return {
-        isReset: false, formSubmissions, formValidations, stepDependencies, formContainer, dependencyInactiveElements: []
+        isReset: false, formSubmissions, formValidationResults, stepDependencies, formContainer, dependencyInactiveElements: [], focusOn: ""
     } as FormState;
 }

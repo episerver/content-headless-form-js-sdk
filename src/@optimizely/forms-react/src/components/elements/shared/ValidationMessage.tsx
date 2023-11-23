@@ -1,9 +1,9 @@
-import { ValidatableElementBase, FormValidationResult, isNull } from "@optimizely/forms-sdk";
+import { ValidatableElementBase, ElementValidationResult, isNull } from "@optimizely/forms-sdk";
 import React from "react";
 
 interface ValidationMessageProps {
     element: ValidatableElementBase,
-    validationResults: FormValidationResult[]
+    validationResults: ElementValidationResult[]
 }
 
 export const ValidationMessage = (props: ValidationMessageProps) => {

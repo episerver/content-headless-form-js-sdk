@@ -11,7 +11,7 @@ interface SelectionElementBlockProps {
 export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
     const { element } = props;
     const { elementContext, handleChange, handleBlur } = useElement(element);
-    const { isVisible, validationResults, value, extraAttr, validatorClasses } = elementContext;
+    const { isVisible, validationResults, value, extraAttr, validatorClasses, elementRef } = elementContext;
 
     return useMemo(()=>(
         <ElementWrapper className={`FormSelection ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
@@ -26,6 +26,7 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={value}
+                ref={elementRef}
             >
                 <option value="" disabled={value !== ""}>
                     {isNullOrEmpty(element.properties.placeHolder) 

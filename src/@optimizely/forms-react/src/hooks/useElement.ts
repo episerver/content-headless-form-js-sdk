@@ -8,7 +8,7 @@ import {
     ValidatableElementBaseProperties,
     ValidatorType,
     SatisfiedActionType,
-    FormValidationResult,
+    ElementValidationResult,
     //functions
     equals,
     getDefaultValue,
@@ -25,10 +25,11 @@ import { DispatchFunctions } from "../context/dispatchFunctions";
 export interface ElementContext {
     value: any,
     defaultValue: any,
-    validationResults: FormValidationResult[],
+    validationResults: ElementValidationResult[],
     extraAttr: any,
     validatorClasses: string,
-    isVisible: boolean
+    isVisible: boolean,
+    elementRef: any
 }
 
 export const useElement = (element: FormElementBase) => {
@@ -40,11 +41,12 @@ export const useElement = (element: FormElementBase) => {
     const defaultValue = getDefaultValue(element);
     const isVisible = useRef<boolean>(true);
     const dispatchFuncs = new DispatchFunctions(dispatch);
+    const elementRef = useRef<any>(null);
 
     //build element state
     const value = (formContext?.formSubmissions ?? [])
         .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
-    const validationResults = (formContext?.formValidations ?? [])
+    const validationResults = (formContext?.formValidationResults ?? [])
         .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
 
     //build extra attributes for element
@@ -103,6 +105,15 @@ export const useElement = (element: FormElementBase) => {
         dispatchFuncs.dispatchUpdateDependencies(inactives);
     },[formContext?.formSubmissions]);
 
+    //focus on element if validate fail before submitting
+    useEffect(()=>{
+        let focusOn = formContext?.focusOn ?? "";
+        if(equals(focusOn, element.key)){
+            elementRef.current && elementRef.current.focus();
+            dispatchFuncs.dispatchFocusOn("");
+        }
+    },[formContext?.focusOn]);
+
     const handleChange = (e: any) => {
         const { name, value: inputValue, type, checked, files } = e.target;
         let submissionValue = inputValue;
@@ -152,7 +163,8 @@ export const useElement = (element: FormElementBase) => {
             validationResults,
             validatorClasses: validatorClasses.current,
             extraAttr: extraAttr.current,
-            isVisible: isVisible.current
+            isVisible: isVisible.current,
+            elementRef
         } as ElementContext, 
         handleChange, handleBlur, handleReset 
     };
