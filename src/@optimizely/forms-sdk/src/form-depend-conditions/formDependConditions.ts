@@ -24,16 +24,14 @@ export class FormDependConditions {
             for (let i = 0; i < conditionProps.conditions.length; i++) {
                 const condition = conditionProps.conditions[i]
                 const fieldValue = formSubmissions.filter(s => equals(s.elementKey, condition.field))[0]?.value as string
-                if (!isNull(fieldValue)) {
-                    const conditionFunction = ConditionFunctions[condition.operator];
-                    if (!isNull(conditionFunction)){
-                        var checkResult = conditionFunction(fieldValue, condition.fieldValue)
-                        if (conditionProps.conditionCombination === ConditionCombinationType.Any && checkResult) {
-                            return true
-                        }
-                        if (conditionProps.conditionCombination !== ConditionCombinationType.Any && !checkResult) {
-                            return false
-                        }
+                const conditionFunction = ConditionFunctions[condition.operator];
+                if (!isNull(conditionFunction)){
+                    let checkResult = conditionFunction(fieldValue, condition.fieldValue)
+                    if (conditionProps.conditionCombination === ConditionCombinationType.Any && checkResult) {
+                        return true
+                    }
+                    if (conditionProps.conditionCombination !== ConditionCombinationType.Any && !checkResult) {
+                        return false
                     }
                 }
             }
