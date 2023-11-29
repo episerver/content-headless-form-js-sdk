@@ -34,7 +34,7 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                         : element.properties.placeHolder
                     }
                 </option>
-                {element.properties.items.map(feed => (
+                {element.properties.items?.map(feed => (
                     <option key={feed.value} value={feed.value} defaultChecked={feed.checked}>{feed.caption}</option>
                 ))}
             </select>
