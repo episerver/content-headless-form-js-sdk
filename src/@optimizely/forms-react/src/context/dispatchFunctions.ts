@@ -1,6 +1,5 @@
-import { FormContainer, ElementValidationResult, FormValidationResult } from "@optimizely/forms-sdk";
+import { FormContainer, ElementValidationResult, FormValidationResult, initFormState } from "@optimizely/forms-sdk";
 import { ActionType } from "./reducer";
-import { initState } from "./initState";
 
 export class DispatchFunctions {
     readonly _dispatch: any
@@ -44,11 +43,11 @@ export class DispatchFunctions {
         });
     }
 
-    dispatchResetForm = (formContainer: FormContainer | undefined) => {
+    dispatchResetForm = (formContainer: FormContainer) => {
         this._dispatch({
             type: ActionType.ResetForm,
             formState: {
-                ...initState({formContainer}),
+                ...initFormState(formContainer),
                 isReset: true
             }
         });

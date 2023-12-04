@@ -1,7 +1,6 @@
 import React from "react";
-import { FormContainer, StepBuilder } from "@optimizely/forms-sdk";
+import { FormContainer, StepBuilder, initFormState } from "@optimizely/forms-sdk";
 import { FormProvider } from "../context/FormProvider";
-import { initState } from "../context/initState";
 import { FormBody } from "./FormBody";
 
 export interface FormContainerProps {
@@ -11,7 +10,7 @@ export interface FormContainerProps {
 export function FormContainerBlock(props: FormContainerProps){
     const stepBuilder = new StepBuilder(props.form);
     const form = stepBuilder.buildForm();
-    const state = initState({formContainer: form});
+    const state = initFormState(form);
 
     {/* finally return the form */}
     return (
