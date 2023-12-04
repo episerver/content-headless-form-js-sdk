@@ -21,7 +21,7 @@ export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
                     <legend className="Form__Element__Caption">{element.properties.label}</legend>
                 }
                 
-                {element.properties.items.map((item, index) => {
+                {element.properties.items?.map((item, index) => {
                     let isChecked = (!isNullOrEmpty(item.value) 
                                         && !isNullOrEmpty(value) 
                                         && (value).split(',').some((s: string) => equals(s, item.value))
