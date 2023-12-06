@@ -29,8 +29,8 @@
     "test": "npm run test-forms-sdk",
     "start-backend": "npm start -w managementsite",
     "start-frontend": "npm start -w sample-react-app",
-    "publish-forms-sdk": "npm run publish -w @episerver/forms-sdk",
-    "publish-forms-react": "npm run publish -w @episerver/forms-react",
+    "publish-forms-sdk": "npm publish -w @episerver/forms-sdk",
+    "publish-forms-react": "npm publish -w @episerver/forms-react",
     "publish":"npm run publish-forms-sdk && npm run publish-forms-react"
   }
 }

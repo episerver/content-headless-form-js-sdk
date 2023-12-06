@@ -34,27 +34,27 @@ switch -wildcard ($branchName) {
     default { $preReleaseInfo = "-ci-{0:D6}" }
 }
 <# update version for forms-sdk #>
-$json = (Get-Content @episerver/forms-sdk/package.json -Raw)
+$json = (Get-Content src/@episerver/forms-sdk/package.json -Raw)
 
 $versionSuffix = "$preReleaseInfo" -f $buildCounter
-$version = (Get-Content @episerver/forms-sdk/package.json) -join "`n" | ConvertFrom-Json | Select-Object -ExpandProperty "version"
+$version = (Get-Content src/@episerver/forms-sdk/package.json) -join "`n" | ConvertFrom-Json | Select-Object -ExpandProperty "version"
 Write-Output "Version read from package.json: $version"
 Write-Output "Version suffix: $versionSuffix"
 
 $fullVersion = "$version$versionSuffix"
 Write-Output "Package version: $fullVersion"
 
-$json -replace $version,$fullVersion | Set-Content -Path @episerver/forms-sdk/package.json
+$json -replace $version,$fullVersion | Set-Content -Path src/@episerver/forms-sdk/package.json
 
 <# update version for forms-react #>
-$json = (Get-Content @episerver/forms-react/package.json -Raw)
+$json = (Get-Content src/@episerver/forms-react/package.json -Raw)
 
 $versionSuffix = "$preReleaseInfo" -f $buildCounter
-$version = (Get-Content @episerver/forms-react/package.json) -join "`n" | ConvertFrom-Json | Select-Object -ExpandProperty "version"
+$version = (Get-Content src/@episerver/forms-react/package.json) -join "`n" | ConvertFrom-Json | Select-Object -ExpandProperty "version"
 Write-Output "Version read from package.json: $version"
 Write-Output "Version suffix: $versionSuffix"
 
 $fullVersion = "$version$versionSuffix"
 Write-Output "Package version: $fullVersion"
 
-$json -replace $version,$fullVersion | Set-Content -Path @episerver/forms-react/package.json
+$json -replace $version,$fullVersion | Set-Content -Path src/@episerver/forms-react/package.json

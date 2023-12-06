@@ -11,10 +11,11 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rollup -c --context window",
-    "publish": "npm publish"
+    "build": "rollup -c --context window"
   },
-  "private": true,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/episerver"
+  },
   "keywords": [],
   "dependencies": {
     "@episerver/forms-sdk": "file:../forms-sdk"

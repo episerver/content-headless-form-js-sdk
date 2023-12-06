@@ -10,8 +10,10 @@
     "watch": "npx tsc --watch",
     "lint": "eslint --cache \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --cache --fix \"src/**/*.{js,jsx,ts,tsx}\"",
-    "test": "jest",
-    "publish": "npm publish"
+    "test": "jest"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/episerver"
   },
   "files": [
     "dist"
