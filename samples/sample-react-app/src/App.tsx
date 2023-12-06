@@ -1,6 +1,6 @@
 import './App.css';
 import { useFetch } from './hooks/useFetch';
-import { Form } from '@optimizely/forms-react';
+import { Form } from '@episerver/forms-react';
 import { extractParams } from './helpers/urlHelper';
 
 function App() {

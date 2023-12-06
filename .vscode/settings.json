@@ -1,4 +1,4 @@
 {
-    "jest.rootPath": "src/@optimizely/forms-sdk",
+    "jest.rootPath": "src/@episerver/forms-sdk",
     "jest.jestCommandLine": "npm run test --",
 }
