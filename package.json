@@ -3,31 +3,34 @@
   "version": "1.0.0",
   "description": "Workspace root",
   "workspaces": [
-    "src/@optimizely/forms-react",
-    "src/@optimizely/forms-sdk",
+    "src/@episerver/forms-react",
+    "src/@episerver/forms-sdk",
     "samples/sample-react-app",
     "samples/managementsite"
   ],
   "author": "Optimizely",
   "license": "ISC",
-  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/episerver/content-headless-form-js-sdk.git"
+  },
   "scripts": {
     "setup-database": "setup.cmd",
-    "setup-backend":"npm run setup -w managementsite",
-    "setup-react-app":"npm install -w sample-react-app",
-    "setup-forms-sdk":"npm install -w @optimizely/forms-sdk",
-    "setup-forms-react":"npm install -w @optimizely/forms-react",
-    "setup":"npm run setup-forms-sdk && npm run setup-forms-react && npm run setup-react-app && npm run setup-backend && npm run setup-database",
-
-    "build-backend":"npm run build -w managementsite",
-    "build-forms-sdk":"npm run build -w @optimizely/forms-sdk",
-    "build-forms-react":"npm run build -w @optimizely/forms-react",
+    "setup-backend": "npm run setup -w managementsite",
+    "setup-react-app": "npm install -w sample-react-app",
+    "setup-forms-sdk": "npm install -w @episerver/forms-sdk",
+    "setup-forms-react": "npm install -w @episerver/forms-react",
+    "setup": "npm run setup-forms-sdk && npm run setup-forms-react && npm run setup-react-app && npm run setup-backend && npm run setup-database",
+    "build-backend": "npm run build -w managementsite",
+    "build-forms-sdk": "npm run build -w @episerver/forms-sdk",
+    "build-forms-react": "npm run build -w @episerver/forms-react",
     "build": "npm run build-forms-sdk && npm run build-forms-react",
-
-    "test-forms-sdk":"npm run test -w @optimizely/forms-sdk",
+    "test-forms-sdk": "npm run test -w @episerver/forms-sdk",
     "test": "npm run test-forms-sdk",
-
     "start-backend": "npm start -w managementsite",
-    "start-frontend": "npm start -w sample-react-app"
+    "start-frontend": "npm start -w sample-react-app",
+    "publish-forms-sdk": "npm run publish -w @episerver/forms-sdk",
+    "publish-forms-react": "npm run publish -w @episerver/forms-react",
+    "publish":"npm run publish-forms-sdk && npm run publish-forms-react"
   }
 }

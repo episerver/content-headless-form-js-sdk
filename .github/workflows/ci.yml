@@ -2,7 +2,11 @@ name: Optimizely Headless Form CI
 
 on:
   push:
-    branches: [ "develop" ]
+    branches:
+      - master
+      - develop
+      - feature/*
+      - bugfix/*
   pull_request:
     branches: [ "develop" ]
 
@@ -10,7 +14,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     strategy:
       matrix:
         node-version: [16.x]
@@ -34,3 +39,11 @@ jobs:
 
       - name: Run unit test
         run: npm test
+
+      - name: Apply Versioning
+        run: |
+          echo "running on branch" ${{env.BRANCH_NAME}}
+          ${{ github.workspace}}\build\get-versionSuffix.ps1 ${{env.BRANCH_NAME}} ${{github.RUN_NUMBER}}
+
+      - name: Publish
+        run: npm run publish
