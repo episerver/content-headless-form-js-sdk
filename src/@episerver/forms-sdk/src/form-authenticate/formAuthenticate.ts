@@ -15,7 +15,7 @@ export class FormAuthenticate {
      * @param password 
      * @returns Access token string
      */
-    async login(username: string, password: string): Promise<string> {
+    login(username: string, password: string): Promise<string> {
         let payload: Record<string,string> = {
             username,
             password,

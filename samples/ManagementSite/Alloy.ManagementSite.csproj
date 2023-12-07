@@ -19,9 +19,10 @@
     <PackageReference Include="EPiServer.CMS.UI.VisitorGroups" Version="12.22.7" />
     <PackageReference Include="EPiServer.CMS.UI.AspNetIdentity" Version="12.22.7" />
 	  <PackageReference Include="EPiServer.ImageLibrary.ImageSharp" Version="2.0.1" />
-	  <PackageReference Include="Optimizely.Headless.Form.Service" Version="0.1.0--inte-148" />
+	  <PackageReference Include="Optimizely.Headless.Form.Service" Version="0.1.0--inte-159" />
 	  <PackageReference Include="Optimizely.Cms.Content.EPiServer" Version="0.3.1" />
 	  <PackageReference Include="EPiServer.Forms" Version="5.6.1-feature-AFORM-3540-021035" />
+	  <PackageReference Include="EPiServer.OpenIDConnect" Version="3.2.0"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EPiServer.ContentDefinitionsApi" Version="3.3.0" />
