@@ -1,10 +1,21 @@
-import { FormAuthenticate, FormAuthenticateConfig, FormConstants, IdentityInfo, isNullOrEmpty } from "@episerver/forms-sdk";
+import { FormAuthenticate, FormAuthenticateConfig, FormCache, FormConstants, IdentityInfo, isNullOrEmpty } from "@episerver/forms-sdk";
 import React, { useState } from "react";
 
 interface FormLoginProps{
+    /**
+     * Client Id that's allowed access API
+     */
     clientId: string,
+    /**
+     * Endpoint to get access token
+     */
     authBaseUrl: string,
-    onAuthenticated: (identityInfo: IdentityInfo) => void
+    /**
+     * Callback function when authenticated
+     * @param identityInfo 
+     * @returns 
+     */
+    onAuthenticated?: (identityInfo: IdentityInfo) => void
 }
 
 export const FormLogin = (props: FormLoginProps) => {
@@ -17,18 +28,18 @@ export const FormLogin = (props: FormLoginProps) => {
         grantType: "password",
         authBaseUrl: props.authBaseUrl
     } as FormAuthenticateConfig);
-    const storage = window.sessionStorage;
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!isNullOrEmpty(storage.getItem(FormConstants.FormAccessToken) ?? ""));
+    const formCache = new FormCache();
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!isNullOrEmpty(formCache.get<string>(FormConstants.FormAccessToken)));
 
     const handleChange = (e: any) => {
         setLoginInfo({...loginInfo, [e.target.name]: e.target.value});
     }
 
-    const handleClick = (e:any) => {
+    const handleClick = () => {
         formAuthenticate.login(loginInfo.username, loginInfo.password).then((token) => {
             setIsAuthenticated(true);
-            storage.setItem(FormConstants.FormAccessToken, token);
-            props.onAuthenticated({ username: loginInfo.username, accessToken: token } as IdentityInfo);
+            formCache.set<string>(FormConstants.FormAccessToken, token);
+            props.onAuthenticated && props.onAuthenticated({ username: loginInfo.username, accessToken: token } as IdentityInfo);
         });
     }
 
