@@ -1,4 +1,4 @@
-import { FormContainer, ElementValidationResult, FormValidationResult, initFormState } from "@episerver/forms-sdk";
+import { FormContainer, ElementValidationResult, FormValidationResult, initFormState, IdentityInfo } from "@episerver/forms-sdk";
 import { ActionType } from "./reducer";
 
 export class DispatchFunctions {
@@ -57,6 +57,13 @@ export class DispatchFunctions {
         this._dispatch({
             type: ActionType.UpdateFocusOn,
             focusOn
+        });
+    }
+
+    dispatchUpdateIdentity = (identityInfo?: IdentityInfo) => {
+        this._dispatch({
+            type: ActionType.UpdateIdentityInfo,
+            identityInfo
         });
     }
 }

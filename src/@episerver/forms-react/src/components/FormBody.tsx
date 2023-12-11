@@ -1,10 +1,14 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
-import { FormContainer, FormSubmit, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty } from "@episerver/forms-sdk";
+import { FormContainer, FormSubmit, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 
-export const FormBody = () => {
+interface FormBodyProps {
+    identityInfo?: IdentityInfo
+}
+
+export const FormBody = (props: FormBodyProps) => {
     const formContext = useForms();
     const form = formContext?.formContainer ?? {} as FormContainer;
     const formSubmit = new FormSubmit(formContext?.formContainer ?? {} as FormContainer);
@@ -12,9 +16,9 @@ export const FormBody = () => {
     const dispatchFunctions = new DispatchFunctions(dispatch);
     
     const formTitleId = `${form.key}_label`;
-    const statusDisplay = useRef<string>("hide");
     const stepCount = form.steps.length;
     const statusMessage = useRef<string>("");
+    const statusDisplay = useRef<string>("hide");
     const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations);
 
     //TODO: these variables should be get from api or sdk
@@ -70,6 +74,17 @@ export const FormBody = () => {
         
         formSubmit.doSubmit(formSubmissions);
     }
+
+    useEffect(()=>{
+        dispatchFunctions.dispatchUpdateIdentity(props.identityInfo);
+        if(isNullOrEmpty(props.identityInfo?.accessToken) && !form.properties.allowAnonymousSubmission){
+            statusDisplay.current = "Form__Warning__Message";
+            statusMessage.current = "You must be logged in to submit this form. If you are logged in and still cannot post, make sure \"Do not track\" in your browser settings is disabled.";
+        }
+        else {
+            statusDisplay.current = "hide";
+        }
+    },[props.identityInfo?.accessToken])
 
     return (
         <form method="post" 

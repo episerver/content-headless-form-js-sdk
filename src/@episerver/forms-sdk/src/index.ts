@@ -6,3 +6,5 @@ export * from "./form-validator";
 export * from "./form-depend-conditions";
 export * from "./form-storage";
 export * from "./form-submit";
+export * from "./form-authenticate";
+export * from "./form-cache";

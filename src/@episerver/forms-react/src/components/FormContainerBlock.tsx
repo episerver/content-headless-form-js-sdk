@@ -1,10 +1,11 @@
 import React from "react";
-import { FormContainer, StepBuilder, initFormState } from "@episerver/forms-sdk";
+import { FormContainer, IdentityInfo, StepBuilder, initFormState } from "@episerver/forms-sdk";
 import { FormProvider } from "../context/FormProvider";
 import { FormBody } from "./FormBody";
 
 export interface FormContainerProps {
     form: FormContainer
+    identityInfo?: IdentityInfo
 }
 
 export function FormContainerBlock(props: FormContainerProps){
@@ -15,7 +16,7 @@ export function FormContainerBlock(props: FormContainerProps){
     {/* finally return the form */}
     return (
         <FormProvider initialState={state}>
-            <FormBody />
+            <FormBody identityInfo={props.identityInfo}/>
         </FormProvider>
     )
 }

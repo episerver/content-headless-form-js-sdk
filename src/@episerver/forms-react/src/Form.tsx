@@ -2,6 +2,7 @@ import React from "react";
 import { FormContainerBlock } from "./components/FormContainerBlock";
 import { UseFormLoaderProps, useFormLoader } from "./hooks/useFormLoader";
 import "./Form.scss"
+import { IdentityInfo } from "@episerver/forms-sdk";
 
 interface FormProps {
     /**
@@ -15,15 +16,19 @@ interface FormProps {
     /**
      * The base url of Headless Form API
      */
-    baseUrl?: string
+    baseUrl?: string,
+    /**
+     * Access token for form submit
+     */
+    identityInfo?: IdentityInfo
 }
 
-export const Form = ({formKey, language, baseUrl}: FormProps) => {
+export const Form = ({formKey, language, baseUrl, identityInfo}: FormProps) => {
   const {data: formData } = useFormLoader({ formKey, language, baseUrl } as UseFormLoaderProps)
 
   return (
     <>
-        {formData && <FormContainerBlock form={formData} key={formData.key} />}
+        {formData && <FormContainerBlock form={formData} key={formData.key} identityInfo={identityInfo} />}
     </>
   );
 }

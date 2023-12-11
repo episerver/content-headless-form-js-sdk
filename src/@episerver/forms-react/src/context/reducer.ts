@@ -10,7 +10,8 @@ export enum ActionType {
     ResetForm = "ResetForm",
     ResetedForm = "ResetedForm",
     UpdateAllValidation = "UpdateAllValidation",
-    UpdateFocusOn = "UpdateFocusOn"
+    UpdateFocusOn = "UpdateFocusOn",
+    UpdateIdentityInfo = "UpdateIdentityInfo"
 }
 
 export function formReducer(formState: FormState, action: any) {
@@ -46,7 +47,10 @@ export function formReducer(formState: FormState, action: any) {
         } as FormState;
       }
       case ActionType.ResetForm: {
-        return action.formState;
+        return {
+          ...formState,
+          ...action.formState
+        };
       }
       case ActionType.ResetedForm: {
         return {
@@ -58,6 +62,12 @@ export function formReducer(formState: FormState, action: any) {
         return {
           ...formState,
           focusOn: action.focusOn
+        } as FormState;
+      }
+      case ActionType.UpdateIdentityInfo: {
+        return {
+          ...formState,
+          identityInfo: action.identityInfo
         } as FormState;
       }
       default: {

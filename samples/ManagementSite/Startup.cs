@@ -16,6 +16,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Optimizely.Headless.Form.DependencyInjection;
 using Optimizely.Headless.Form;
+using EPiServer.OpenIDConnect;
+using System;
+using static OpenIddict.Abstractions.OpenIddictConstants;
+using Microsoft.Extensions.Options;
+using OpenIddict.Server;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Alloy.ManagementSite
 {
@@ -24,6 +31,9 @@ namespace Alloy.ManagementSite
         private readonly IWebHostEnvironment _environment;
         private readonly IConfiguration _configuration;
         private readonly string _allowedOrigins = "_allowedOrigins";
+        private const string TestClientId = "TestClient";
+        private const string TestClientSecret = "TestClientSecret";
+        private const string ClientEndpoint = "http://localhost:8082";
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
@@ -91,6 +101,28 @@ namespace Alloy.ManagementSite
                 });
             });
 
+            services.AddOpenIDConnect<ApplicationUser>(
+               useDevelopmentCertificate: true,
+               signingCertificate: null,
+               encryptionCertificate: null,
+               createSchema: true,
+               options =>
+               {
+                   options.AllowResourceOwnerPasswordFlow = true;
+                   options.AccessTokenLifetime = TimeSpan.FromHours(24);
+                   options.RequireHttps = false;
+                   options.Applications.Add(new OpenIDConnectApplication
+                   {
+                       ClientId = TestClientId,
+                       Scopes =
+                       {
+                            Scopes.OpenId,
+                       },
+                   });
+               });
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<HeadlessFormServiceOptions>, HeadlessFormServiceOptionsPostConfigure>());
+
             // Register the Optimizely Headless Form API Services
             services.AddOptimizelyHeadlessFormService(options =>
             {
@@ -100,6 +132,10 @@ namespace Alloy.ManagementSite
                     AllowOrigins = new string[] { "http://localhost:3000" }, //Enter '*' to allow any origins, multiple origins separate by comma
                     AllowCredentials = true
                 };
+                options.OpenIDConnectClients.Add(new()
+                {
+                    Authority = ClientEndpoint
+                });
             });
         }
 
@@ -120,6 +156,27 @@ namespace Alloy.ManagementSite
             {
                 endpoints.MapContent();
             });
+        }
+    }
+
+    public class HeadlessFormServiceOptionsPostConfigure : IPostConfigureOptions<HeadlessFormServiceOptions>
+    {
+        private readonly OpenIddictServerOptions _options;
+
+        public HeadlessFormServiceOptionsPostConfigure(IOptions<OpenIddictServerOptions> options)
+        {
+            _options = options.Value;
+        }
+
+        public void PostConfigure(string name, HeadlessFormServiceOptions options)
+        {
+            foreach (var client in options.OpenIDConnectClients)
+            {
+                foreach (var key in _options.EncryptionCredentials.Select(c => c.Key))
+                {
+                    client.EncryptionKeys.Add(key);
+                }
+            }
         }
     }
 }
