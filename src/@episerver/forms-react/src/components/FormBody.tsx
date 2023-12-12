@@ -102,12 +102,12 @@ export const FormBody = (props: FormBodyProps) => {
 
         formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
             if(response.success){
-                message.current = "The form has been submitted successfully.";
+                message.current = response.messages.map(m => m.message).join("<br>");
             }
             else {
                 submissionWarning.current = true;
                 //ignore validation message
-                message.current = response.errors.filter(e => isNullOrEmpty(e.identifier)).map(e => e.message).join("<br>");
+                message.current = response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>");
             }
             validateFail.current = response.validationFail;
             isFormFinalized.current = isSuccess.current = response.success;

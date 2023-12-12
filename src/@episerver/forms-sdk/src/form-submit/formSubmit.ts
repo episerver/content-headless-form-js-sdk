@@ -49,12 +49,12 @@ export interface FormSubmitResult {
      */
     validationFail: boolean;
     /**
-     * List of error messages from the form submission.
+     * List of messages from the form submission.
      */
-    errors: FormSubmitError[];
+    messages: FormSubmitMessage[];
 }
 
-export interface FormSubmitError {
+export interface FormSubmitMessage {
     /**
      * The section where the message originated from.
      */
