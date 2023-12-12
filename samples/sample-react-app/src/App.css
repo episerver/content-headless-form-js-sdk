@@ -14,6 +14,11 @@
   text-align: center;
 }
 
+.main { display: flex; }
+.left { flex-grow: 1; }
+.right { flex-grow: 1; }
+.hide { display: none; }
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

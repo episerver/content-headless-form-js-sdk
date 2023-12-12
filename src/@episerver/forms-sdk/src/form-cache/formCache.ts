@@ -27,7 +27,12 @@ export class FormCache{
 
     set<T>(key: string, data: T): T{
         try { // safari private mode does not allow local storage
-            this._storage.setItem(key, JSON.stringify(data));
+            if(typeof data === "object"){
+                this._storage.setItem(key, JSON.stringify(data));
+            }
+            else {
+                this._storage.setItem(key, data as string);
+            }
         } catch (e: any) {
             console.log("Local Storage not supported: " + e.message);
         }
