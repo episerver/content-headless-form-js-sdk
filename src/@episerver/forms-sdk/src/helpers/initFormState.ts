@@ -44,7 +44,7 @@ export function initFormState(formContainer: FormContainer): FormState{
     }
 
     return {
-        isReset: false, focusOn: "", dependencyInactiveElements: [], 
+        isReset: false, focusOn: "", dependencyInactiveElements: [], currentStepIndex: 0,
         formSubmissions, formValidationResults, stepDependencies, formContainer
     } as FormState;
 }

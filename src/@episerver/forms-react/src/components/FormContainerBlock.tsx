@@ -4,8 +4,9 @@ import { FormProvider } from "../context/FormProvider";
 import { FormBody } from "./FormBody";
 
 export interface FormContainerProps {
-    form: FormContainer
-    identityInfo?: IdentityInfo
+    form: FormContainer;
+    identityInfo?: IdentityInfo;
+    baseUrl: string;
 }
 
 export function FormContainerBlock(props: FormContainerProps){
@@ -16,7 +17,7 @@ export function FormContainerBlock(props: FormContainerProps){
     {/* finally return the form */}
     return (
         <FormProvider initialState={state}>
-            <FormBody identityInfo={props.identityInfo}/>
+            <FormBody identityInfo={props.identityInfo} baseUrl={props.baseUrl}/>
         </FormProvider>
     )
 }

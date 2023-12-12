@@ -16,4 +16,6 @@ export interface FormState {
     dependencyInactiveElements: string[]
     focusOn: string,
     identityInfo?: IdentityInfo
+    submissionKey?: string
+    currentStepIndex: number
 }

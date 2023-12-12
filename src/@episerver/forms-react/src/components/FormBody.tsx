@@ -1,17 +1,18 @@
 import React, { useEffect, useRef } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
-import { FormContainer, FormSubmit, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty } from "@episerver/forms-sdk";
+import { FormContainer, FormSubmitter, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 
 interface FormBodyProps {
-    identityInfo?: IdentityInfo
+    identityInfo?: IdentityInfo;
+    baseUrl: string;
 }
 
 export const FormBody = (props: FormBodyProps) => {
     const formContext = useForms();
     const form = formContext?.formContainer ?? {} as FormContainer;
-    const formSubmit = new FormSubmit(formContext?.formContainer ?? {} as FormContainer);
+    const formSubmitter = new FormSubmitter(formContext?.formContainer ?? {} as FormContainer, props.baseUrl);
     const dispatch = useFormsDispatch();
     const dispatchFunctions = new DispatchFunctions(dispatch);
     
@@ -22,31 +23,31 @@ export const FormBody = (props: FormBodyProps) => {
     const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations);
 
     //TODO: these variables should be get from api or sdk
-    const validateFail = false,
-    formFinalized = false,
-    isProgressiveSubmit = false,
-    isSuccess = false,
+    const validateFail = useRef<boolean>(false),
+    isFormFinalized = useRef<boolean>(false),
+    isProgressiveSubmit = useRef<boolean>(false),
+    isSuccess = useRef<boolean>(false),
     submittable = true,
-    submissionWarning = false,
-    message = "",
+    submissionWarning = useRef<boolean>(false),
+    message = useRef<string>(""),
     isReadOnlyMode = false,
     readOnlyModeMessage = "",
-    currentStepIndex = 0,
+    currentStepIndex = formContext?.currentStepIndex ?? 0,
     isStepValidToDisplay = true;
 
-    if(formFinalized || isProgressiveSubmit)
+    if(isSuccess.current && isFormFinalized.current)
     {
         statusDisplay.current = "Form__Success__Message";
-        statusMessage.current = form.properties.submitSuccessMessage ?? message;
+        statusMessage.current = form.properties.submitSuccessMessage ?? message.current;
     }
-    else if((submissionWarning || (!submittable && !isSuccess)) 
-        && message)
+    else if((submissionWarning.current || (!submittable && !isSuccess.current)) 
+        && !isNullOrEmpty(message.current))
     {
         statusDisplay.current = "Form__Warning__Message";
-        statusMessage.current = message;
+        statusMessage.current = message.current;
     }
-    const validationCssClass = validateFail ? "ValidationFail" : "ValidationSuccess";
-    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !formFinalized;
+    const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
+    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized;
     const prevButtonDisableState = (currentStepIndex == 0) || !submittable;
     const nextButtonDisableState = (currentStepIndex == stepCount - 1) || !submittable;
     const currentDisplayStepIndex = currentStepIndex + 1;
@@ -55,11 +56,27 @@ export const FormBody = (props: FormBodyProps) => {
     const handleSubmit = (e: any) => {
         e.preventDefault();
         
+        if(!form.properties.allowAnonymousSubmission && isNullOrEmpty(formContext?.identityInfo?.accessToken)){
+            return;
+        }
+
+        //Find submit button, if found then check property 'finalizeForm' of submit button. Otherwise, button Next/Previous was clicked.
+        let buttonId = e.nativeEvent.submitter.id;
+        let submitButton = form.formElements.filter(fe => fe.key === buttonId)[0] as SubmitButton;
+        if(!isNull(submitButton)){
+            //when submitting by SubmitButton, isProgressiveSubmit default is true
+            isProgressiveSubmit.current = true;
+        }
+        
+        isFormFinalized.current = submitButton?.properties?.finalizeForm || formContext?.currentStepIndex === form.steps.length - 1;
+
+        //remove submissions of inactive elements and submissions with undefined value
         let formSubmissions = (formContext?.formSubmissions ?? [])
                                 //only post value of active elements
-                                .filter(fs => !isInArray(fs.elementKey, formContext?.dependencyInactiveElements ?? []));
+                                .filter(fs => !isInArray(fs.elementKey, formContext?.dependencyInactiveElements ?? []) && !isNull(fs.value));
+
         //validate all submission data before submit
-        let formValidationResults = formSubmit.doValidate(formSubmissions);
+        let formValidationResults = formSubmitter.doValidate(formSubmissions);
         dispatchFunctions.dispatchUpdateAllValidation(formValidationResults);
         
         //set focus on the 1st invalid element of current step
@@ -69,10 +86,33 @@ export const FormBody = (props: FormBodyProps) => {
             )[0]?.elementKey;
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.dispatchFocusOn(invalid);
+            isFormFinalized.current = false;
             return;
         }
         
-        formSubmit.doSubmit(formSubmissions);
+        let model: FormSubmitModel = {
+            formKey: form.key,
+            locale: form.locale,
+            isFinalized: isFormFinalized.current,
+            partialSubmissionKey: formContext?.submissionKey ?? "",
+            hostedPageUrl: window.location.pathname,
+            submissionData: formSubmissions,
+            accessToken: formContext?.identityInfo?.accessToken
+        }
+
+        formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
+            if(response.success){
+                message.current = "The form has been submitted successfully.";
+            }
+            else {
+                submissionWarning.current = true;
+                //ignore validation message
+                message.current = response.errors.filter(e => isNullOrEmpty(e.identifier)).map(e => e.message).join("<br>");
+            }
+            validateFail.current = response.validationFail;
+            isFormFinalized.current = isSuccess.current = response.success;
+            dispatchFunctions.dispatchUpdateSubmissionKey(response.submissionKey);
+        });
     }
 
     useEffect(()=>{
@@ -82,9 +122,10 @@ export const FormBody = (props: FormBodyProps) => {
             statusMessage.current = "You must be logged in to submit this form. If you are logged in and still cannot post, make sure \"Do not track\" in your browser settings is disabled.";
         }
         else {
+            statusMessage.current = "";
             statusDisplay.current = "hide";
         }
-    },[props.identityInfo?.accessToken])
+    },[props.identityInfo?.accessToken]);
 
     return (
         <form method="post" 
@@ -125,7 +166,7 @@ export const FormBody = (props: FormBodyProps) => {
             <div className="Form__MainBody">
                 {/* render element */}
                 {form.steps.map((e, i)=>{
-                    let stepDisplaying = (currentStepIndex === i && !formFinalized && isStepValidToDisplay) ? "" : "hide";
+                    let stepDisplaying = (currentStepIndex === i && !isFormFinalized.current && isStepValidToDisplay) ? "" : "hide";
                     return (
                         <section key={e.formStep.key} id={e.formStep.key} className={`Form__Element__Step ${stepDisplaying}`}>
                             <RenderElementInStep elements={e.elements} stepIndex={i} />

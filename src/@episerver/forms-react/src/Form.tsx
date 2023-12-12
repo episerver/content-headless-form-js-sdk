@@ -16,7 +16,7 @@ interface FormProps {
     /**
      * The base url of Headless Form API
      */
-    baseUrl?: string,
+    baseUrl: string,
     /**
      * Access token for form submit
      */
@@ -28,7 +28,7 @@ export const Form = ({formKey, language, baseUrl, identityInfo}: FormProps) => {
 
   return (
     <>
-        {formData && <FormContainerBlock form={formData} key={formData.key} identityInfo={identityInfo} />}
+        {formData && <FormContainerBlock form={formData} key={formData.key} identityInfo={identityInfo} baseUrl={baseUrl} />}
     </>
   );
 }

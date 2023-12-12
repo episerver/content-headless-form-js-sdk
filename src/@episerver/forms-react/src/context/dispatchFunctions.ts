@@ -66,4 +66,18 @@ export class DispatchFunctions {
             identityInfo
         });
     }
+
+    dispatchUpdateSubmissionKey = (submissionKey?: string) => {
+        this._dispatch({
+            type: ActionType.UpdateSubmissionKey,
+            submissionKey
+        });
+    }
+
+    dispatchUpdateCurrentStepIndex = (currentStepIndex?: number) => {
+        this._dispatch({
+            type: ActionType.UpdateCurrentStepIndex,
+            currentStepIndex
+        });
+    }
 }

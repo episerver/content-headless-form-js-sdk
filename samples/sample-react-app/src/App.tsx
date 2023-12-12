@@ -36,7 +36,7 @@ function App() {
                 key={c.reference.key}
                 formKey={c.reference.key} 
                 language={language ?? "en"}
-                baseUrl={process.env.REACT_APP_HEADLESS_FORM_BASE_URL}
+                baseUrl={process.env.REACT_APP_HEADLESS_FORM_BASE_URL ?? "/"}
                 identityInfo={identityInfo}/>
             ))}
           </>
