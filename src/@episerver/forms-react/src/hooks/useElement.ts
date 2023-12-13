@@ -72,7 +72,7 @@ export const useElement = (element: FormElementBase) => {
     useEffect(()=>{
         if(formContext?.isReset){
             //update form state
-            dispatchFuncs.dispatchResetedForm();
+            dispatchFuncs.resetedForm();
         }
     },[formContext?.isReset]);
 
@@ -103,7 +103,7 @@ export const useElement = (element: FormElementBase) => {
         else {
             !isInArray(element.key, inactives) && inactives.push(element.key);
         }
-        dispatchFuncs.dispatchUpdateDependencies(inactives);
+        dispatchFuncs.updateDependencies(inactives);
     },[formContext?.formSubmissions]);
 
     //focus on element if validate fail before submitting
@@ -111,9 +111,16 @@ export const useElement = (element: FormElementBase) => {
         let focusOn = formContext?.focusOn ?? "";
         if(equals(focusOn, element.key)){
             elementRef.current && elementRef.current.focus();
-            dispatchFuncs.dispatchFocusOn("");
+            dispatchFuncs.updateFocusOn("");
         }
     },[formContext?.focusOn]);
+
+    //disable submit button when form submitting
+    useEffect(()=>{
+        if(equals(element.contentType, "SubmitButtonElementBlock")){
+            elementRef.current.disabled = formContext?.isSubmitting ?? false;
+        }
+    },[formContext?.isSubmitting])
 
     const handleChange = (e: any) => {
         const { name, value: inputValue, type, checked, files } = e.target;
@@ -138,11 +145,11 @@ export const useElement = (element: FormElementBase) => {
         if (/file/.test(type)) {
             submissionValue = files;
             let validationResults = formValidation.validate(files)
-            dispatchFuncs.dispatchUpdateValidation(element.key, validationResults);
+            dispatchFuncs.updateValidation(element.key, validationResults);
         }
 
         //update form context
-        dispatchFuncs.dispatchUpdateValue(element.key, submissionValue);
+        dispatchFuncs.updateValue(element.key, submissionValue);
     }
 
     const handleBlur = (e: any) => {
@@ -150,11 +157,11 @@ export const useElement = (element: FormElementBase) => {
         let validationResults = formValidation.validate(value);
 
         //update form context
-        dispatchFuncs.dispatchUpdateValidation(element.key, validationResults);
+        dispatchFuncs.updateValidation(element.key, validationResults);
     }
 
     const handleReset = () => {
-        dispatchFuncs.dispatchResetForm(formContext?.formContainer ?? {} as FormContainer);
+        dispatchFuncs.resetForm(formContext?.formContainer ?? {} as FormContainer);
     }
 
     return { 

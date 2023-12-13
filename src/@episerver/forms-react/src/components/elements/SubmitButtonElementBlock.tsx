@@ -1,7 +1,6 @@
 import { SubmitButton, isNullOrEmpty } from "@episerver/forms-sdk";
 import React, { useMemo } from "react";
 import { useElement } from "../../hooks/useElement";
-import ElementWrapper from "./shared/ElementWrapper";
 
 interface SubmitButtonElementBlockProps{
     element: SubmitButton
@@ -10,7 +9,7 @@ interface SubmitButtonElementBlockProps{
 export const SubmitButtonElementBlock = (props: SubmitButtonElementBlockProps) => {
     const { element } = props;
     const { elementContext } = useElement(element);
-    const { isVisible, extraAttr, validatorClasses } = elementContext;
+    const { isVisible, extraAttr, validatorClasses, elementRef } = elementContext;
     //TODO: Need to get submittable status from API
     const buttonDisableState = false;
 
@@ -25,6 +24,7 @@ export const SubmitButtonElementBlock = (props: SubmitButtonElementBlockProps) =
                 ? `Form__Element FormExcludeDataRebind FormSubmitButton ${validatorClasses}` 
                 : `Form__Element FormExcludeDataRebind FormSubmitButton FormImageSubmitButton ${validatorClasses}`
             }
+            ref={elementRef}
         >
             {isNullOrEmpty(element.properties.image) ? element.properties.label : (
                 <img src={element.properties.image} alt={element.properties.label} />

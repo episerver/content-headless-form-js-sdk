@@ -7,7 +7,7 @@ export class DispatchFunctions {
         this._dispatch = dispatch;
     }
 
-    dispatchUpdateValidation = (elementKey: string, validationResults: ElementValidationResult[]) => {
+    updateValidation = (elementKey: string, validationResults: ElementValidationResult[]) => {
         this._dispatch({
             type: ActionType.UpdateValidation,
             elementKey: elementKey,
@@ -15,14 +15,14 @@ export class DispatchFunctions {
         });
     }
 
-    dispatchUpdateAllValidation = (formValidationResults: FormValidationResult[]) => {
+    updateAllValidation = (formValidationResults: FormValidationResult[]) => {
         this._dispatch({
             type: ActionType.UpdateAllValidation,
             formValidationResults
         });
     }
 
-    dispatchUpdateValue = (elementKey: string, value: any) => {
+    updateValue = (elementKey: string, value: any) => {
         this._dispatch({
             type: ActionType.UpdateValue,
             elementKey: elementKey,
@@ -30,20 +30,20 @@ export class DispatchFunctions {
         });
     }
 
-    dispatchUpdateDependencies = (dependencyInactiveElements: string[]) => {
+    updateDependencies = (dependencyInactiveElements: string[]) => {
         this._dispatch({
             type: ActionType.UpdateDependencies,
             dependencyInactiveElements
         });
     }
 
-    dispatchResetedForm = () => {
+    resetedForm = () => {
         this._dispatch({
             type: ActionType.ResetedForm
         });
     }
 
-    dispatchResetForm = (formContainer: FormContainer) => {
+    resetForm = (formContainer: FormContainer) => {
         this._dispatch({
             type: ActionType.ResetForm,
             formState: {
@@ -53,31 +53,38 @@ export class DispatchFunctions {
         });
     }
 
-    dispatchFocusOn = (focusOn: string) => {
+    updateFocusOn = (focusOn: string) => {
         this._dispatch({
             type: ActionType.UpdateFocusOn,
             focusOn
         });
     }
 
-    dispatchUpdateIdentity = (identityInfo?: IdentityInfo) => {
+    updateIdentity = (identityInfo?: IdentityInfo) => {
         this._dispatch({
             type: ActionType.UpdateIdentityInfo,
             identityInfo
         });
     }
 
-    dispatchUpdateSubmissionKey = (submissionKey?: string) => {
+    updateSubmissionKey = (submissionKey?: string) => {
         this._dispatch({
             type: ActionType.UpdateSubmissionKey,
             submissionKey
         });
     }
 
-    dispatchUpdateCurrentStepIndex = (currentStepIndex?: number) => {
+    updateCurrentStepIndex = (currentStepIndex?: number) => {
         this._dispatch({
             type: ActionType.UpdateCurrentStepIndex,
             currentStepIndex
+        });
+    }
+
+    updateIsSubmitting = (isSubmitting?: boolean) => {
+        this._dispatch({
+            type: ActionType.UpdateIsSubmitting,
+            isSubmitting
         });
     }
 }
