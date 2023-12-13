@@ -1,1 +1,2 @@
-export * from "./stepBuilder"
+export * from "./stepBuilder";
+export * from "./stepDependCondition";

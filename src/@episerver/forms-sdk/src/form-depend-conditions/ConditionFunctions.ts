@@ -2,7 +2,7 @@ import { isNull, isNullOrEmpty } from "../helpers";
 import { getConcatString } from "../helpers/dependencyHelper";
 import { ConditionFunctionType } from "../models";
 
-export type ConditionFunctionRecord = Record<string, (actualValue: Object, patternOfExpected: string) => boolean>;
+export type ConditionFunctionRecord = Record<string, (actualValue: any, patternOfExpected: string) => boolean>;
 
 export const ConditionFunctions: ConditionFunctionRecord = {
     [ConditionFunctionType.Contains]: Contains,
@@ -17,7 +17,7 @@ export const ConditionFunctions: ConditionFunctionRecord = {
  * @param dependencyFieldValue 
  * @returns 
  */
-function Equals(actualValue: Object, dependencyFieldValue: string): boolean {
+function Equals(actualValue: any, dependencyFieldValue: string): boolean {
     const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
     dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toLocaleUpperCase();
     return _actualValue === dependencyFieldValue;
@@ -28,7 +28,7 @@ function Equals(actualValue: Object, dependencyFieldValue: string): boolean {
  * @param dependencyFieldValue 
  * @returns 
 */
-function NotEquals(actualValue: Object, dependencyFieldValue: string): boolean {
+function NotEquals(actualValue: any, dependencyFieldValue: string): boolean {
     const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
     dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toLocaleUpperCase();
     return _actualValue !== dependencyFieldValue;
@@ -39,7 +39,7 @@ function NotEquals(actualValue: Object, dependencyFieldValue: string): boolean {
  * @param dependencyFieldValue 
  * @returns 
  */
-function Contains(actualValue: Object, dependencyFieldValue: string): boolean {
+function Contains(actualValue: any, dependencyFieldValue: string): boolean {
     const _actualValue = isNull(actualValue) ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
     dependencyFieldValue = !dependencyFieldValue ? "" : dependencyFieldValue.toLocaleUpperCase();
     return _actualValue.indexOf(dependencyFieldValue) >= 0;
@@ -50,7 +50,7 @@ function Contains(actualValue: Object, dependencyFieldValue: string): boolean {
  * @param dependencyFieldValue 
  * @returns 
  */
-function NotContains(actualValue: Object, dependencyFieldValue: string): boolean {
+function NotContains(actualValue: any, dependencyFieldValue: string): boolean {
     const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",").toLocaleUpperCase();
     const actualValueNull = isNullOrEmpty(_actualValue)
     const dependencyFieldValueNull = isNullOrEmpty(dependencyFieldValue)
@@ -64,7 +64,7 @@ function NotContains(actualValue: Object, dependencyFieldValue: string): boolean
  * @param patternOfExpected 
  * @returns 
  */
-function MatchRegularExpression(actualValue: Object, patternOfExpected: string): boolean {
+function MatchRegularExpression(actualValue: any, patternOfExpected: string): boolean {
     var regex = new RegExp(patternOfExpected, "igm");
     const _actualValue = !actualValue ? "" : getConcatString(actualValue, ",");
     return isNullOrEmpty(patternOfExpected) || (!isNullOrEmpty(patternOfExpected) && regex.test(_actualValue));
