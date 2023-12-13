@@ -18,4 +18,5 @@ export interface FormState {
     identityInfo?: IdentityInfo
     submissionKey?: string
     currentStepIndex: number
+    isSubmitting?: boolean
 }

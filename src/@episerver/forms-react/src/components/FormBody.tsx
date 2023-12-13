@@ -68,8 +68,6 @@ export const FormBody = (props: FormBodyProps) => {
             isProgressiveSubmit.current = true;
         }
         
-        isFormFinalized.current = submitButton?.properties?.finalizeForm || formContext?.currentStepIndex === form.steps.length - 1;
-
         //remove submissions of inactive elements and submissions with undefined value
         let formSubmissions = (formContext?.formSubmissions ?? [])
                                 //only post value of active elements
@@ -77,7 +75,7 @@ export const FormBody = (props: FormBodyProps) => {
 
         //validate all submission data before submit
         let formValidationResults = formSubmitter.doValidate(formSubmissions);
-        dispatchFunctions.dispatchUpdateAllValidation(formValidationResults);
+        dispatchFunctions.updateAllValidation(formValidationResults);
         
         //set focus on the 1st invalid element of current step
         let invalid = formValidationResults.filter(fv => 
@@ -85,7 +83,7 @@ export const FormBody = (props: FormBodyProps) => {
                 form.steps[currentStepIndex]?.elements?.some(e => equals(e.key, fv.elementKey))
             )[0]?.elementKey;
         if(!isNullOrEmpty(invalid)){
-            dispatchFunctions.dispatchFocusOn(invalid);
+            dispatchFunctions.updateFocusOn(invalid);
             isFormFinalized.current = false;
             return;
         }
@@ -93,12 +91,14 @@ export const FormBody = (props: FormBodyProps) => {
         let model: FormSubmitModel = {
             formKey: form.key,
             locale: form.locale,
-            isFinalized: isFormFinalized.current,
+            isFinalized: submitButton?.properties?.finalizeForm || formContext?.currentStepIndex === form.steps.length - 1,
             partialSubmissionKey: formContext?.submissionKey ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
             accessToken: formContext?.identityInfo?.accessToken
         }
+
+        dispatchFunctions.updateIsSubmitting(true);
 
         formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
             if(response.success){
@@ -111,12 +111,13 @@ export const FormBody = (props: FormBodyProps) => {
             }
             validateFail.current = response.validationFail;
             isFormFinalized.current = isSuccess.current = response.success;
-            dispatchFunctions.dispatchUpdateSubmissionKey(response.submissionKey);
+            dispatchFunctions.updateSubmissionKey(response.submissionKey);
+            dispatchFunctions.updateIsSubmitting(false);
         });
     }
 
     useEffect(()=>{
-        dispatchFunctions.dispatchUpdateIdentity(props.identityInfo);
+        dispatchFunctions.updateIdentity(props.identityInfo);
         if(isNullOrEmpty(props.identityInfo?.accessToken) && !form.properties.allowAnonymousSubmission){
             statusDisplay.current = "Form__Warning__Message";
             statusMessage.current = "You must be logged in to submit this form. If you are logged in and still cannot post, make sure \"Do not track\" in your browser settings is disabled.";
