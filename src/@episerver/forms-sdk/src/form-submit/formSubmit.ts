@@ -140,8 +140,12 @@ export class FormSubmitter {
             fetch(`${this._baseUrl}${ApiConstant.apiEndpoint}`, requestInit)
                 .then(async (response: Response) => {
                     if(response.ok){
-                        let json = await response.json();
-                        resolve(json as FormSubmitResult);
+                        let result = (await response.json()) as FormSubmitResult;
+                        if(result.success && model.isFinalized){
+                            //clear cache of form submission
+                            formStorage.removeFormDataInStorage();
+                        }
+                        resolve(result);
                     }
                     else {
                         reject(response);
