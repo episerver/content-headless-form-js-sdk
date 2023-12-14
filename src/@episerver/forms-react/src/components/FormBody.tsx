@@ -36,7 +36,8 @@ export const FormBody = (props: FormBodyProps) => {
         currentStepIndex = formContext?.currentStepIndex ?? 0,
         isStepValidToDisplay = true;
 
-    if (isSuccess.current && isFormFinalized.current) {
+    if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
+        {
         statusDisplay.current = "Form__Success__Message";
         statusMessage.current = form.properties.submitSuccessMessage ?? message.current;
     }
@@ -45,6 +46,7 @@ export const FormBody = (props: FormBodyProps) => {
         statusDisplay.current = "Form__Warning__Message";
         statusMessage.current = message.current;
     }
+    
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
 
     const handleSubmit = (e: any) => {
@@ -102,7 +104,8 @@ export const FormBody = (props: FormBodyProps) => {
                 message.current = response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>");
             }
             validateFail.current = response.validationFail;
-            isFormFinalized.current = isSuccess.current = response.success;
+            isSuccess.current = response.success;
+            isFormFinalized.current = formContext?.currentStepIndex === form.steps.length - 1 && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             dispatchFunctions.updateIsSubmitting(false);
         });
