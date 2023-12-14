@@ -7,6 +7,7 @@ export interface FormContainerProps {
     form: FormContainer;
     identityInfo?: IdentityInfo;
     baseUrl: string;
+    history?: any;
 }
 
 export function FormContainerBlock(props: FormContainerProps){
@@ -17,7 +18,7 @@ export function FormContainerBlock(props: FormContainerProps){
     {/* finally return the form */}
     return (
         <FormProvider initialState={state}>
-            <FormBody identityInfo={props.identityInfo} baseUrl={props.baseUrl}/>
+            <FormBody identityInfo={props.identityInfo} baseUrl={props.baseUrl} history={props.history}/>
         </FormProvider>
     )
 }

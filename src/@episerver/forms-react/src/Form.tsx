@@ -21,14 +21,16 @@ interface FormProps {
      * Access token for form submit
      */
     identityInfo?: IdentityInfo
+
+    history? : any
 }
 
-export const Form = ({formKey, language, baseUrl, identityInfo}: FormProps) => {
+export const Form = ({formKey, language, baseUrl, identityInfo, history}: FormProps) => {
   const {data: formData } = useFormLoader({ formKey, language, baseUrl } as UseFormLoaderProps)
 
   return (
     <>
-        {formData && <FormContainerBlock form={formData} key={formData.key} identityInfo={identityInfo} baseUrl={baseUrl} />}
+        {formData && <FormContainerBlock form={formData} key={formData.key} identityInfo={identityInfo} baseUrl={baseUrl} history={history}/>}
     </>
   );
 }

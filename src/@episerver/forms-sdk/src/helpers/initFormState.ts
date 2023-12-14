@@ -1,5 +1,6 @@
+import { FormCache } from "../form-cache";
 import { FormStorage } from "../form-storage";
-import { ElementValidationResult, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies, ValidatableElementBaseProperties } from "../models";
+import { ElementValidationResult, FormConstants, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies, ValidatableElementBaseProperties } from "../models";
 import { getDefaultValue } from "./elementHelper";
 import { isNull } from "./utils";
 
@@ -8,10 +9,11 @@ import { isNull } from "./utils";
  * @param formContainer A form container
  * @returns An object of FormState
  */
-export function initFormState(formContainer: FormContainer): FormState{
+export function initFormState(formContainer: FormContainer): FormState {
     const formStorage = new FormStorage(formContainer);
     const formData = formStorage.loadFormDataFromStorage();
-    
+    const formCache = new FormCache()
+
     let formSubmissions = [] as FormSubmission[];
     let formValidationResults = [] as FormValidationResult[];
     let stepDependencies = [] as StepDependencies[];
@@ -26,25 +28,30 @@ export function initFormState(formContainer: FormContainer): FormState{
             let elementValidationResults = [] as ElementValidationResult[];
 
             //some elements don't have validator
-            if(!isNull(validatableProps.validators))
-            {
+            if (!isNull(validatableProps.validators)) {
                 validatableProps.validators.forEach(v => {
-                    elementValidationResults = elementValidationResults.concat({type: v.type, valid: true}); //default valid = true to hide message
+                    elementValidationResults = elementValidationResults.concat({ type: v.type, valid: true }); //default valid = true to hide message
                 });
             }
 
-            formValidationResults = formValidationResults.concat({elementKey: e.key, results: elementValidationResults});
+            formValidationResults = formValidationResults.concat({ elementKey: e.key, results: elementValidationResults });
         });
-        stepDependencies = stepDependencies.concat({elementKey: s.formStep.key, isSatisfied: false });
+        stepDependencies = stepDependencies.concat({ elementKey: s.formStep.key, isSatisfied: false });
     });
 
     //binding the elements with stored input value between Next/Prev navigation
-    if(formData.length > 0){
+    if (formData.length > 0) {
         formSubmissions = formData;
     }
 
     return {
-        isReset: false, focusOn: "", dependencyInactiveElements: [], currentStepIndex: 0,
-        formSubmissions, formValidationResults, stepDependencies, formContainer
+        isReset: false,
+        focusOn: "",
+        dependencyInactiveElements: [],
+        currentStepIndex: parseInt(formCache.get(FormConstants.FormCurrentStep + formContainer.key) ?? "0"),
+        formSubmissions,
+        formValidationResults,
+        stepDependencies,
+        formContainer
     } as FormState;
 }
