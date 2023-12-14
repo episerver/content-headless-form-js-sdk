@@ -35,7 +35,7 @@ export const FormBody = (props: FormBodyProps) => {
     currentStepIndex = formContext?.currentStepIndex ?? 0,
     isStepValidToDisplay = true;
 
-    if(isSuccess.current && isFormFinalized.current)
+    if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
     {
         statusDisplay.current = "Form__Success__Message";
         statusMessage.current = form.properties.submitSuccessMessage ?? message.current;
@@ -47,7 +47,7 @@ export const FormBody = (props: FormBodyProps) => {
         statusMessage.current = message.current;
     }
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
-    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized;
+    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized.current;
     const prevButtonDisableState = (currentStepIndex == 0) || !submittable;
     const nextButtonDisableState = (currentStepIndex == stepCount - 1) || !submittable;
     const currentDisplayStepIndex = currentStepIndex + 1;
@@ -64,7 +64,7 @@ export const FormBody = (props: FormBodyProps) => {
         let buttonId = e.nativeEvent.submitter.id;
         let submitButton = form.formElements.filter(fe => fe.key === buttonId)[0] as SubmitButton;
         if(!isNull(submitButton)){
-            //when submitting by SubmitButton, isProgressiveSubmit default is true
+            //when submitting by SubmitButton, then isProgressiveSubmit is true
             isProgressiveSubmit.current = true;
         }
         
@@ -84,7 +84,6 @@ export const FormBody = (props: FormBodyProps) => {
             )[0]?.elementKey;
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
-            isFormFinalized.current = false;
             return;
         }
         
@@ -109,6 +108,8 @@ export const FormBody = (props: FormBodyProps) => {
                 //ignore validation message
                 message.current = response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>");
             }
+
+           
             validateFail.current = response.validationFail;
             isFormFinalized.current = isSuccess.current = response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
