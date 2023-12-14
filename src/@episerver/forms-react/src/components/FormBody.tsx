@@ -46,10 +46,11 @@ export const FormBody = (props: FormBodyProps) => {
         statusDisplay.current = "Form__Warning__Message";
         statusMessage.current = message.current;
     }
+    const isLastStep = currentStepIndex == stepCount - 1;
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
     const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized.current;
     const prevButtonDisableState = (currentStepIndex == 0) || !submittable;
-    const nextButtonDisableState = (currentStepIndex == stepCount - 1) || !submittable;
+    const nextButtonDisableState = isLastStep || !submittable;
     const currentDisplayStepIndex = currentStepIndex + 1;
     const progressWidth = (100 * currentDisplayStepIndex / stepCount) + "%";
 
@@ -90,7 +91,7 @@ export const FormBody = (props: FormBodyProps) => {
         let model: FormSubmitModel = {
             formKey: form.key,
             locale: form.locale,
-            isFinalized: submitButton?.properties?.finalizeForm || formContext?.currentStepIndex === form.steps.length - 1,
+            isFinalized: submitButton?.properties?.finalizeForm || isLastStep,
             partialSubmissionKey: formContext?.submissionKey ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
@@ -111,7 +112,8 @@ export const FormBody = (props: FormBodyProps) => {
 
            
             validateFail.current = response.validationFail;
-            isFormFinalized.current = isSuccess.current = response.success;
+            isSuccess.current = response.success;
+            isFormFinalized.current = isLastStep && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             dispatchFunctions.updateIsSubmitting(false);
         });
