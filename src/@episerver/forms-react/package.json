@@ -18,9 +18,7 @@
   },
   "keywords": [],
   "dependencies": {
-    "@episerver/forms-sdk": "file:../forms-sdk",
-    "@types/react-router-dom": "^5.3.3",
-    "react-router-dom": "^5.3.4"
+    "@episerver/forms-sdk": "file:../forms-sdk"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.4",

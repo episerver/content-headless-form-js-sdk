@@ -167,12 +167,7 @@ export const FormBody = (props: FormBodyProps) => {
                     );
                 })}
 
-                {/* render step navigation
-                <FormStepNavigation
-                    stepLocalizations={stepLocalizations}
-                    form={form} 
-                    isFormFinalized={isFormFinalized}
-                /> */}
+                {/* render step navigation*/}
                 <FormStepNavigation
                     stepLocalizations={stepLocalizations}
                     form={form} 
