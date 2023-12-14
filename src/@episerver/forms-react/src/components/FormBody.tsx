@@ -35,7 +35,7 @@ export const FormBody = (props: FormBodyProps) => {
     currentStepIndex = formContext?.currentStepIndex ?? 0,
     isStepValidToDisplay = true;
 
-    if(isSuccess.current && isFormFinalized.current)
+    if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
     {
         statusDisplay.current = "Form__Success__Message";
         statusMessage.current = form.properties.submitSuccessMessage ?? message.current;
@@ -46,10 +46,11 @@ export const FormBody = (props: FormBodyProps) => {
         statusDisplay.current = "Form__Warning__Message";
         statusMessage.current = message.current;
     }
+    const isLastStep = currentStepIndex == stepCount - 1;
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
-    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized;
+    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized.current;
     const prevButtonDisableState = (currentStepIndex == 0) || !submittable;
-    const nextButtonDisableState = (currentStepIndex == stepCount - 1) || !submittable;
+    const nextButtonDisableState = isLastStep || !submittable;
     const currentDisplayStepIndex = currentStepIndex + 1;
     const progressWidth = (100 * currentDisplayStepIndex / stepCount) + "%";
 
@@ -64,7 +65,7 @@ export const FormBody = (props: FormBodyProps) => {
         let buttonId = e.nativeEvent.submitter.id;
         let submitButton = form.formElements.filter(fe => fe.key === buttonId)[0] as SubmitButton;
         if(!isNull(submitButton)){
-            //when submitting by SubmitButton, isProgressiveSubmit default is true
+            //when submitting by SubmitButton, then isProgressiveSubmit is true
             isProgressiveSubmit.current = true;
         }
         
@@ -84,14 +85,13 @@ export const FormBody = (props: FormBodyProps) => {
             )[0]?.elementKey;
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
-            isFormFinalized.current = false;
             return;
         }
         
         let model: FormSubmitModel = {
             formKey: form.key,
             locale: form.locale,
-            isFinalized: submitButton?.properties?.finalizeForm || formContext?.currentStepIndex === form.steps.length - 1,
+            isFinalized: submitButton?.properties?.finalizeForm || isLastStep,
             partialSubmissionKey: formContext?.submissionKey ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
@@ -109,8 +109,11 @@ export const FormBody = (props: FormBodyProps) => {
                 //ignore validation message
                 message.current = response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>");
             }
+
+           
             validateFail.current = response.validationFail;
-            isFormFinalized.current = isSuccess.current = response.success;
+            isSuccess.current = response.success;
+            isFormFinalized.current = isLastStep && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             dispatchFunctions.updateIsSubmitting(false);
         });
