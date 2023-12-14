@@ -20,7 +20,7 @@ export class StepBuilder {
         let steps: Step[] = [];
         let elements: FormElementBase[] = [];
     
-        let currentStep = { key: newUniqueID() } as FormElementBase;
+        let currentStep = { key: newUniqueID() } as FormStep;
     
         this._form.formElements.forEach((e,i) => {
             if (this.isFormStep(e)) {
@@ -32,7 +32,7 @@ export class StepBuilder {
                 
                 //reset vars
                 elements = [];
-                currentStep = {...e};
+                currentStep = {...(e as FormStep)};
             }
 
             elements.push(e);

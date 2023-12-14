@@ -1,3 +1,4 @@
+import { FormStep } from "./elements"
 import { FormElementBase } from "./elements/base/FormElementBase"
 
 /**
@@ -28,6 +29,6 @@ export interface FormContainerProperties {
 }
 
 export interface Step {
-    formStep: FormElementBase
+    formStep: FormStep
     elements: FormElementBase[]
 }

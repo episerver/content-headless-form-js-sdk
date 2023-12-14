@@ -27,25 +27,25 @@ export class StepDependCondition {
      * @returns 
      */
     isSatisfied (stepIndex: number): boolean {
-        let step = this._form.steps[stepIndex]?.formStep as FormStep;
+        let step = this._form.steps[stepIndex]?.formStep;
 
         if (!step) {
             return false;
         }
 
-        let dependField = step?.properties?.dependField,
+        let dependField = step.properties.dependField,
             storedData = this._formStorage.loadFormDataFromStorage().filter(fs => fs.elementKey === dependField?.key)[0],
-            funcOfDependCondition = ConditionFunctions[step?.properties?.dependCondition]; 
+            funcOfDependCondition = ConditionFunctions[step.properties.dependCondition]; 
 
         if (!dependField || !funcOfDependCondition || !storedData) { // no input to check, consider it's OK
             return true;
         }
 
         if(!dependField && isInArray(dependField, this._inactiveElements)){
-            return funcOfDependCondition(null, step?.properties?.dependValue);
+            return funcOfDependCondition(null, step.properties.dependValue);
         }
 
-        return funcOfDependCondition(storedData?.value, step?.properties?.dependValue);
+        return funcOfDependCondition(storedData?.value, step.properties.dependValue);
     }
 
     /**
