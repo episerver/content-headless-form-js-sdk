@@ -2,7 +2,7 @@ import { FormCache } from "../form-cache";
 import { FormStorage } from "../form-storage";
 import { ElementValidationResult, FormConstants, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies, ValidatableElementBaseProperties } from "../models";
 import { getDefaultValue } from "./elementHelper";
-import { isNull } from "./utils";
+import { equals, isNull } from "./utils";
 
 /**
  * Function to initialize FormState object
@@ -39,9 +39,12 @@ export function initFormState(formContainer: FormContainer): FormState {
         stepDependencies = stepDependencies.concat({ elementKey: s.formStep.key, isSatisfied: false });
     });
 
-    //binding the elements with stored input value between Next/Prev navigation
-    if (formData.length > 0) {
-        formSubmissions = formData;
+    //binding the elements with saved data between Next/Prev navigation
+    if(formData.length > 0){
+        formSubmissions = formSubmissions.map(s => {
+            let savedData = formData.find(d => equals(d.elementKey, s.elementKey));
+            return savedData ? savedData : s;
+        });
     }
 
     return {

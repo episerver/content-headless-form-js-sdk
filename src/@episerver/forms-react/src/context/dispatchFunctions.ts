@@ -1,10 +1,11 @@
 import { FormContainer, ElementValidationResult, FormValidationResult, initFormState, IdentityInfo } from "@episerver/forms-sdk";
 import { ActionType } from "./reducer";
+import { useFormsDispatch } from "./store";
 
 export class DispatchFunctions {
     readonly _dispatch: any
-    constructor(dispatch: any){
-        this._dispatch = dispatch;
+    constructor(){
+        this._dispatch = useFormsDispatch();
     }
 
     updateValidation = (elementKey: string, validationResults: ElementValidationResult[]) => {

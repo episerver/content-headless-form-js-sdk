@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton } from "@episerver/forms-sdk";
+import { FormContainer, FormSubmitter, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, ElementValidationResult } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -15,13 +15,11 @@ export const FormBody = (props: FormBodyProps) => {
     const formContext = useForms();
     const form = formContext?.formContainer ?? {} as FormContainer;
     const formSubmitter = new FormSubmitter(formContext?.formContainer ?? {} as FormContainer, props.baseUrl);
-    const dispatch = useFormsDispatch();
-    const dispatchFunctions = new DispatchFunctions(dispatch);
+    const dispatchFunctions = new DispatchFunctions();
     
     const formTitleId = `${form.key}_label`;
     const statusMessage = useRef<string>("");
     const statusDisplay = useRef<string>("hide");
-    const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations);
 
     //TODO: these variables should be get from api or sdk
     const validateFail = useRef<boolean>(false),
@@ -49,6 +47,14 @@ export const FormBody = (props: FormBodyProps) => {
     
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
 
+    const isInCurrentStep = (elementKey: string): boolean => {
+        let currentStep = form.steps[currentStepIndex];
+        if(currentStep){
+            return currentStep.elements.some(e => equals(e.key, elementKey));
+        }
+        return true;
+    }
+
     const handleSubmit = (e: any) => {
         e.preventDefault();
 
@@ -58,15 +64,14 @@ export const FormBody = (props: FormBodyProps) => {
 
         //Find submit button, if found then check property 'finalizeForm' of submit button. Otherwise, button Next/Previous was clicked.
         let buttonId = e.nativeEvent.submitter.id;
-        let submitButton = form.formElements.filter(fe => fe.key === buttonId)[0] as SubmitButton;
+        let submitButton = form.formElements.find(fe => fe.key === buttonId) as SubmitButton;
         if (!isNull(submitButton)) {
             //when submitting by SubmitButton, isProgressiveSubmit default is true
             isProgressiveSubmit.current = true;
         }
-        //remove submissions of inactive elements and submissions with undefined value
+        //filter submissions by active elements and current step
         let formSubmissions = (formContext?.formSubmissions ?? [])
-            //only post value of active elements
-            .filter(fs => !isInArray(fs.elementKey, formContext?.dependencyInactiveElements ?? []) && !isNull(fs.value));
+            .filter(fs => !isInArray(fs.elementKey, formContext?.dependencyInactiveElements ?? []) && isInCurrentStep(fs.elementKey));
 
         //validate all submission data before submit
         let formValidationResults = formSubmitter.doValidate(formSubmissions);
@@ -79,14 +84,14 @@ export const FormBody = (props: FormBodyProps) => {
             )[0]?.elementKey;
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
-            isFormFinalized.current = false;
             return;
         }
 
+        let isLastStep = formContext?.currentStepIndex === form.steps.length - 1;
         let model: FormSubmitModel = {
             formKey: form.key,
             locale: form.locale,
-            isFinalized: submitButton?.properties?.finalizeForm || formContext?.currentStepIndex === form.steps.length - 1,
+            isFinalized: submitButton?.properties?.finalizeForm || isLastStep,
             partialSubmissionKey: formContext?.submissionKey ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
@@ -95,6 +100,7 @@ export const FormBody = (props: FormBodyProps) => {
 
         dispatchFunctions.updateIsSubmitting(true);
         formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
+            //get error or success message
             if(response.success){
                 message.current = response.messages.map(m => m.message).join("<br>");
             }
@@ -103,9 +109,19 @@ export const FormBody = (props: FormBodyProps) => {
                 //ignore validation message
                 message.current = response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>");
             }
+            //update validation message
+            if(response.validationFail){
+                response.messages.forEach(m => {
+                    let elementValidationResults = formContext?.formValidationResults?.find(r => equals(r.elementKey, m.identifier))?.results;
+                    if(elementValidationResults){
+                        elementValidationResults = elementValidationResults.map(r => equals(r.type, m.section) ? {...r, valid: false} as ElementValidationResult : r);
+                        dispatchFunctions.updateValidation(m.identifier, elementValidationResults);
+                    }
+                })
+            }
             validateFail.current = response.validationFail;
             isSuccess.current = response.success;
-            isFormFinalized.current = formContext?.currentStepIndex === form.steps.length - 1 && response.success;
+            isFormFinalized.current = isLastStep && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             dispatchFunctions.updateIsSubmitting(false);
         });
@@ -172,9 +188,7 @@ export const FormBody = (props: FormBodyProps) => {
 
                 {/* render step navigation*/}
                 <FormStepNavigation
-                    stepLocalizations={stepLocalizations}
-                    form={form} 
-                    isFormFinalized={isFormFinalized}
+                    isFormFinalized={isFormFinalized.current}
                     history = {props.history}
                 />
             </div>

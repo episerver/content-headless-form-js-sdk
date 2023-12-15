@@ -1,24 +1,22 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
 import { FormCache, FormConstants, FormContainer, FormStep, StepDependCondition, SubmitButtonType, isNull } from "@episerver/forms-sdk";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { useHistory } from "react-router-dom";
 
 interface FormStepNavigationProps {
-    stepLocalizations: React.MutableRefObject<Record<string, string>>
-    form: FormContainer
-    isFormFinalized: React.MutableRefObject<boolean>
+    isFormFinalized: boolean
     history?: any
 }
 
 export const FormStepNavigation = (props: FormStepNavigationProps) => {
-    const formContext = useForms()
-    const formCache = new FormCache()
-    const dispatch = useFormsDispatch()
-    const history = props.history
-    const depend = new StepDependCondition(props.form, formContext?.dependencyInactiveElements ?? [])
-    const { stepLocalizations, form, isFormFinalized } = props;
-    const dispatchFuncs = new DispatchFunctions(dispatch);
+    const formContext = useForms();
+    const formCache = new FormCache();
+    const form = formContext?.formContainer ?? {} as FormContainer;
+    const depend = new StepDependCondition(form, formContext?.dependencyInactiveElements ?? []);
+    const { isFormFinalized, history } = props;
+    const dispatchFuncs = new DispatchFunctions();
+    const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations);
 
     const submittable = true
     const stepCount = form.steps.length;
@@ -29,7 +27,7 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
     const nextButtonDisableState = (currentStepIndex == stepCount - 1) || !submittable;
     const progressWidth = (100 * currentDisplayStepIndex / stepCount) + "%";
 
-    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized.current;
+    const isShowStepNavigation = stepCount > 1 && currentStepIndex > -1 && currentStepIndex < stepCount && !isFormFinalized;
 
     const handlePrevStep = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
@@ -44,7 +42,7 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
     const goToStep = (stepIndex: number) => {
         var step = form.steps[stepIndex].formStep as FormStep
 
-        formCache.set<number>(FormConstants.FormCurrentStep + props.form.key, stepIndex)
+        formCache.set<number>(FormConstants.FormCurrentStep + form.key, stepIndex)
         dispatchFuncs.updateCurrentStepIndex(stepIndex)
 
         if (!isNull(step) && !isNull(step.properties.attachedContentLink)) {

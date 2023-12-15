@@ -1,6 +1,6 @@
 import { FormStorage } from "../form-storage";
 import { FormValidator } from "../form-validator";
-import { equals } from "../helpers";
+import { equals, isNull } from "../helpers";
 import { FormConstants, FormContainer, FormSubmission, FormValidationResult } from "../models";
 import { ApiConstant } from "../form-loader/apiConstant";
 
@@ -104,6 +104,11 @@ export class FormSubmitter {
             model.submissionData.forEach(data => {
                 let ovalue = data.value;
                 let key = `${FormConstants.FormFieldPrefix}${data.elementKey}`;
+
+                if(isNull(ovalue)) {
+                    return;
+                }
+
                 // checking file upload elements, item must be File if any,
                 // for using Object.getPrototypeOf(variable) variable must be object type
                 if(Object.getPrototypeOf(ovalue) === FileList.prototype && (ovalue as FileList).length > 0) {
