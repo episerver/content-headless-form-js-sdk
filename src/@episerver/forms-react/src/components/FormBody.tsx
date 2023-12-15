@@ -1,9 +1,23 @@
 import React, { useEffect, useRef } from "react";
-import { useForms, useFormsDispatch } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, ElementValidationResult, FormValidationResult } from "@episerver/forms-sdk";
+import { useForms } from "../context/store";
+import {
+    FormContainer,
+    FormSubmitter,
+    IdentityInfo,
+    equals,
+    isInArray,
+    isNull,
+    isNullOrEmpty,
+    FormSubmitModel,
+    FormSubmitResult,
+    SubmitButton,
+    FormValidationResult,
+    FormCache,
+    FormConstants
+} from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
-import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
+import { DispatchFunctions } from "../context/dispatchFunctions";
 
 interface FormBodyProps {
     identityInfo?: IdentityInfo;
@@ -16,7 +30,9 @@ export const FormBody = (props: FormBodyProps) => {
     const form = formContext?.formContainer ?? {} as FormContainer;
     const formSubmitter = new FormSubmitter(formContext?.formContainer ?? {} as FormContainer, props.baseUrl);
     const dispatchFunctions = new DispatchFunctions();
-    
+    const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations);
+    const formCache = new FormCache()
+    const localFormCache = new FormCache(window.localStorage);
     const formTitleId = `${form.key}_label`;
     const statusMessage = useRef<string>("");
     const statusDisplay = useRef<string>("hide");
@@ -34,8 +50,7 @@ export const FormBody = (props: FormBodyProps) => {
         currentStepIndex = formContext?.currentStepIndex ?? 0,
         isStepValidToDisplay = true;
 
-    if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
-        {
+    if ((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current) {
         statusDisplay.current = "Form__Success__Message";
         statusMessage.current = form.properties.submitSuccessMessage ?? message.current;
     }
@@ -44,20 +59,20 @@ export const FormBody = (props: FormBodyProps) => {
         statusDisplay.current = "Form__Warning__Message";
         statusMessage.current = message.current;
     }
-    
+
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
 
     const isInCurrentStep = (elementKey: string): boolean => {
         let currentStep = form.steps[currentStepIndex];
-        if(currentStep){
+        if (currentStep) {
             return currentStep.elements.some(e => equals(e.key, elementKey));
         }
         return true;
     }
 
     const getFirstInvalidElement = (formValidationResults: FormValidationResult[]): string => {
-        return formValidationResults.filter(fv => 
-            fv.results.some(r => !r.valid) &&    
+        return formValidationResults.filter(fv =>
+            fv.results.some(r => !r.valid) &&
             form.steps[currentStepIndex]?.elements?.some(e => equals(e.key, fv.elementKey))
         )[0]?.elementKey;
     }
@@ -70,7 +85,7 @@ export const FormBody = (props: FormBodyProps) => {
         }
 
         //Find submit button, if found then check property 'finalizeForm' of submit button. Otherwise, button Next/Previous was clicked.
-        let buttonId = e.nativeEvent.submitter.id;
+        let buttonId = e.nativeEvent.submitter?.id;
         let submitButton = form.formElements.find(fe => fe.key === buttonId) as SubmitButton;
         if (!isNull(submitButton)) {
             //when submitting by SubmitButton, isProgressiveSubmit default is true
@@ -83,10 +98,10 @@ export const FormBody = (props: FormBodyProps) => {
         //validate all submission data before submit
         let formValidationResults = formSubmitter.doValidate(formSubmissions);
         dispatchFunctions.updateAllValidation(formValidationResults);
-        
+
         //set focus on the 1st invalid element of current step
         let invalid = getFirstInvalidElement(formValidationResults);
-        if(!isNullOrEmpty(invalid)){
+        if (!isNullOrEmpty(invalid)) {
             dispatchFunctions.updateFocusOn(invalid);
             return;
         }
@@ -96,16 +111,16 @@ export const FormBody = (props: FormBodyProps) => {
             formKey: form.key,
             locale: form.locale,
             isFinalized: submitButton?.properties?.finalizeForm || isLastStep,
-            partialSubmissionKey: formContext?.submissionKey ?? "",
+            partialSubmissionKey: localFormCache.get(FormConstants.FormSubmissionId + form.key) ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
             accessToken: formContext?.identityInfo?.accessToken
         }
 
         dispatchFunctions.updateIsSubmitting(true);
-        formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
+        formSubmitter.doSubmit(model).then((response: FormSubmitResult) => {
             //get error or success message
-            if(response.success){
+            if (response.success) {
                 message.current = response.messages.map(m => m.message).join("<br>");
             }
             else {
@@ -114,7 +129,7 @@ export const FormBody = (props: FormBodyProps) => {
                 message.current = response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>");
             }
             //update validation message
-            if(response.validationFail){
+            if (response.validationFail) {
                 let formValidationResults = formContext?.formValidationResults?.map(fr => {
                     let errorMessages = response.messages.filter(m => equals(m.identifier, fr.elementKey));
                     return errorMessages.length === 0 ? fr : {
@@ -132,10 +147,19 @@ export const FormBody = (props: FormBodyProps) => {
                 dispatchFunctions.updateFocusOn(getFirstInvalidElement(formValidationResults));
             }
             validateFail.current = response.validationFail;
+
             isSuccess.current = response.success;
             isFormFinalized.current = isLastStep && response.success;
+
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             dispatchFunctions.updateIsSubmitting(false);
+
+            localFormCache.set(FormConstants.FormSubmissionId + form.key, response.submissionKey)
+
+            if (isFormFinalized.current) {
+                formCache.remove(FormConstants.FormCurrentStep + form.key)
+                localFormCache.remove(FormConstants.FormSubmissionId + form.key)
+            }
         });
     }
 
@@ -200,8 +224,11 @@ export const FormBody = (props: FormBodyProps) => {
 
                 {/* render step navigation*/}
                 <FormStepNavigation
+                    stepLocalizations={stepLocalizations.current}
+                    form={form}
                     isFormFinalized={isFormFinalized.current}
-                    history = {props.history}
+                    history={props.history}
+                    handleSubmit={handleSubmit}
                 />
             </div>
         </form>
