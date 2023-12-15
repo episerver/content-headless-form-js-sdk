@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useForms, useFormsDispatch } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, ElementValidationResult } from "@episerver/forms-sdk";
+import { FormContainer, FormSubmitter, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, ElementValidationResult, FormValidationResult } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -55,6 +55,13 @@ export const FormBody = (props: FormBodyProps) => {
         return true;
     }
 
+    const getFirstInvalidElement = (formValidationResults: FormValidationResult[]): string => {
+        return formValidationResults.filter(fv => 
+            fv.results.some(r => !r.valid) &&    
+            form.steps[currentStepIndex]?.elements?.some(e => equals(e.key, fv.elementKey))
+        )[0]?.elementKey;
+    }
+
     const handleSubmit = (e: any) => {
         e.preventDefault();
 
@@ -78,10 +85,7 @@ export const FormBody = (props: FormBodyProps) => {
         dispatchFunctions.updateAllValidation(formValidationResults);
         
         //set focus on the 1st invalid element of current step
-        let invalid = formValidationResults.filter(fv => 
-                fv.results.some(r => !r.valid) &&    
-                form.steps[currentStepIndex]?.elements?.some(e => equals(e.key, fv.elementKey))
-            )[0]?.elementKey;
+        let invalid = getFirstInvalidElement(formValidationResults);
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
             return;
@@ -111,13 +115,21 @@ export const FormBody = (props: FormBodyProps) => {
             }
             //update validation message
             if(response.validationFail){
-                response.messages.forEach(m => {
-                    let elementValidationResults = formContext?.formValidationResults?.find(r => equals(r.elementKey, m.identifier))?.results;
-                    if(elementValidationResults){
-                        elementValidationResults = elementValidationResults.map(r => equals(r.type, m.section) ? {...r, valid: false} as ElementValidationResult : r);
-                        dispatchFunctions.updateValidation(m.identifier, elementValidationResults);
-                    }
-                })
+                let formValidationResults = formContext?.formValidationResults?.map(fr => {
+                    let errorMessages = response.messages.filter(m => equals(m.identifier, fr.elementKey));
+                    return errorMessages.length === 0 ? fr : {
+                        ...fr,
+                        results: fr.results.map(er => !errorMessages.some(em => equals(em.section, er.type)) ? er : {
+                            ...er,
+                            valid: false
+                        })
+                    } as FormValidationResult
+                }) ?? [];
+
+                dispatchFunctions.updateAllValidation(formValidationResults);
+
+                //set focus on the 1st invalid element of current step
+                dispatchFunctions.updateFocusOn(getFirstInvalidElement(formValidationResults));
             }
             validateFail.current = response.validationFail;
             isSuccess.current = response.success;
