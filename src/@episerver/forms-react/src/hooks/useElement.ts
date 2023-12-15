@@ -35,13 +35,12 @@ export interface ElementContext {
 
 export const useElement = (element: FormElementBase) => {
     const formContext = useForms();
-    const dispatch = useFormsDispatch();
     const extraAttr = useRef<any>({});
     const formValidation = new FormValidator(element);
     const formCondition = new FormDependConditions(element)
     const defaultValue = getDefaultValue(element);
     const isVisible = useRef<boolean>(true);
-    const dispatchFuncs = new DispatchFunctions(dispatch);
+    const dispatchFuncs = new DispatchFunctions();
     const elementRef = useRef<any>(null);
 
     //build element state
