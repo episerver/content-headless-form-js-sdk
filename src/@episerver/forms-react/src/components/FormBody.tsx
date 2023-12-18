@@ -114,7 +114,8 @@ export const FormBody = (props: FormBodyProps) => {
             partialSubmissionKey: localFormCache.get(FormConstants.FormSubmissionId + form.key) ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
-            accessToken: formContext?.identityInfo?.accessToken
+            accessToken: formContext?.identityInfo?.accessToken,
+            currentStepIndex: currentStepIndex
         }
 
         dispatchFunctions.updateIsSubmitting(true);
