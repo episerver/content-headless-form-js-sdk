@@ -33,6 +33,10 @@ export interface FormSubmitModel {
      * The access token to identify login user
      */
     accessToken?: string;
+    /**
+     * The current index of submitted step
+     */
+    currentStepIndex: number;
 }
 
 export interface FormSubmitResult {
@@ -99,6 +103,7 @@ export class FormSubmitter {
             formData.append("IsFinalized", model.isFinalized.toString());
             formData.append("PartialSubmissionKey", model.partialSubmissionKey);
             formData.append("HostedPageUrl", model.hostedPageUrl);
+            formData.append("CurrentStep", model.currentStepIndex.toString());
 
             //append form submission to FormData object
             model.submissionData.forEach(data => {

@@ -7,6 +7,7 @@ import { useHistory } from "react-router-dom";
 interface FormStepNavigationProps {
     isFormFinalized: boolean
     history?: any
+    handleSubmit: (e: any) => void
 }
 
 export const FormStepNavigation = (props: FormStepNavigationProps) => {
@@ -14,9 +15,9 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
     const formCache = new FormCache();
     const form = formContext?.formContainer ?? {} as FormContainer;
     const depend = new StepDependCondition(form, formContext?.dependencyInactiveElements ?? []);
-    const { isFormFinalized, history } = props;
+    const { isFormFinalized, history, handleSubmit } = props;
     const dispatchFuncs = new DispatchFunctions();
-    const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations);
+    const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations).current;
 
     const submittable = true
     const stepCount = form.steps.length;
@@ -36,6 +37,7 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
 
     const handleNextStep = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
+        handleSubmit(event)
         goToStep(depend.findNextStep(currentStepIndex) ?? 0)
     }
 
@@ -63,13 +65,13 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
                         disabled={prevButtonDisableState}
                         onClick={(event) => handlePrevStep(event)}
                     >
-                        {stepLocalizations.current["previousButtonLabel"]}
+                        {stepLocalizations["previousButtonLabel"]}
                     </button>
 
                     <div className="Form__NavigationBar__ProgressBar">
                         <div className="Form__NavigationBar__ProgressBar--Progress" style={{ width: progressWidth }}></div>
                         <div className="Form__NavigationBar__ProgressBar--Text">
-                            <span className="Form__NavigationBar__ProgressBar__ProgressLabel">{stepLocalizations.current["pageButtonLabel"]}</span>
+                            <span className="Form__NavigationBar__ProgressBar__ProgressLabel">{stepLocalizations["pageButtonLabel"]}</span>
                             <span className="Form__NavigationBar__ProgressBar__CurrentStep">{currentDisplayStepIndex}</span>/
                             <span className="Form__NavigationBar__ProgressBar__StepsCount">{stepCount}</span>
                         </div>
@@ -83,7 +85,7 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
                         disabled={nextButtonDisableState}
                         onClick={handleNextStep}
                     >
-                        {stepLocalizations.current["nextButtonLabel"]}
+                        {stepLocalizations["nextButtonLabel"]}
                     </button>
                 </nav>
             }

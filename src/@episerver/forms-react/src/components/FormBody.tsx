@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
-import { useForms, useFormsDispatch } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, SubmitButtonType, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, ElementValidationResult, FormValidationResult } from "@episerver/forms-sdk";
+import { useForms } from "../context/store";
+import { FormContainer, FormSubmitter, IdentityInfo, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormValidationResult, FormCache, FormConstants } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -21,6 +21,9 @@ export const FormBody = (props: FormBodyProps) => {
     const statusMessage = useRef<string>("");
     const statusDisplay = useRef<string>("hide");
 
+    const formCache = new FormCache();
+    const localFormCache = new FormCache(window.localStorage);
+
     //TODO: these variables should be get from api or sdk
     const validateFail = useRef<boolean>(false),
         isFormFinalized = useRef<boolean>(false),
@@ -32,6 +35,7 @@ export const FormBody = (props: FormBodyProps) => {
         isReadOnlyMode = false,
         readOnlyModeMessage = "",
         currentStepIndex = formContext?.currentStepIndex ?? 0,
+        submissionStorageKey = FormConstants.FormSubmissionId + form.key,
         isStepValidToDisplay = true;
 
     if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
@@ -70,7 +74,7 @@ export const FormBody = (props: FormBodyProps) => {
         }
 
         //Find submit button, if found then check property 'finalizeForm' of submit button. Otherwise, button Next/Previous was clicked.
-        let buttonId = e.nativeEvent.submitter.id;
+        let buttonId = e.nativeEvent.submitter?.id;
         let submitButton = form.formElements.find(fe => fe.key === buttonId) as SubmitButton;
         if (!isNull(submitButton)) {
             //when submitting by SubmitButton, isProgressiveSubmit default is true
@@ -96,10 +100,11 @@ export const FormBody = (props: FormBodyProps) => {
             formKey: form.key,
             locale: form.locale,
             isFinalized: submitButton?.properties?.finalizeForm || isLastStep,
-            partialSubmissionKey: formContext?.submissionKey ?? "",
+            partialSubmissionKey: localFormCache.get(submissionStorageKey) ?? formContext?.submissionKey ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
-            accessToken: formContext?.identityInfo?.accessToken
+            accessToken: formContext?.identityInfo?.accessToken,
+            currentStepIndex: currentStepIndex
         }
 
         dispatchFunctions.updateIsSubmitting(true);
@@ -131,11 +136,19 @@ export const FormBody = (props: FormBodyProps) => {
                 //set focus on the 1st invalid element of current step
                 dispatchFunctions.updateFocusOn(getFirstInvalidElement(formValidationResults));
             }
+
             validateFail.current = response.validationFail;
             isSuccess.current = response.success;
             isFormFinalized.current = isLastStep && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             dispatchFunctions.updateIsSubmitting(false);
+
+            localFormCache.set(submissionStorageKey, response.submissionKey)
+
+            if (isFormFinalized.current) {
+                formCache.remove(submissionStorageKey)
+                localFormCache.remove(submissionStorageKey)
+            }
         });
     }
 
@@ -202,6 +215,7 @@ export const FormBody = (props: FormBodyProps) => {
                 <FormStepNavigation
                     isFormFinalized={isFormFinalized.current}
                     history = {props.history}
+                    handleSubmit = {handleSubmit}
                 />
             </div>
         </form>
