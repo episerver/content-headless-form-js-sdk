@@ -1,7 +1,7 @@
 import { FormStorage } from "../form-storage";
 import { FormValidator } from "../form-validator";
 import { equals, isNull } from "../helpers";
-import { FormConstants, FormContainer, FormSubmission, FormValidationResult } from "../models";
+import { FormConstants, FormContainer, FormSubmission, FormValidationResult, ProblemDetail } from "../models";
 import { ApiConstant } from "../form-loader/apiConstant";
 
 export interface FormSubmitModel {
@@ -149,8 +149,9 @@ export class FormSubmitter {
 
             fetch(`${this._baseUrl}${ApiConstant.apiEndpoint}`, requestInit)
                 .then(async (response: Response) => {
+                    let json = await response.json();
                     if(response.ok){
-                        let result = (await response.json()) as FormSubmitResult;
+                        let result = json as FormSubmitResult;
                         if(result.success && model.isFinalized){
                             //clear cache of form submission
                             formStorage.removeFormDataInStorage();
@@ -158,7 +159,7 @@ export class FormSubmitter {
                         resolve(result);
                     }
                     else {
-                        reject(response);
+                        reject(json as ProblemDetail);
                     }
                 })
                 .catch((error: any) => {

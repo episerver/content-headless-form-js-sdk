@@ -1,5 +1,5 @@
 /**
- * Interface to define type of object that is form validation result 
+ * Represent type of object that is form validation result 
  */
 export interface FormValidationResult
 {
@@ -8,7 +8,7 @@ export interface FormValidationResult
 }
 
 /**
- * Interface to define type of object that is element validation result 
+ * Represent type of object that is element validation result 
  */
 export interface ElementValidationResult {
     type: string

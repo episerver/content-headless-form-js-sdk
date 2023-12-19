@@ -1,6 +1,6 @@
 {
   "name": "@episerver/forms-sdk",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Forms SDK with client validation, step navigation, submit form, element depends",
   "author": "Optimizely",
   "license": "ISC",

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormValidationResult, FormCache, FormConstants } from "@episerver/forms-sdk";
+import { FormContainer, FormSubmitter, IdentityInfo, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormValidationResult, FormCache, FormConstants, ProblemDetail } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -39,7 +39,7 @@ export const FormBody = (props: FormBodyProps) => {
         isStepValidToDisplay = true;
 
     if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
-        {
+    {
         statusDisplay.current = "Form__Success__Message";
         statusMessage.current = form.properties.submitSuccessMessage ?? message.current;
     }
@@ -47,6 +47,10 @@ export const FormBody = (props: FormBodyProps) => {
         && !isNullOrEmpty(message.current)) {
         statusDisplay.current = "Form__Warning__Message";
         statusMessage.current = message.current;
+    }
+    else {
+        statusDisplay.current = "hide";
+        statusMessage.current = "";
     }
     
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
@@ -64,6 +68,11 @@ export const FormBody = (props: FormBodyProps) => {
             fv.results.some(r => !r.valid) &&    
             form.steps[currentStepIndex]?.elements?.some(e => equals(e.key, fv.elementKey))
         )[0]?.elementKey;
+    }
+
+    const showError = (error: string) => {
+        submissionWarning.current = !isNullOrEmpty(error);
+        message.current = error;
     }
 
     const handleSubmit = (e: any) => {
@@ -114,9 +123,8 @@ export const FormBody = (props: FormBodyProps) => {
                 message.current = response.messages.map(m => m.message).join("<br>");
             }
             else {
-                submissionWarning.current = true;
                 //ignore validation message
-                message.current = response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>");
+                showError(response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>"));
             }
             //update validation message
             if(response.validationFail){
@@ -141,26 +149,31 @@ export const FormBody = (props: FormBodyProps) => {
             isSuccess.current = response.success;
             isFormFinalized.current = isLastStep && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
-            dispatchFunctions.updateIsSubmitting(false);
-
             localFormCache.set(submissionStorageKey, response.submissionKey)
 
             if (isFormFinalized.current) {
                 formCache.remove(submissionStorageKey)
                 localFormCache.remove(submissionStorageKey)
             }
+        }).catch((e: ProblemDetail) => {
+            if(e.status === 401) {
+                //clear access token to ask login again
+                dispatchFunctions.updateIdentity({} as IdentityInfo);
+                formCache.remove(FormConstants.FormAccessToken);
+                showError(e.detail);
+            }
+        }).finally(()=>{
+            dispatchFunctions.updateIsSubmitting(false);
         });
     }
 
     useEffect(() => {
         dispatchFunctions.updateIdentity(props.identityInfo);
         if (isNullOrEmpty(props.identityInfo?.accessToken) && !form.properties.allowAnonymousSubmission) {
-            statusDisplay.current = "Form__Warning__Message";
-            statusMessage.current = "You must be logged in to submit this form. If you are logged in and still cannot post, make sure \"Do not track\" in your browser settings is disabled.";
+            showError(form.localizations["allowAnonymousSubmissionErrorMessage"]);
         }
         else {
-            statusMessage.current = "";
-            statusDisplay.current = "hide";
+            showError("");
         }
     }, [props.identityInfo?.accessToken]);
 

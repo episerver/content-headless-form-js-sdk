@@ -1,6 +1,6 @@
 {
   "name": "@episerver/forms-react",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Forms react components render a form from JSON data",
   "author": "Optimizely",
   "license": "ISC",

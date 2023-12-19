@@ -2,13 +2,13 @@ import './App.css';
 import { useFetch } from './hooks/useFetch';
 import { Form, FormLogin } from '@episerver/forms-react';
 import { extractParams } from './helpers/urlHelper';
-import { FormCache, FormConstants, IdentityInfo, isNullOrEmpty } from '@episerver/forms-sdk';
-import { useEffect, useState } from 'react';
-import { BrowserRouter, useHistory, useLocation } from 'react-router-dom';
+import { FormCache, FormConstants, IdentityInfo } from '@episerver/forms-sdk';
+import { useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
 function App() {
     const location = useLocation();
-    const { relativePath, language } = extractParams(window.location.pathname)
+    const { language } = extractParams(window.location.pathname)
     const url = `${process.env.REACT_APP_ENDPOINT_GET_FORM_BY_PAGE_URL}${location.pathname}`;
     
     const { data: pageData, loading } = useFetch(url);
@@ -44,7 +44,7 @@ function App() {
                                 />
                             ))}
                         </div>
-                        <div className={`right ${!isNullOrEmpty(identityInfo.accessToken) ? "hide" : ""}`}>
+                        <div className={`right`}>
                             <h2>Login</h2>
                             <FormLogin
                                 clientId='TestClient'

@@ -1,3 +1,6 @@
+/**
+ * The list of validator type
+ */
 export enum ValidatorType{
     RequiredValidator = "RequiredValidator",
     EmailValidator = "EmailValidator",
