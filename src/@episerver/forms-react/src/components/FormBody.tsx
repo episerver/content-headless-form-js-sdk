@@ -35,7 +35,7 @@ export const FormBody = (props: FormBodyProps) => {
         isReadOnlyMode = false,
         readOnlyModeMessage = "",
         currentStepIndex = formContext?.currentStepIndex ?? 0,
-        submissionStorageKey = FormConstants.FormCurrentStep + form.key,
+        submissionStorageKey = FormConstants.FormSubmissionId + form.key,
         isStepValidToDisplay = true;
 
     if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
@@ -100,7 +100,7 @@ export const FormBody = (props: FormBodyProps) => {
             formKey: form.key,
             locale: form.locale,
             isFinalized: submitButton?.properties?.finalizeForm || isLastStep,
-            partialSubmissionKey: localFormCache.get(FormConstants.FormSubmissionId + form.key) ?? formContext?.submissionKey ?? "",
+            partialSubmissionKey: localFormCache.get(submissionStorageKey) ?? formContext?.submissionKey ?? "",
             hostedPageUrl: window.location.pathname,
             submissionData: formSubmissions,
             accessToken: formContext?.identityInfo?.accessToken,
