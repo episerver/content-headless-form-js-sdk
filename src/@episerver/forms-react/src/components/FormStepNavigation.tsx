@@ -1,8 +1,7 @@
 import React, { useRef } from "react";
-import { useForms, useFormsDispatch } from "../context/store";
+import { useForms } from "../context/store";
 import { FormCache, FormConstants, FormContainer, FormStep, StepDependCondition, SubmitButtonType, isNull } from "@episerver/forms-sdk";
 import { DispatchFunctions } from "../context/dispatchFunctions";
-import { useHistory } from "react-router-dom";
 
 interface FormStepNavigationProps {
     isFormFinalized: boolean

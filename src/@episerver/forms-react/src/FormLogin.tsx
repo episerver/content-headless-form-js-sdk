@@ -1,5 +1,5 @@
 import { FormAuthenticate, FormAuthenticateConfig, FormCache, FormConstants, IdentityInfo, isNullOrEmpty } from "@episerver/forms-sdk";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface FormLoginProps{
     /**
@@ -42,6 +42,18 @@ export const FormLogin = (props: FormLoginProps) => {
             props.onAuthenticated && props.onAuthenticated({ username: loginInfo.username, accessToken: token } as IdentityInfo);
         });
     }
+
+    useEffect(()=>{
+        let intervalId = setInterval(()=>{
+            let accessToken = formCache.get<string>(FormConstants.FormAccessToken);
+            if(isNullOrEmpty(accessToken)){
+                setIsAuthenticated(false);
+            }
+        },1000);
+        return ()=>{
+            clearInterval(intervalId);
+        }
+    },[]);
 
     return (
         <>
