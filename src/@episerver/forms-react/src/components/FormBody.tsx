@@ -154,6 +154,7 @@ export const FormBody = (props: FormBodyProps) => {
             if (isFormFinalized.current) {
                 formCache.remove(submissionStorageKey)
                 localFormCache.remove(submissionStorageKey)
+                formCache.remove(FormConstants.FormCurrentStep + form.key)
             }
         }).catch((e: ProblemDetail) => {
             if(e.status === 401) {

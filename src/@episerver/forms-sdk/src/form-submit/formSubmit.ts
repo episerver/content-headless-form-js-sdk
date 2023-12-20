@@ -93,10 +93,11 @@ export class FormSubmitter {
         return new Promise<FormSubmitResult>((resolve, reject)=>{
             let formStorage = new FormStorage(this._form);
 
-            //save data to storage of browser
-            formStorage.saveFormDataToStorage(model.submissionData);
+            // Save data to storage of browser
+            let currentData = formStorage.loadFormDataFromStorage()
+            formStorage.saveFormDataToStorage(currentData.concat(model.submissionData));
     
-            //post data to API
+            // Post data to API
             let formData = new FormData();
             formData.append("formKey", model.formKey);
             formData.append("locale", model.locale);
