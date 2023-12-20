@@ -1,3 +1,4 @@
+using EPiServer.Cms.Shell;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,8 @@ public class ReactController : ControllerBase
         var contentHeadless = await _contentRepositoryInteApi.GetAsync(new ContentReference(key), new GetContentOptions());
 
         pageModel.Title = contentHeadless.DisplayName;
+        pageModel.PageUrl = UrlResolver.Current.GetUrl(content.ContentLink);
+
         if (contentHeadless.Properties.ContainsKey("MainContentArea"))
         {
             pageModel.Childrens.AddRange(contentHeadless.Properties["MainContentArea"] as IList<IContentComponent>);
@@ -46,5 +49,6 @@ public class ReactController : ControllerBase
 public class PageModel
 {
     public string Title { get; set; }
+    public string PageUrl { get; set; }
     public List<IContentComponent> Childrens { get; set; } = new List<IContentComponent>();
 }

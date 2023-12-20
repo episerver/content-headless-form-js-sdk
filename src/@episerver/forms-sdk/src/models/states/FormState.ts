@@ -17,6 +17,5 @@ export interface FormState {
     focusOn: string,
     identityInfo?: IdentityInfo
     submissionKey?: string
-    currentStepIndex: number
     isSubmitting?: boolean
 }

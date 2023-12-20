@@ -1,21 +1,27 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useForms } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormValidationResult, FormCache, FormConstants, ProblemDetail } from "@episerver/forms-sdk";
+import { FormContainer, FormSubmitter, IdentityInfo, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormValidationResult, FormCache, FormConstants, ProblemDetail, StepDependCondition } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
+import { StepHelper } from "@episerver/forms-sdk/dist/form-step/stepHelper";
 
 interface FormBodyProps {
     identityInfo?: IdentityInfo;
     baseUrl: string;
-    history?: any
+    history?: any;
+    currentPageUrl?: string;
 }
 
 export const FormBody = (props: FormBodyProps) => {
     const formContext = useForms();
     const form = formContext?.formContainer ?? {} as FormContainer;
+    const inactiveElements = formContext?.dependencyInactiveElements ?? [];
     const formSubmitter = new FormSubmitter(formContext?.formContainer ?? {} as FormContainer, props.baseUrl);
     const dispatchFunctions = new DispatchFunctions();
+    const stepDependCondition = new StepDependCondition(form, inactiveElements);
+    const stepHelper = new StepHelper(form);
+    const currentPageUrl = props.currentPageUrl ?? window.location.pathname;
     
     const formTitleId = `${form.key}_label`;
     const statusMessage = useRef<string>("");
@@ -23,27 +29,29 @@ export const FormBody = (props: FormBodyProps) => {
 
     const formCache = new FormCache();
     const localFormCache = new FormCache(window.localStorage);
+    const currentStepIndex = useMemo(()=>{
+        return stepHelper.getCurrentStepIndex(currentPageUrl);
+    },[currentPageUrl]);
 
     //TODO: these variables should be get from api or sdk
     const validateFail = useRef<boolean>(false),
         isFormFinalized = useRef<boolean>(false),
         isProgressiveSubmit = useRef<boolean>(false),
         isSuccess = useRef<boolean>(false),
-        submittable = true,
         submissionWarning = useRef<boolean>(false),
         message = useRef<string>(""),
         isReadOnlyMode = false,
         readOnlyModeMessage = "",
-        currentStepIndex = formContext?.currentStepIndex ?? 0,
         submissionStorageKey = FormConstants.FormSubmissionId + form.key,
-        isStepValidToDisplay = true;
-
+        isStepValidToDisplay = stepDependCondition.isStepValidToDisplay(currentStepIndex, currentPageUrl),
+        isMalFormSteps = stepHelper.isMalFormSteps();
+    
     if((isFormFinalized.current || isProgressiveSubmit.current) && isSuccess.current)
     {
         statusDisplay.current = "Form__Success__Message";
         statusMessage.current = form.properties.submitSuccessMessage ?? message.current;
     }
-    else if ((submissionWarning.current || (!submittable && !isSuccess.current))
+    else if ((submissionWarning.current || !isSuccess.current)
         && !isNullOrEmpty(message.current)) {
         statusDisplay.current = "Form__Warning__Message";
         statusMessage.current = message.current;
@@ -54,21 +62,6 @@ export const FormBody = (props: FormBodyProps) => {
     }
     
     const validationCssClass = validateFail.current ? "ValidationFail" : "ValidationSuccess";
-
-    const isInCurrentStep = (elementKey: string): boolean => {
-        let currentStep = form.steps[currentStepIndex];
-        if(currentStep){
-            return currentStep.elements.some(e => equals(e.key, elementKey));
-        }
-        return true;
-    }
-
-    const getFirstInvalidElement = (formValidationResults: FormValidationResult[]): string => {
-        return formValidationResults.filter(fv => 
-            fv.results.some(r => !r.valid) &&    
-            form.steps[currentStepIndex]?.elements?.some(e => equals(e.key, fv.elementKey))
-        )[0]?.elementKey;
-    }
 
     const showError = (error: string) => {
         submissionWarning.current = !isNullOrEmpty(error);
@@ -91,26 +84,26 @@ export const FormBody = (props: FormBodyProps) => {
         }
         //filter submissions by active elements and current step
         let formSubmissions = (formContext?.formSubmissions ?? [])
-            .filter(fs => !isInArray(fs.elementKey, formContext?.dependencyInactiveElements ?? []) && isInCurrentStep(fs.elementKey));
+            .filter(fs => !isInArray(fs.elementKey, formContext?.dependencyInactiveElements ?? []) && stepHelper.isInCurrentStep(fs.elementKey, currentStepIndex));
 
         //validate all submission data before submit
         let formValidationResults = formSubmitter.doValidate(formSubmissions);
         dispatchFunctions.updateAllValidation(formValidationResults);
         
         //set focus on the 1st invalid element of current step
-        let invalid = getFirstInvalidElement(formValidationResults);
+        let invalid = stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex);
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
             return;
         }
 
-        let isLastStep = formContext?.currentStepIndex === form.steps.length - 1;
+        let isLastStep = currentStepIndex === form.steps.length - 1;
         let model: FormSubmitModel = {
             formKey: form.key,
             locale: form.locale,
             isFinalized: submitButton?.properties?.finalizeForm || isLastStep,
             partialSubmissionKey: localFormCache.get(submissionStorageKey) ?? formContext?.submissionKey ?? "",
-            hostedPageUrl: window.location.pathname,
+            hostedPageUrl: currentPageUrl,
             submissionData: formSubmissions,
             accessToken: formContext?.identityInfo?.accessToken,
             currentStepIndex: currentStepIndex
@@ -142,18 +135,17 @@ export const FormBody = (props: FormBodyProps) => {
                 dispatchFunctions.updateAllValidation(formValidationResults);
 
                 //set focus on the 1st invalid element of current step
-                dispatchFunctions.updateFocusOn(getFirstInvalidElement(formValidationResults));
+                dispatchFunctions.updateFocusOn(stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex));
             }
 
             validateFail.current = response.validationFail;
             isSuccess.current = response.success;
             isFormFinalized.current = isLastStep && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
-            localFormCache.set(submissionStorageKey, response.submissionKey)
+            localFormCache.set(submissionStorageKey, response.submissionKey);
 
             if (isFormFinalized.current) {
-                formCache.remove(submissionStorageKey)
-                localFormCache.remove(submissionStorageKey)
+                localFormCache.remove(submissionStorageKey);
             }
         }).catch((e: ProblemDetail) => {
             if(e.status === 401) {
@@ -176,6 +168,8 @@ export const FormBody = (props: FormBodyProps) => {
             showError("");
         }
     }, [props.identityInfo?.accessToken]);
+
+    isMalFormSteps && showError("Improperly formed FormStep configuration. Some steps are attached to pages, while some steps are not attached, or attached to content with no public URL.");
 
     return (
         <form method="post"
@@ -216,7 +210,7 @@ export const FormBody = (props: FormBodyProps) => {
             <div className="Form__MainBody">
                 {/* render element */}
                 {form.steps.map((e, i) => {
-                    let stepDisplaying = (currentStepIndex === i && !isFormFinalized.current && isStepValidToDisplay) ? "" : "hide";
+                    let stepDisplaying = (currentStepIndex === i && !isFormFinalized.current && isStepValidToDisplay && !isMalFormSteps) ? "" : "hide";
                     return (
                         <section key={e.formStep.key} id={e.formStep.key} className={`Form__Element__Step ${stepDisplaying}`}>
                             <RenderElementInStep elements={e.elements} stepIndex={i} />
@@ -229,6 +223,9 @@ export const FormBody = (props: FormBodyProps) => {
                     isFormFinalized={isFormFinalized.current}
                     history = {props.history}
                     handleSubmit = {handleSubmit}
+                    isMalFormSteps = {isMalFormSteps}
+                    isStepValidToDisplay = {isStepValidToDisplay}
+                    currentStepIndex={currentStepIndex}
                 />
             </div>
         </form>

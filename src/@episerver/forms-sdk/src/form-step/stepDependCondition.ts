@@ -1,15 +1,18 @@
 import { ConditionFunctions } from "../form-depend-conditions/ConditionFunctions";
 import { FormStorage } from "../form-storage";
-import { isInArray } from "../helpers";
+import { equals, isInArray, isNullOrEmpty } from "../helpers";
 import { FormContainer, FormStep } from "../models";
+import { StepHelper } from "./stepHelper";
 
 /**
  * Class to help check step is satisfy depend condition
  */
 export class StepDependCondition {
-    readonly _form: FormContainer
-    readonly _formStorage: FormStorage
-    readonly _inactiveElements: string[]
+    readonly _form: FormContainer;
+    readonly _formStorage: FormStorage;
+    readonly _inactiveElements: string[];
+    readonly _tempBaseUrl = "http://temp";
+    readonly _stepHelper: StepHelper;
     /**
      * The constructor of class StepDependCondition
      * @param form Current form container
@@ -19,6 +22,7 @@ export class StepDependCondition {
         this._form = form;
         this._formStorage = new FormStorage(form);
         this._inactiveElements = inactiveElements;
+        this._stepHelper = new StepHelper(form);
     }
 
     /**
@@ -33,7 +37,7 @@ export class StepDependCondition {
             return false;
         }
 
-        let dependField = step.properties.dependField,
+        let dependField = step.properties?.dependField,
             storedData = this._formStorage.loadFormDataFromStorage().filter(fs => fs.elementKey === dependField?.key)[0],
             funcOfDependCondition = ConditionFunctions[step.properties.dependCondition]; 
 
@@ -81,4 +85,65 @@ export class StepDependCondition {
         }
         return undefined;
     }
+
+    
+
+    /**
+     * Whether step index is valid to display
+     * @param stepIndex 
+     * @param currentPageUrl 
+     * @returns 
+     */
+    isStepValidToDisplay (stepIndex: number, currentPageUrl: string): boolean {
+        let totalStep = this._form.steps.length;
+        if(stepIndex < 0 || stepIndex >= totalStep){
+            return false;
+        }
+        let step = this._form.steps[stepIndex].formStep;
+        let attachedContent = step.properties?.attachedContentLink;
+        let attachedContentUrl = new URL(attachedContent, this._tempBaseUrl);
+        let pageUrl = new URL(currentPageUrl, this._tempBaseUrl)
+        // if the step is not configured for display in current page, return false
+        if(!isNullOrEmpty(attachedContent) && !equals(attachedContentUrl.pathname, pageUrl.pathname)){
+            return false;
+        }
+        // always display the last step
+        if (stepIndex == totalStep - 1)
+        {
+             return true;
+        }
+        if(!this._stepHelper.isNeedCheckDependCondition(stepIndex)){
+            // the step has no depend condition always display
+            return true;
+        }
+        //the step has depend condition
+        let submissionData = this._formStorage.loadFormDataFromStorage();
+        if(submissionData.length === 0){
+            return false
+        }
+        let inactiveStepsIndex = this.getInactiveStepsIndex();
+        return !inactiveStepsIndex.some(i => i === stepIndex);
+    }
+
+    /**
+     * Get an array of step index that are inactive by depend conditions
+     * @returns 
+     */
+    getInactiveStepsIndex(): number[] {
+        let totalStep = this._form.steps.length;
+        if(totalStep === 1){
+            return [];
+        }
+        let inactiveSteps: number[] = [];
+
+        this._form.steps.forEach((s, i) => {
+            if(this._stepHelper.isNeedCheckDependCondition(i) && !this.isSatisfied(i)){
+                inactiveSteps = inactiveSteps.concat(i);
+            }
+        });
+
+        return inactiveSteps;
+    }
+
+    
 }

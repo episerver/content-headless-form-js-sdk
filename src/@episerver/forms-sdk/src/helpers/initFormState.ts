@@ -1,4 +1,3 @@
-import { FormCache } from "../form-cache";
 import { FormStorage } from "../form-storage";
 import { ElementValidationResult, FormConstants, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies, ValidatableElementBaseProperties } from "../models";
 import { getDefaultValue } from "./elementHelper";
@@ -12,7 +11,6 @@ import { equals, isNull } from "./utils";
 export function initFormState(formContainer: FormContainer): FormState {
     const formStorage = new FormStorage(formContainer);
     const formData = formStorage.loadFormDataFromStorage();
-    const formCache = new FormCache()
 
     let formSubmissions = [] as FormSubmission[];
     let formValidationResults = [] as FormValidationResult[];
@@ -51,7 +49,6 @@ export function initFormState(formContainer: FormContainer): FormState {
         isReset: false,
         focusOn: "",
         dependencyInactiveElements: [],
-        currentStepIndex: parseInt(formCache.get(FormConstants.FormCurrentStep + formContainer.key) ?? "0"),
         formSubmissions,
         formValidationResults,
         stepDependencies,

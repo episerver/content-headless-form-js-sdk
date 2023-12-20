@@ -41,6 +41,7 @@ function App() {
                                     baseUrl={process.env.REACT_APP_HEADLESS_FORM_BASE_URL ?? "/"}
                                     identityInfo={identityInfo} 
                                     history={history}
+                                    currentPageUrl={pageData.pageUrl}
                                 />
                             ))}
                         </div>
