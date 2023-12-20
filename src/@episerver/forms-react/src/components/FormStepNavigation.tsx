@@ -1,12 +1,11 @@
 import React, { useRef } from "react";
 import { useForms } from "../context/store";
-import { FormCache, FormContainer, FormStep, StepDependCondition, SubmitButtonType, isNull } from "@episerver/forms-sdk";
-import { DispatchFunctions } from "../context/dispatchFunctions";
+import { FormContainer, FormStep, StepDependCondition, SubmitButtonType, isNull } from "@episerver/forms-sdk";
 
 interface FormStepNavigationProps {
     isFormFinalized: boolean;
     history?: any;
-    handleSubmit: (e: any) => void;
+    handleSubmit: (e: any) => Promise<boolean>;
     isMalFormSteps: boolean;
     isStepValidToDisplay: boolean;
     currentStepIndex: number;
@@ -14,11 +13,9 @@ interface FormStepNavigationProps {
 
 export const FormStepNavigation = (props: FormStepNavigationProps) => {
     const formContext = useForms();
-    const formCache = new FormCache();
     const form = formContext?.formContainer ?? {} as FormContainer;
     const depend = new StepDependCondition(form, formContext?.dependencyInactiveElements ?? []);
     const { isFormFinalized, history, handleSubmit, isMalFormSteps, isStepValidToDisplay, currentStepIndex } = props;
-    const dispatchFuncs = new DispatchFunctions();
     const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations).current;
 
     const submittable = true
@@ -36,10 +33,10 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
         goToStep(depend.findPreviousStep(currentStepIndex) ?? 0)
     }
 
-    const handleNextStep = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleNextStep = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
-        handleSubmit(event)
-        goToStep(depend.findNextStep(currentStepIndex) ?? 0)
+        let isSuccess = await handleSubmit(event);
+        isSuccess && goToStep(depend.findNextStep(currentStepIndex) ?? 0);
     }
 
     const goToStep = (stepIndex: number) => {

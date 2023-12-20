@@ -68,11 +68,11 @@ export const FormBody = (props: FormBodyProps) => {
         message.current = error;
     }
 
-    const handleSubmit = (e: any) => {
+    const handleSubmit = async (e: any):Promise<boolean> => {
         e.preventDefault();
 
         if (!form.properties.allowAnonymousSubmission && isNullOrEmpty(formContext?.identityInfo?.accessToken)) {
-            return;
+            return false;
         }
 
         //Find submit button, if found then check property 'finalizeForm' of submit button. Otherwise, button Next/Previous was clicked.
@@ -94,7 +94,7 @@ export const FormBody = (props: FormBodyProps) => {
         let invalid = stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex);
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
-            return;
+            return false;
         }
 
         let isLastStep = currentStepIndex === form.steps.length - 1;
@@ -109,6 +109,8 @@ export const FormBody = (props: FormBodyProps) => {
             currentStepIndex: currentStepIndex
         }
 
+        //submit data to API
+        isSuccess.current = false;
         dispatchFunctions.updateIsSubmitting(true);
         formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
             //get error or success message
@@ -157,6 +159,8 @@ export const FormBody = (props: FormBodyProps) => {
         }).finally(()=>{
             dispatchFunctions.updateIsSubmitting(false);
         });
+
+        return isSuccess.current;
     }
 
     useEffect(() => {
