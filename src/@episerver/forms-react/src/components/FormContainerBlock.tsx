@@ -8,17 +8,18 @@ export interface FormContainerProps {
     identityInfo?: IdentityInfo;
     baseUrl: string;
     history?: any;
+    currentPageUrl?: string;
 }
 
 export function FormContainerBlock(props: FormContainerProps){
     const stepBuilder = new StepBuilder(props.form);
     const form = stepBuilder.buildForm();
-    const state = initFormState(form);
+    const state = initFormState(form, props.currentPageUrl);
 
     {/* finally return the form */}
     return (
         <FormProvider initialState={state}>
-            <FormBody identityInfo={props.identityInfo} baseUrl={props.baseUrl} history={props.history}/>
+            <FormBody identityInfo={props.identityInfo} baseUrl={props.baseUrl} history={props.history} currentPageUrl={props.currentPageUrl}/>
         </FormProvider>
     )
 }

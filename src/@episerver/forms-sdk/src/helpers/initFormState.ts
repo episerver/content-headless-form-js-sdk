@@ -1,18 +1,20 @@
 import { FormCache } from "../form-cache";
+import { StepHelper } from "../form-step";
 import { FormStorage } from "../form-storage";
 import { ElementValidationResult, FormConstants, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies, ValidatableElementBaseProperties } from "../models";
 import { getDefaultValue } from "./elementHelper";
-import { equals, isNull } from "./utils";
+import { equals, isNull, isNullOrEmpty } from "./utils";
 
 /**
  * Function to initialize FormState object
  * @param formContainer A form container
  * @returns An object of FormState
  */
-export function initFormState(formContainer: FormContainer): FormState {
+export function initFormState(formContainer: FormContainer, currentPageUrl?: string): FormState {
     const formStorage = new FormStorage(formContainer);
     const formData = formStorage.loadFormDataFromStorage();
-    const formCache = new FormCache()
+    const formCache = new FormCache();
+    const stepHelper = new StepHelper(formContainer);
 
     let formSubmissions = [] as FormSubmission[];
     let formValidationResults = [] as FormValidationResult[];
@@ -47,11 +49,16 @@ export function initFormState(formContainer: FormContainer): FormState {
         });
     }
 
+    let stepIndexCached = formCache.get(FormConstants.FormCurrentStep + formContainer.key) as string;
+    let currentStepIndex = isNullOrEmpty(stepIndexCached) 
+        ? stepHelper.getCurrentStepIndex(currentPageUrl)
+        : parseInt(stepIndexCached);
+
     return {
         isReset: false,
         focusOn: "",
         dependencyInactiveElements: [],
-        currentStepIndex: parseInt(formCache.get(FormConstants.FormCurrentStep + formContainer.key) ?? "0"),
+        currentStepIndex,
         formSubmissions,
         formValidationResults,
         stepDependencies,
