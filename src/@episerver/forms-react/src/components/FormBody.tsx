@@ -21,7 +21,7 @@ export const FormBody = (props: FormBodyProps) => {
     const dispatchFunctions = new DispatchFunctions();
     const stepDependCondition = new StepDependCondition(form, inactiveElements);
     const stepHelper = new StepHelper(form);
-    const currentPageUrl = props.currentPageUrl ?? window.location.pathname;
+    const currentPageUrl = props.currentPageUrl ?? window.location.href;
     
     const formTitleId = `${form.key}_label`;
     const statusMessage = useRef<string>("");
@@ -29,9 +29,7 @@ export const FormBody = (props: FormBodyProps) => {
 
     const formCache = new FormCache();
     const localFormCache = new FormCache(window.localStorage);
-    const currentStepIndex = useMemo(()=>{
-        return stepHelper.getCurrentStepIndex(currentPageUrl);
-    },[currentPageUrl]);
+    const currentStepIndex = formContext?.currentStepIndex ?? 0;
 
     //TODO: these variables should be get from api or sdk
     const validateFail = useRef<boolean>(false),
@@ -68,11 +66,11 @@ export const FormBody = (props: FormBodyProps) => {
         message.current = error;
     }
 
-    const handleSubmit = async (e: any):Promise<boolean> => {
+    const handleSubmit = (e: any) => {
         e.preventDefault();
 
         if (!form.properties.allowAnonymousSubmission && isNullOrEmpty(formContext?.identityInfo?.accessToken)) {
-            return false;
+            return;
         }
 
         //Find submit button, if found then check property 'finalizeForm' of submit button. Otherwise, button Next/Previous was clicked.
@@ -94,7 +92,7 @@ export const FormBody = (props: FormBodyProps) => {
         let invalid = stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex);
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
-            return false;
+            return;
         }
 
         let isLastStep = currentStepIndex === form.steps.length - 1;
@@ -110,14 +108,10 @@ export const FormBody = (props: FormBodyProps) => {
         }
 
         //submit data to API
-        isSuccess.current = false;
         dispatchFunctions.updateIsSubmitting(true);
         formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
             //get error or success message
-            if(response.success){
-                message.current = response.messages.map(m => m.message).join("<br>");
-            }
-            else {
+            if(!response.success) {
                 //ignore validation message
                 showError(response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>"));
             }
@@ -147,20 +141,26 @@ export const FormBody = (props: FormBodyProps) => {
             localFormCache.set(submissionStorageKey, response.submissionKey);
 
             if (isFormFinalized.current) {
+                formCache.remove(FormConstants.FormCurrentStep + form.key);
                 localFormCache.remove(submissionStorageKey);
+                message.current = response.messages.map(m => m.message).join("<br>");
             }
         }).catch((e: ProblemDetail) => {
-            if(e.status === 401) {
-                //clear access token to ask login again
-                dispatchFunctions.updateIdentity({} as IdentityInfo);
-                formCache.remove(FormConstants.FormAccessToken);
-                showError(e.detail);
+            switch(e.status){
+                case 401:
+                    //clear access token to ask login again
+                    dispatchFunctions.updateIdentity({} as IdentityInfo);
+                    formCache.remove(FormConstants.FormAccessToken);
+                    break;
+                case 400:
+                    //validate fail
+                    break;
             }
+
+            showError(e.detail);
         }).finally(()=>{
             dispatchFunctions.updateIsSubmitting(false);
         });
-
-        return isSuccess.current;
     }
 
     useEffect(() => {
@@ -172,6 +172,11 @@ export const FormBody = (props: FormBodyProps) => {
             showError("");
         }
     }, [props.identityInfo?.accessToken]);
+
+    //reset when change page
+    useEffect(()=>{
+        isSuccess.current = false;
+    },[currentStepIndex]);
 
     isMalFormSteps && showError("Improperly formed FormStep configuration. Some steps are attached to pages, while some steps are not attached, or attached to content with no public URL.");
 
@@ -229,7 +234,7 @@ export const FormBody = (props: FormBodyProps) => {
                     handleSubmit = {handleSubmit}
                     isMalFormSteps = {isMalFormSteps}
                     isStepValidToDisplay = {isStepValidToDisplay}
-                    currentStepIndex={currentStepIndex}
+                    isSuccess = {isSuccess.current}
                 />
             </div>
         </form>

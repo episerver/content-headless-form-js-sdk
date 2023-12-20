@@ -75,6 +75,13 @@ export class DispatchFunctions {
         });
     }
 
+    updateCurrentStepIndex = (currentStepIndex?: number) => {
+        this._dispatch({
+            type: ActionType.UpdateCurrentStepIndex,
+            currentStepIndex
+        });
+    }
+
     updateIsSubmitting = (isSubmitting?: boolean) => {
         this._dispatch({
             type: ActionType.UpdateIsSubmitting,

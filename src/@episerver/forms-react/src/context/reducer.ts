@@ -13,6 +13,7 @@ export enum ActionType {
     UpdateFocusOn = "UpdateFocusOn",
     UpdateIdentityInfo = "UpdateIdentityInfo",
     UpdateSubmissionKey = "UpdateSubmissionKey",
+    UpdateCurrentStepIndex = "UpdateCurrentStepIndex",
     UpdateIsSubmitting = "UpdateIsSubmitting"
 }
 
@@ -76,6 +77,12 @@ export function formReducer(formState: FormState, action: any) {
         return {
           ...formState,
           submissionKey: action.submissionKey
+        } as FormState
+      }
+      case ActionType.UpdateCurrentStepIndex: {
+        return {
+          ...formState,
+          currentStepIndex: action.currentStepIndex
         } as FormState
       }
       case ActionType.UpdateIsSubmitting: {

@@ -39,7 +39,7 @@ export class StepHelper {
      * @param currentPageUrl 
      * @returns 
      */
-    getCurrentStepIndex (currentPageUrl: string): number {
+    getCurrentStepIndex (currentPageUrl?: string): number {
         let currentStepIndex = 0;
         
         if(this.isAllStepsAreNotLinked()){
@@ -48,7 +48,7 @@ export class StepHelper {
         else {
             this._form.steps.every((s, i)=>{
                 let url = new URL(s.formStep.properties?.attachedContentLink, this._tempBaseUrl);
-                let pageUrl = new URL(currentPageUrl, this._tempBaseUrl)
+                let pageUrl = new URL(currentPageUrl ?? "/", this._tempBaseUrl)
                 if(equals(pageUrl.pathname, url.pathname)){
                     currentStepIndex = i;
                     return false;

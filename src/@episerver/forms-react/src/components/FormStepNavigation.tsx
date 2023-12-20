@@ -1,26 +1,31 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { FormContainer, FormStep, StepDependCondition, SubmitButtonType, isNull } from "@episerver/forms-sdk";
+import { FormCache, FormConstants, FormContainer, StepDependCondition, SubmitButtonType, isNull, isNullOrEmpty } from "@episerver/forms-sdk";
+import { DispatchFunctions } from "../context/dispatchFunctions";
 
 interface FormStepNavigationProps {
     isFormFinalized: boolean;
     history?: any;
-    handleSubmit: (e: any) => Promise<boolean>;
+    handleSubmit: (e: any) => void;
     isMalFormSteps: boolean;
     isStepValidToDisplay: boolean;
-    currentStepIndex: number;
+    isSuccess: boolean;
 }
 
 export const FormStepNavigation = (props: FormStepNavigationProps) => {
     const formContext = useForms();
+    const formCache = new FormCache();
     const form = formContext?.formContainer ?? {} as FormContainer;
     const depend = new StepDependCondition(form, formContext?.dependencyInactiveElements ?? []);
-    const { isFormFinalized, history, handleSubmit, isMalFormSteps, isStepValidToDisplay, currentStepIndex } = props;
+    const { isFormFinalized, history, handleSubmit, isMalFormSteps, isStepValidToDisplay, isSuccess } = props;
+    const dispatchFuncs = new DispatchFunctions();
     const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations).current;
+    const isNextStep = useRef<boolean>(false);
 
     const submittable = true
     const stepCount = form.steps.length;
 
+    const currentStepIndex = formContext?.currentStepIndex ?? 0;
     const currentDisplayStepIndex = currentStepIndex + 1;
     const prevButtonDisableState = (currentStepIndex == 0) || !submittable;
     const nextButtonDisableState = (currentStepIndex == stepCount - 1) || !submittable;
@@ -35,18 +40,27 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
 
     const handleNextStep = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
-        let isSuccess = await handleSubmit(event);
-        isSuccess && goToStep(depend.findNextStep(currentStepIndex) ?? 0);
+        handleSubmit(event);
+        isNextStep.current = true;
     }
 
     const goToStep = (stepIndex: number) => {
-        var step = form.steps[stepIndex].formStep as FormStep
+        var attachedContentLink = form.steps[stepIndex]?.formStep?.properties?.attachedContentLink;
 
-        if (!isNull(step) && !isNull(step.properties.attachedContentLink)) {
-            let url = new URL(step.properties.attachedContentLink)
+        formCache.set<number>(FormConstants.FormCurrentStep + form.key, stepIndex);
+        dispatchFuncs.updateCurrentStepIndex(stepIndex);
+        if (!isNullOrEmpty(attachedContentLink)) {
+            let url = new URL(attachedContentLink);
             history && history.push(url.pathname);
         }
     }
+
+    useEffect(()=>{
+        if(isSuccess && isNextStep.current) { 
+            goToStep(depend.findNextStep(currentStepIndex) ?? 0);
+            isNextStep.current = false;
+        }
+    },[isSuccess]);
 
     return (
         <>
