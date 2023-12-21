@@ -86,6 +86,23 @@ export class FormSubmitter {
     }
 
     /**
+     * Combine 2 data from storage and form submission
+     * @param dataFromStorage the array of form data from session storage
+     * @param submissionData the array of form submission
+     */
+    combineData(dataFromStorage: FormSubmission[], submissionData: FormSubmission[]): FormSubmission[] {
+        const mapFromArray = new Map<string, FormSubmission>();
+        
+        submissionData.forEach(element => {
+            mapFromArray.set(element.elementKey, element);
+        });
+    
+        const combinedData = [...submissionData, ...dataFromStorage.filter(element => !mapFromArray.has(element.elementKey))];
+        
+        return combinedData;
+    }
+
+    /**
      * Post an array of form submission to the Headless Form API
      * @param formSubmission the array of form submission to post
      */
@@ -95,8 +112,8 @@ export class FormSubmitter {
 
             // Save data to storage of browser
             let currentData = formStorage.loadFormDataFromStorage()
-            formStorage.saveFormDataToStorage(currentData.concat(model.submissionData));
-    
+            let dataCombined = this.combineData(currentData,model.submissionData)
+            formStorage.saveFormDataToStorage(dataCombined);
             // Post data to API
             let formData = new FormData();
             formData.append("formKey", model.formKey);

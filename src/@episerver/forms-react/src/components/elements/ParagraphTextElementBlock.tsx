@@ -45,8 +45,6 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
             }
         });
     }
-    
-    console.log(text)
 
     return useMemo(() => (
         <ElementWrapper className={`FormParagraphText Form__Element--NonData ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
