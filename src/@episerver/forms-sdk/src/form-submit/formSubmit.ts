@@ -199,7 +199,7 @@ export class FormSubmitter {
                 let value = formSubmissions.filter(fs => equals(fs.elementKey, e.key))[0]?.value;
                 return {
                     elementKey: e.key,
-                    results: formValidator.validate(value)
+                    result: formValidator.validate(value)
                 } as FormValidationResult;
         });
     }

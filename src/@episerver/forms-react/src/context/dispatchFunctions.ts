@@ -8,11 +8,11 @@ export class DispatchFunctions {
         this._dispatch = useFormsDispatch();
     }
 
-    updateValidation = (elementKey: string, validationResults: ElementValidationResult[]) => {
+    updateValidation = (elementKey: string, validationResult: ElementValidationResult) => {
         this._dispatch({
             type: ActionType.UpdateValidation,
             elementKey: elementKey,
-            validationResults
+            validationResult
         });
     }
 

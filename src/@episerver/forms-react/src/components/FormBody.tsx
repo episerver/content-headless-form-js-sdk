@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, equals, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormValidationResult, FormCache, FormConstants, ProblemDetail, StepDependCondition } from "@episerver/forms-sdk";
+import { FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -38,8 +38,6 @@ export const FormBody = (props: FormBodyProps) => {
         isSuccess = useRef<boolean>(false),
         submissionWarning = useRef<boolean>(false),
         message = useRef<string>(""),
-        isReadOnlyMode = false,
-        readOnlyModeMessage = "",
         submissionStorageKey = FormConstants.FormSubmissionId + form.key,
         isStepValidToDisplay = stepDependCondition.isStepValidToDisplay(currentStepIndex, currentPageUrl),
         isMalFormSteps = stepHelper.isMalFormSteps();
@@ -110,31 +108,7 @@ export const FormBody = (props: FormBodyProps) => {
         //submit data to API
         dispatchFunctions.updateIsSubmitting(true);
         formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
-            //get error or success message
-            if(!response.success) {
-                //ignore validation message
-                showError(response.messages.filter(m => isNullOrEmpty(m.identifier)).map(m => m.message).join("<br>"));
-            }
-            //update validation message
-            if(response.validationFail){
-                let formValidationResults = formContext?.formValidationResults?.map(fr => {
-                    let errorMessages = response.messages.filter(m => equals(m.identifier, fr.elementKey));
-                    return errorMessages.length === 0 ? fr : {
-                        ...fr,
-                        results: fr.results.map(er => !errorMessages.some(em => equals(em.section, er.type)) ? er : {
-                            ...er,
-                            valid: false
-                        })
-                    } as FormValidationResult
-                }) ?? [];
-
-                dispatchFunctions.updateAllValidation(formValidationResults);
-
-                //set focus on the 1st invalid element of current step
-                dispatchFunctions.updateFocusOn(stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex));
-            }
-
-            validateFail.current = response.validationFail;
+            //go here, response.success always is true
             isSuccess.current = response.success;
             isFormFinalized.current = isLastStep && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
@@ -154,6 +128,16 @@ export const FormBody = (props: FormBodyProps) => {
                     break;
                 case 400:
                     //validate fail
+                    validateFail.current = false;
+                    let formValidationResults = formContext?.formValidationResults?.map(fr => isNull(e.errors[fr.elementKey]) ? fr : {
+                        ...fr,
+                        result: { valid: false, message: e.errors[fr.elementKey].join("<br/>") }
+                    }) ?? [];
+
+                    dispatchFunctions.updateAllValidation(formValidationResults);
+
+                    //set focus on the 1st invalid element of current step
+                    dispatchFunctions.updateFocusOn(stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex));
                     break;
             }
 
@@ -178,6 +162,13 @@ export const FormBody = (props: FormBodyProps) => {
         isSuccess.current = false;
     },[currentStepIndex]);
 
+    //Run in-case change page by url. The currentStepIndex that get from cache is incorrect.
+    useEffect(()=>{
+        if(!isStepValidToDisplay){
+            dispatchFunctions.updateCurrentStepIndex(stepHelper.getCurrentStepIndex(currentPageUrl));
+        }
+    },[]);
+
     isMalFormSteps && showError("Improperly formed FormStep configuration. Some steps are attached to pages, while some steps are not attached, or attached to content with no public URL.");
 
     return (
@@ -198,13 +189,6 @@ export const FormBody = (props: FormBodyProps) => {
                 <aside className="Form__Description">
                     {form.properties.description}
                 </aside>
-            }
-            {isReadOnlyMode && readOnlyModeMessage &&
-                <div className="Form__Status">
-                    <span className="Form__Readonly__Message" role="alert">
-                        {readOnlyModeMessage}
-                    </span>
-                </div>
             }
             {/* area for showing Form's status or validation */}
             <div className="Form__Status">
