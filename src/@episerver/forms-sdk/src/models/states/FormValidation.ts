@@ -3,14 +3,11 @@
  */
 export interface FormValidationResult
 {
-    elementKey: string
-    results: ElementValidationResult[]
+    elementKey: string;
+    result: ElementValidationResult;
 }
 
-/**
- * Represent type of object that is element validation result 
- */
 export interface ElementValidationResult {
-    type: string
-    valid: boolean
+    valid: boolean;
+    message: string;
 }

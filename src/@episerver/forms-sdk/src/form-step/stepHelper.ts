@@ -81,8 +81,8 @@ export class StepHelper {
      */
     getFirstInvalidElement (formValidationResults: FormValidationResult[], stepIndex: number): string {
         return formValidationResults.filter(fv => 
-            fv.results.some(r => !r.valid) &&    
-            this._form.steps[stepIndex]?.elements?.some(e => equals(e.key, fv.elementKey))
+            !fv.result.valid &&    
+            this.isInCurrentStep(fv.elementKey, stepIndex)
         )[0]?.elementKey;
     }
 

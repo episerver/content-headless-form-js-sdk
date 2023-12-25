@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useForms, useFormsDispatch } from "../context/store";
+import { useForms } from "../context/store";
 import {
     //models
     FormContainer,
@@ -9,7 +9,6 @@ import {
     ValidatableElementBaseProperties,
     ValidatorType,
     SatisfiedActionType,
-    ElementValidationResult,
     //functions
     equals,
     getDefaultValue,
@@ -20,13 +19,14 @@ import {
     FormValidator,
     FormSubmission,
     FormDependConditions,
+    FormValidationResult,
     } from "@episerver/forms-sdk";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 
 export interface ElementContext {
     value: any,
     defaultValue: any,
-    validationResults: ElementValidationResult[],
+    validationResults: FormValidationResult,
     extraAttr: any,
     validatorClasses: string,
     isVisible: boolean,
@@ -47,7 +47,7 @@ export const useElement = (element: FormElementBase) => {
     const value = (formContext?.formSubmissions ?? [])
         .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
     const validationResults = (formContext?.formValidationResults ?? [])
-        .filter(s => equals(s.elementKey, element.key))[0]?.results ?? [];
+        .filter(s => equals(s.elementKey, element.key))[0] ?? {elementKey: element.key, result: {valid: true}};
 
     //build extra attributes for element
     const validatableProps = (element.properties as unknown) as ValidatableElementBaseProperties;
@@ -143,8 +143,7 @@ export const useElement = (element: FormElementBase) => {
 
         if (/file/.test(type)) {
             submissionValue = files;
-            let validationResults = formValidation.validate(files)
-            dispatchFuncs.updateValidation(element.key, validationResults);
+            dispatchFuncs.updateValidation(element.key, formValidation.validate(files));
         }
 
         //update form context
@@ -152,11 +151,8 @@ export const useElement = (element: FormElementBase) => {
     }
 
     const handleBlur = (e: any) => {
-        //call validation from form-sdk
-        let validationResults = formValidation.validate(value);
-
         //update form context
-        dispatchFuncs.updateValidation(element.key, validationResults);
+        dispatchFuncs.updateValidation(element.key, formValidation.validate(value));
     }
 
     const handleReset = () => {

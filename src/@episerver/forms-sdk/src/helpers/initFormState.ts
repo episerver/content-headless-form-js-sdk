@@ -1,9 +1,9 @@
 import { FormCache } from "../form-cache";
 import { StepHelper } from "../form-step";
 import { FormStorage } from "../form-storage";
-import { ElementValidationResult, FormConstants, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies, ValidatableElementBaseProperties } from "../models";
+import { FormConstants, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies } from "../models";
 import { getDefaultValue } from "./elementHelper";
-import { equals, isNull, isNullOrEmpty } from "./utils";
+import { equals, isNullOrEmpty } from "./utils";
 
 /**
  * Function to initialize FormState object
@@ -26,17 +26,7 @@ export function initFormState(formContainer: FormContainer, currentPageUrl?: str
             formSubmissions = formSubmissions.concat({ elementKey: e.key, value: getDefaultValue(e) } as FormSubmission);
 
             //init form validation
-            let validatableProps = e.properties as ValidatableElementBaseProperties;
-            let elementValidationResults = [] as ElementValidationResult[];
-
-            //some elements don't have validator
-            if (!isNull(validatableProps.validators)) {
-                validatableProps.validators.forEach(v => {
-                    elementValidationResults = elementValidationResults.concat({ type: v.type, valid: true }); //default valid = true to hide message
-                });
-            }
-
-            formValidationResults = formValidationResults.concat({ elementKey: e.key, results: elementValidationResults });
+            formValidationResults = formValidationResults.concat({ elementKey: e.key, result: {valid: true, message: ""} });
         });
         stepDependencies = stepDependencies.concat({ elementKey: s.formStep.key, isSatisfied: false });
     });

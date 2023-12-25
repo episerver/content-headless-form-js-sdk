@@ -33,7 +33,7 @@ export function formReducer(formState: FormState, action: any) {
             ...formState,
             formValidationResults: formState.formValidationResults.map(fv => equals(fv.elementKey, action.elementKey) ? {
                 elementKey: action.elementKey,
-                results: action.validationResults
+                result: action.validationResult
             } as FormValidationResult : fv)
         } as FormState;
       }

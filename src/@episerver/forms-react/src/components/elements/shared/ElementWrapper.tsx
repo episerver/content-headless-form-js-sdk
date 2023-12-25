@@ -1,15 +1,15 @@
-import { ElementValidationResult } from "@episerver/forms-sdk";
+import { FormValidationResult } from "@episerver/forms-sdk";
 import React, { ReactNode } from "react";
 
 export interface ElementWrapperProps{
     className?: string
     isVisible: boolean,
     children: ReactNode,
-    validationResults?: ElementValidationResult[]
+    validationResults?: FormValidationResult
 }
 
 export default function ElementWrapper(props: ElementWrapperProps){
-    const isFail = props.validationResults?.some(r => !r.valid);
+    const isFail = !props.validationResults?.result?.valid;
 
     return (
         <>

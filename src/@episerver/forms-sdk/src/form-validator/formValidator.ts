@@ -130,13 +130,14 @@ export class FormValidator {
      * @param value Value of field to validate
      * @returns An object that contains validate result
      */
-    validate(value: any): ElementValidationResult[]{
+    validate(value: any): ElementValidationResult{
+        let result: ElementValidationResult = {valid: true, message: ""};
         let validatorProps = this._element.properties as ValidatableElementBaseProperties;
         if(isNull(validatorProps?.validators)){
-            return [];
+            return result;
         }
 
-        return validatorProps.validators.map((v) => {
+        validatorProps.validators.every((v) => {
             let valid = true;
             switch(v.type){
                 case ValidatorType.CaptchaValidator:
@@ -164,10 +165,13 @@ export class FormValidator {
                     break;
             }
 
-            return {
-                type: v.type,
-                valid
-            } as ElementValidationResult;
-        })
+            if(!valid) {
+                result = {valid, message: v.model.message};
+                return false;
+            }
+            return true;
+        });
+
+        return result;
     }
 }
