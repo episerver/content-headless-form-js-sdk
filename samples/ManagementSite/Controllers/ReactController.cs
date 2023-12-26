@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Optimizely.Cms.Content;
 using Optimizely.Cms.Content.Models;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AlloyMvcTemplates.Controllers;
@@ -29,10 +30,11 @@ public class ReactController : ControllerBase
         {
             return NoContent();
         }
-
+        CancellationTokenSource source = new CancellationTokenSource();
+        CancellationToken token = source.Token;
         var key = ContentKey.FormatAsKey(content.ContentGuid);
         var pageModel = new PageModel();
-        var contentHeadless = await _contentRepositoryInteApi.GetAsync(new ContentReference(key), new GetContentOptions());
+        var contentHeadless = await _contentRepositoryInteApi.GetAsync(key, content.LanguageBranch());
 
         pageModel.Title = contentHeadless.DisplayName;
         pageModel.PageUrl = UrlResolver.Current.GetUrl(content.ContentLink);

@@ -1,8 +1,7 @@
 import './App.css';
-import { useFetch } from './hooks/useFetch';
+import { useFetch } from './useFetch';
 import { Form, FormLogin } from '@episerver/forms-react';
-import { extractParams } from './helpers/urlHelper';
-import { FormCache, FormConstants, IdentityInfo } from '@episerver/forms-sdk';
+import { FormCache, FormConstants, IdentityInfo, extractParams } from '@episerver/forms-sdk';
 import { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 
