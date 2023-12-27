@@ -20,6 +20,7 @@ import {
     FormSubmission,
     FormDependConditions,
     FormValidationResult,
+    htmlDecodeEntities,
     } from "@episerver/forms-sdk";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 
@@ -156,7 +157,10 @@ export const useElement = (element: FormElementBase) => {
     }
 
     const handleReset = () => {
-        dispatchFuncs.resetForm(formContext?.formContainer ?? {} as FormContainer);
+        const form = formContext?.formContainer ?? {} as FormContainer
+        if (confirm(htmlDecodeEntities(form.properties.resetConfirmationMessage))) {
+            dispatchFuncs.resetForm(form);
+        }
     }
 
     return { 

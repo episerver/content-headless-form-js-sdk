@@ -72,3 +72,13 @@ export function isInArray (value: string, arrayString: string[], ignoreCase: boo
     }
     return arrayString.indexOf(value) > -1;
 }
+
+/**
+ * Decodes HTML entities in a given encoded string and returns the decoded string..
+ * @param encodedString - The string containing HTML-encoded entities to be decoded.
+ */
+export function htmlDecodeEntities(encodedString: string) : string{
+    var textArea = document.createElement("textarea");
+    textArea.innerHTML = encodedString;
+    return textArea.value;
+}
