@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition } from "@episerver/forms-sdk";
+import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
-import { StepHelper } from "@episerver/forms-sdk/dist/form-step/stepHelper";
 
 interface FormBodyProps {
     identityInfo?: IdentityInfo;
@@ -127,17 +126,19 @@ export const FormBody = (props: FormBodyProps) => {
                     formCache.remove(FormConstants.FormAccessToken);
                     break;
                 case 400:
-                    //validate fail
-                    validateFail.current = false;
-                    let formValidationResults = formContext?.formValidationResults?.map(fr => isNull(e.errors[fr.elementKey]) ? fr : {
-                        ...fr,
-                        result: { valid: false, message: e.errors[fr.elementKey].join("<br/>") }
-                    }) ?? [];
+                    if(e.errors){
+                        //validate fail
+                        validateFail.current = false;
+                        let formValidationResults = formContext?.formValidationResults?.map(fr => isNull(e.errors[fr.elementKey]) ? fr : {
+                            ...fr,
+                            result: { valid: false, message: e.errors[fr.elementKey].join("<br/>") }
+                        }) ?? [];
 
-                    dispatchFunctions.updateAllValidation(formValidationResults);
+                        dispatchFunctions.updateAllValidation(formValidationResults);
 
-                    //set focus on the 1st invalid element of current step
-                    dispatchFunctions.updateFocusOn(stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex));
+                        //set focus on the 1st invalid element of current step
+                        dispatchFunctions.updateFocusOn(stepHelper.getFirstInvalidElement(formValidationResults, currentStepIndex));
+                    }
                     break;
             }
 

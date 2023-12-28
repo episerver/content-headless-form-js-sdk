@@ -1,5 +1,5 @@
 import { FormCache } from "../form-cache";
-import { StepHelper } from "../form-step";
+import { StepHelper } from "./stepHelper";
 import { FormStorage } from "../form-storage";
 import { FormConstants, FormContainer, FormState, FormSubmission, FormValidationResult, StepDependencies } from "../models";
 import { getDefaultValue } from "./elementHelper";
