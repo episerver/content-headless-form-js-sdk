@@ -156,9 +156,18 @@ export const useElement = (element: FormElementBase) => {
         dispatchFuncs.updateValidation(element.key, formValidation.validate(value));
     }
 
+    const shouldResetForm = (resetConfirmationMessage: string) => {
+        if (isNullOrEmpty(resetConfirmationMessage)) {
+          return true;
+        }
+      
+        const userConfirmed = confirm(htmlDecodeEntities(resetConfirmationMessage));
+        return userConfirmed;
+      };
+
     const handleReset = () => {
         const form = formContext?.formContainer ?? {} as FormContainer
-        if (confirm(htmlDecodeEntities(form.properties.resetConfirmationMessage))) {
+        if (shouldResetForm(form.properties.resetConfirmationMessage)) {
             dispatchFuncs.resetForm(form);
         }
     }
