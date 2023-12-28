@@ -25,7 +25,9 @@ export class FormValidator {
      * @returns True or false
      */
     validateRequired(value: any): boolean{
-        if (isNullOrEmpty(value)
+        if (isNull(value)
+                //for text, textarea
+                || (typeof value === "string" && isNullOrEmpty(value.trim()))
                 // for FileUpload element
                 || (value instanceof Array && value.length === 0)) {
                 return false;
