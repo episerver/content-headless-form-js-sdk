@@ -12,10 +12,10 @@ export const ImageChoiceElementBlock = (props: ImageChoiceElementBlockProps) => 
     const { element } = props;
     const { elementContext, handleChange, handleBlur } = useElement(element);
     const sShouldBeVisible = element.properties.showSelectionInputControl ? "" : "visually-hidden";
-    const { isVisible, validationResults, value, validatorClasses } = elementContext;
+    const { isVisible, validationResults, value, validatorClasses, extraAttr } = elementContext;
 
     return useMemo(()=>(
-        <ElementWrapper className={`FormChoice FormChoice--Image ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
+        <ElementWrapper className={`FormChoice FormChoice--Image ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible} extraAttr={extraAttr}>
             <fieldset aria-describedby={`${element.key}_desc`}>
                 {
                     isNullOrEmpty(element.properties.label) &&
