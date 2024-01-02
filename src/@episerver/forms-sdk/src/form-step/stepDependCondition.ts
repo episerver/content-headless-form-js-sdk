@@ -2,7 +2,7 @@ import { ConditionFunctions } from "../form-depend-conditions/ConditionFunctions
 import { FormStorage } from "../form-storage";
 import { equals, isInArray, isNullOrEmpty } from "../helpers";
 import { FormContainer, FormStep } from "../models";
-import { StepHelper } from "./stepHelper";
+import { StepHelper } from "../helpers/stepHelper";
 
 /**
  * Class to help check step is satisfy depend condition
