@@ -120,11 +120,7 @@ export class FormValidator {
      * @returns True or false
      */
     validateNumeric(value: any): boolean{
-        if (isNull(value) || !isNumeric(value)) {
-            return false
-        }
-
-        return true;
+        return isNullOrEmpty(value) || isNumeric(value);
     }
 
     /**
