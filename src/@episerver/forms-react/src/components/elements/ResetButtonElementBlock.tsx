@@ -11,15 +11,15 @@ export const ResetButtonElementBlock = (props: ResetButtonElementBlockProps) => 
     const { elementContext, handleReset } = useElement(element);
     const { extraAttr } = elementContext;
 
-    return useMemo(()=>(
+    return useMemo(() => (
         <>
-            <input 
-                type="reset" 
-                className="Form__Element FormResetButton Form__Element--NonData" 
+            <input
+                type="reset"
+                className="Form__Element FormResetButton Form__Element--NonData"
                 {...extraAttr}
-                value={element.properties.label} 
+                value={element.properties.label}
                 onClick={handleReset}
             />
         </>
-    ),[]);
+    ), []);
 }

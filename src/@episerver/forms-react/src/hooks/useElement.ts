@@ -20,6 +20,7 @@ import {
     FormSubmission,
     FormDependConditions,
     FormValidationResult,
+    htmlDecodeEntities,
     } from "@episerver/forms-sdk";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 
@@ -155,8 +156,20 @@ export const useElement = (element: FormElementBase) => {
         dispatchFuncs.updateValidation(element.key, formValidation.validate(value));
     }
 
+    const shouldResetForm = (resetConfirmationMessage: string) => {
+        if (isNullOrEmpty(resetConfirmationMessage)) {
+          return true;
+        }
+      
+        const userConfirmed = confirm(htmlDecodeEntities(resetConfirmationMessage));
+        return userConfirmed;
+      };
+
     const handleReset = () => {
-        dispatchFuncs.resetForm(formContext?.formContainer ?? {} as FormContainer);
+        const form = formContext?.formContainer ?? {} as FormContainer
+        if (shouldResetForm(form.properties.resetConfirmationMessage)) {
+            dispatchFuncs.resetForm(form);
+        }
     }
 
     return { 

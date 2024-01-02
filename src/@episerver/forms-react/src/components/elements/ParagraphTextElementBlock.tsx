@@ -11,7 +11,7 @@ export interface ParagraphTextElementBlockProps {
 
 export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps) => {
     const { element } = props;
-    const { elementContext, handleChange, handleBlur } = useElement(element);
+    const { elementContext } = useElement(element);
     const { isVisible, validationResults, value, validatorClasses } = elementContext;
     const formContext = useForms();
     const form = formContext?.formContainer as FormContainer
