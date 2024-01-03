@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition } from "@episerver/forms-sdk";
+import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition, FormSubmission, FormStorage } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -63,6 +63,37 @@ export const FormBody = (props: FormBodyProps) => {
         message.current = error;
     }
 
+    const buildConfirmMessage = (confirmationMessage: string, data: FormSubmission[], form: FormContainer): string => {
+        const fieldsToIgnore  = ["FormStepBlock"]
+        const newLine = "\n"
+        let message = confirmationMessage + newLine;
+
+        data.forEach(element => {
+            let formElement = form.formElements.find(fe => fe.key === element.elementKey)
+            
+            if (formElement && fieldsToIgnore.indexOf(formElement.contentType) === -1){
+                message += `${formElement.displayName}: ${element.value}${newLine}`;
+            }
+        });
+
+        return message
+    }
+
+    const handleConfirm = () => {
+        const form = formContext?.formContainer ?? {} as FormContainer;
+        const confirmationMessage = form.properties.confirmationMessage;
+        let confimStatus = true;
+
+        if (!isNullOrEmpty(confirmationMessage) && form.properties.showSummarizedData) {
+            const formStorage = new FormStorage(form);
+            const data = formStorage.loadFormDataFromStorage();
+            const confirmationMessageWithData = buildConfirmMessage(confirmationMessage, data, form)
+            confimStatus = confirm(confirmationMessageWithData);
+        }
+
+        return confimStatus
+    }
+
     const handleSubmit = (e: any) => {
         e.preventDefault();
 
@@ -77,6 +108,14 @@ export const FormBody = (props: FormBodyProps) => {
             //when submitting by SubmitButton, isProgressiveSubmit default is true
             isProgressiveSubmit.current = true;
         }
+
+        let isLastStep = currentStepIndex === form.steps.length - 1;
+        if (submitButton?.properties?.finalizeForm || isLastStep) {
+            if (!handleConfirm()) {
+                return
+            }
+        }
+
         //filter submissions by active elements and current step
         let formSubmissions = (formContext?.formSubmissions ?? [])
             .filter(fs => !isInArray(fs.elementKey, formContext?.dependencyInactiveElements ?? []) && stepHelper.isInCurrentStep(fs.elementKey, currentStepIndex));
@@ -91,8 +130,7 @@ export const FormBody = (props: FormBodyProps) => {
             dispatchFunctions.updateFocusOn(invalid);
             return;
         }
-
-        let isLastStep = currentStepIndex === form.steps.length - 1;
+        
         let model: FormSubmitModel = {
             formKey: form.key,
             locale: form.locale,
