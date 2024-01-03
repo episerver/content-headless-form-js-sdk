@@ -110,11 +110,7 @@ export const FormBody = (props: FormBodyProps) => {
         }
 
         let isLastStep = currentStepIndex === form.steps.length - 1;
-        if (submitButton?.properties?.finalizeForm || isLastStep) {
-            if (!handleConfirm()) {
-                return
-            }
-        }
+
 
         //filter submissions by active elements and current step
         let formSubmissions = (formContext?.formSubmissions ?? [])
@@ -129,6 +125,13 @@ export const FormBody = (props: FormBodyProps) => {
         if(!isNullOrEmpty(invalid)){
             dispatchFunctions.updateFocusOn(invalid);
             return;
+        }
+
+        // Confirm if user want to submit the form
+        if (submitButton?.properties?.finalizeForm || isLastStep) {
+            if (!handleConfirm()) {
+                return
+            }
         }
         
         let model: FormSubmitModel = {
