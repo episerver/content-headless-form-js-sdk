@@ -117,6 +117,12 @@ export const FormBody = (props: FormBodyProps) => {
                 formCache.remove(FormConstants.FormCurrentStep + form.key);
                 localFormCache.remove(submissionStorageKey);
                 message.current = response.messages.map(m => m.message).join("<br>");
+                //redirect after submit
+                let redirectToPage = submitButton?.properties?.redirectToPage
+                if(!isNullOrEmpty(redirectToPage)){
+                    let url = new URL(redirectToPage);
+                    props.history && props.history.push(url.pathname);
+                }
             }
         }).catch((e: ProblemDetail) => {
             switch(e.status){
