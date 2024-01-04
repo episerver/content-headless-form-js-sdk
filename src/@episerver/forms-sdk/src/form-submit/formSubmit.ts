@@ -140,11 +140,16 @@ export class FormSubmitter {
                             formData.append(key + "_file_" + idx, ofile);
                         }
 
-                        //always send file name to server if existed to handle case upload file then click back
-                        fileNames += files[idx].name + "|"; // charactor | cannot be used in filename and then is safe for splitting later
+                        // always send file name to server if existed to handle case upload file then click back
+                        // charactor | cannot be used in filename and then is safe for splitting later
+                        if(idx > 0){
+                            fileNames += " | "
+                        }
+                        
+                        fileNames += files[idx].name; 
                     }
                     formData.append(key, fileNames);
-                    data.value = fileNames
+                    data.prevValue = fileNames
                 }
                 else {
                     formData.append(key, data.value);
@@ -153,8 +158,8 @@ export class FormSubmitter {
 
             // Save data to session storage
             let formStorage = new FormStorage(this._form);
-            let currentData = formStorage.loadFormDataFromStorage()
-            let dataCombined = this.combineData(currentData, model.submissionData)
+            let currentData = formStorage.loadFormDataFromStorage();
+            let dataCombined = this.combineData(currentData, model.submissionData);
             formStorage.saveFormDataToStorage(dataCombined);
 
             //init a request and call ajax
