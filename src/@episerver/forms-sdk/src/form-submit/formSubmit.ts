@@ -80,7 +80,7 @@ export class FormSubmitter {
     readonly _form: FormContainer
     readonly _baseUrl: string
 
-    constructor(form: FormContainer, baseUrl: string){
+    constructor(form: FormContainer, baseUrl: string) {
         this._form = form;
         this._baseUrl = baseUrl;
     }
@@ -92,13 +92,13 @@ export class FormSubmitter {
      */
     combineData(dataFromStorage: FormSubmission[], submissionData: FormSubmission[]): FormSubmission[] {
         const mapFromArray = new Map<string, FormSubmission>();
-        
+
         submissionData.forEach(element => {
             mapFromArray.set(element.elementKey, element);
         });
-    
+
         const combinedData = [...submissionData, ...dataFromStorage.filter(element => !mapFromArray.has(element.elementKey))];
-        
+
         return combinedData;
     }
 
@@ -107,13 +107,7 @@ export class FormSubmitter {
      * @param formSubmission the array of form submission to post
      */
     doSubmit(model: FormSubmitModel): Promise<FormSubmitResult> {
-        return new Promise<FormSubmitResult>((resolve, reject)=>{
-            let formStorage = new FormStorage(this._form);
-
-            // Save data to storage of browser
-            let currentData = formStorage.loadFormDataFromStorage()
-            let dataCombined = this.combineData(currentData,model.submissionData)
-            formStorage.saveFormDataToStorage(dataCombined);
+        return new Promise<FormSubmitResult>((resolve, reject) => {
             // Post data to API
             let formData = new FormData();
             formData.append("formKey", model.formKey);
@@ -128,7 +122,7 @@ export class FormSubmitter {
                 let ovalue = data.value;
                 let key = `${FormConstants.FormFieldPrefix}${data.elementKey}`;
 
-                if(isNull(ovalue)) {
+                if (isNull(ovalue)) {
                     return;
                 }
 
@@ -150,11 +144,18 @@ export class FormSubmitter {
                         fileNames += files[idx].name + "|"; // charactor | cannot be used in filename and then is safe for splitting later
                     }
                     formData.append(key, fileNames);
+                    data.value = fileNames
                 }
                 else {
                     formData.append(key, data.value);
                 }
             });
+
+            // Save data to session storage
+            let formStorage = new FormStorage(this._form);
+            let currentData = formStorage.loadFormDataFromStorage()
+            let dataCombined = this.combineData(currentData, model.submissionData)
+            formStorage.saveFormDataToStorage(dataCombined);
 
             //init a request and call ajax
             let requestInit: RequestInit = {
@@ -168,9 +169,9 @@ export class FormSubmitter {
             fetch(`${this._baseUrl}${ApiConstant.apiEndpoint}`, requestInit)
                 .then(async (response: Response) => {
                     let json = await response.json();
-                    if(response.ok){
+                    if (response.ok) {
                         let result = json as FormSubmitResult;
-                        if(result.success && model.isFinalized){
+                        if (result.success && model.isFinalized) {
                             //clear cache of form submission
                             formStorage.removeFormDataInStorage();
                         }
@@ -191,7 +192,7 @@ export class FormSubmitter {
      * @param formSubmission the array of form submission to post
      * @returns An array of validation result
      */
-    doValidate(formSubmissions: FormSubmission[]): FormValidationResult[]{
+    doValidate(formSubmissions: FormSubmission[]): FormValidationResult[] {
         return this._form.formElements
             .filter(e => formSubmissions.some(fs => equals(fs.elementKey, e.key)))
             .map(e => {
