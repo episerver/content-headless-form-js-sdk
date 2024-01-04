@@ -32,8 +32,8 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
         }
     }
 
-    let text = element.properties.paragraphText
-    const placeHolders = extractTextsWithFormat(element.properties.paragraphText)
+    let text = element.properties.paragraphText ?? "";
+    const placeHolders = extractTextsWithFormat(text)
 
     if (doReplaceText) {
         data.forEach(element => {
