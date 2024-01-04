@@ -123,7 +123,7 @@ export const useElement = (element: FormElementBase) => {
     },[formContext?.isSubmitting])
 
     const handleChange = (e: any) => {
-        const { name, value: inputValue, type, checked, files } = e.target;
+        const { name, value: inputValue, type, checked, files, selectedOptions } = e.target;
         let submissionValue = inputValue;
 
         //get selected value for choice
@@ -145,6 +145,10 @@ export const useElement = (element: FormElementBase) => {
         if (/file/.test(type)) {
             submissionValue = files;
             dispatchFuncs.updateValidation(element.key, formValidation.validate(files));
+        }
+
+        if (/select-multiple/.test(type)) {
+            submissionValue = Array.from(selectedOptions, (item: any) => item.value).join(",");
         }
 
         //update form context

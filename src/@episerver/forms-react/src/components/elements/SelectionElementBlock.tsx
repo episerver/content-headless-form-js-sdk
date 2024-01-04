@@ -25,7 +25,7 @@ export const SelectionElementBlock = (props: SelectionElementBlockProps) => {
                 autoComplete={element.properties.autoComplete}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                value={value}
+                value={element.properties.allowMultiSelect ? value.split(",") : value}
                 ref={elementRef}
             >
                 <option value="" disabled={value !== ""}>
