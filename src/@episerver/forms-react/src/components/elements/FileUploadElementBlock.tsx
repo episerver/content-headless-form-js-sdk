@@ -1,8 +1,9 @@
-import { FileUpload } from "@episerver/forms-sdk"
+import { FileUpload, FormContainer, FormStorage, isNullOrEmpty } from "@episerver/forms-sdk"
 import React, { useMemo } from "react";
 import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
 import { ElementCaption, ValidationMessage } from "./shared";
+import { useForms } from "../../context/store";
 
 export interface FileUploadElementBlockProps {
     element: FileUpload
@@ -16,6 +17,12 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
         return (ext[0] != ".") ? `.${ext}` : ext;
     }).join(",") : "";
     const { isVisible, validationResults, extraAttr, validatorClasses, elementRef } = elementContext;
+
+    const formContext = useForms();
+    const form = formContext?.formContainer as FormContainer;
+    const formStorage = new FormStorage(form);
+    const data = formStorage.loadFormDataFromStorage();
+    const prevFilenames =  data.find(fe => fe.elementKey === element.key)?.prevValue
 
     return useMemo(()=>(
         <ElementWrapper className={`FormFileUpload ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
@@ -33,7 +40,10 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
                 onChange={handleChange}
                 ref={elementRef}
             />
-            <div className="FormFileUpload__PostedFile"></div>
+
+            <div className="FormFileUpload__PostedFile">
+            (Previous posted file(s): {prevFilenames} )
+            </div>
 
             <ValidationMessage element={element} validationResults={validationResults} />
         </ElementWrapper>
