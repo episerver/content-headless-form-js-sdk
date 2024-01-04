@@ -11,10 +11,10 @@ export interface ChoiceElementBlockProps {
 export const ChoiceElementBlock = (props: ChoiceElementBlockProps) => {
     const { element } = props;
     const { elementContext, handleChange, handleBlur } = useElement(element);
-    const { isVisible, validationResults, value, validatorClasses } = elementContext;
+    const { isVisible, validationResults, value, validatorClasses, extraAttr } = elementContext;
 
     return useMemo(()=>(
-        <ElementWrapper className={`FormChoice ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
+        <ElementWrapper className={`FormChoice ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible} extraAttr={extraAttr}>
             <fieldset aria-describedby={`${element.key}_desc`}>
                 
                 {!isNullOrEmpty(element.properties.label) && 
