@@ -64,7 +64,7 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
 
     return (
         <>
-            {isShowStepNavigation &&
+            {isShowStepNavigation && form.properties.showNavigationBar &&
                 <nav role="navigation" className="Form__NavigationBar">
                     <button
                         type="submit"
