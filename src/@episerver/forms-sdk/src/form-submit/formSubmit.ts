@@ -113,7 +113,7 @@ export class FormSubmitter {
             formData.append("formKey", model.formKey);
             formData.append("locale", model.locale);
             formData.append("IsFinalized", model.isFinalized.toString());
-            formData.append("PartialSubmissionKey", model.partialSubmissionKey);
+            formData.append("SubmissionKey", model.partialSubmissionKey);
             formData.append("HostedPageUrl", model.hostedPageUrl);
             formData.append("CurrentStep", model.currentStepIndex.toString());
 
