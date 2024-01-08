@@ -1,4 +1,4 @@
-import { FileUpload, FormContainer, FormStorage, isNullOrEmpty } from "@episerver/forms-sdk"
+import { FileUpload, FormContainer, FormStorage } from "@episerver/forms-sdk"
 import React, { useMemo } from "react";
 import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
@@ -42,7 +42,7 @@ export const FileUploadElementBlock = (props: FileUploadElementBlockProps) => {
             />
 
             <div className="FormFileUpload__PostedFile">
-            (Previous posted file(s): {prevFilenames} )
+                {prevFilenames && <>(Previous posted file(s): {prevFilenames} )</>} 
             </div>
 
             <ValidationMessage element={element} validationResults={validationResults} />
