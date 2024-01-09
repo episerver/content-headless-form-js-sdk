@@ -97,13 +97,20 @@ export const useElement = (element: FormElementBase) => {
 
         //update form state
         let inactives = formContext?.dependencyInactiveElements ?? [];
+        let needUpdate = false;
         if(isVisible.current){
-            inactives = inactives.filter(ek => !equals(ek, element.key));
+            if(inactives.includes(element.key)){
+                inactives = inactives.filter(ek => !equals(ek, element.key));
+                needUpdate = true;
+            }
         }
         else {
-            !isInArray(element.key, inactives) && inactives.push(element.key);
+            if(!isInArray(element.key, inactives)){
+                inactives.push(element.key);
+                needUpdate = true;
+            }
         }
-        dispatchFuncs.updateDependencies(inactives);
+        needUpdate && dispatchFuncs.updateDependencies(inactives);
     },[formContext?.formSubmissions]);
 
     //focus on element if validate fail before submitting
@@ -117,7 +124,7 @@ export const useElement = (element: FormElementBase) => {
 
     //disable submit button when form submitting
     useEffect(()=>{
-        if(equals(element.contentType, "SubmitButtonElementBlock")){
+        if(equals(element.contentType, "SubmitButtonElementBlock") && elementRef.current){
             elementRef.current.disabled = formContext?.isSubmitting ?? false;
         }
     },[formContext?.isSubmitting])

@@ -1,8 +1,8 @@
-import { FormCache, FormContainer, FormStorage, ParagraphText, Url } from "@episerver/forms-sdk"
+import { FormContainer, FormStorage, ParagraphText } from "@episerver/forms-sdk"
 import React, { useMemo } from "react";
 import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
-import { ElementCaption, ValidationMessage } from "./shared";
+import { ElementCaption } from "./shared";
 import { useForms } from "../../context/store";
 
 export interface ParagraphTextElementBlockProps {
@@ -35,7 +35,7 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
 
     let replacedText = element.properties.paragraphText ?? ""
     const indicators = ['::', "#"]
-
+    
     indicators.forEach(indicator => {
         const placeHolders = extractTextsWithFormat(replacedText, indicator)
         if (doReplaceText) {
