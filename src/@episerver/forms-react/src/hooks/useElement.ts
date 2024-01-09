@@ -176,7 +176,8 @@ export const useElement = (element: FormElementBase) => {
         return userConfirmed;
       };
 
-    const handleReset = () => {
+    const handleReset = (e: any) => {
+        e.preventDefault()
         const form = formContext?.formContainer ?? {} as FormContainer
         if (shouldResetForm(form.properties.resetConfirmationMessage)) {
             dispatchFuncs.resetForm(form);
