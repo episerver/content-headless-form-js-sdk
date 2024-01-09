@@ -22,29 +22,32 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
 
     const doReplaceText = element.properties.disablePlaceholdersReplacement ?? true
 
-    function extractTextsWithFormat(inputString: string) {
-        const regex = /::(.*?)::/g;
-        const matches = inputString.match(regex);
+    function extractTextsWithFormat(inputString: string, indicator: string) {
+        const regex = new RegExp(`${indicator}(.*?)${indicator}`, 'g');
+        const indicatorLength = indicator.length;
+        const matches = (inputString.match(regex) ?? []) as string[];
         if (matches) {
-            return matches.map(match => match.slice(2, -2));
+            return matches.map(match => match.slice(indicatorLength, -indicatorLength));
         } else {
             return [];
         }
     }
 
-    let text = element.properties.paragraphText ?? "";
-    const placeHolders = extractTextsWithFormat(text)
+    let replacedText = element.properties.paragraphText ?? ""
+    const indicators = ['::', "#"]
 
-    if (doReplaceText) {
-        data.forEach(element => {
-            const key = element.elementKey
-            const value = element.value as string
-            const friendlyName = form.formElements.find(fe => fe.key === key)?.displayName
-            if (friendlyName && placeHolders.indexOf(friendlyName) !== -1) {
-                text = text.replace("::" + friendlyName + "::", value)
-            }
-        });
-    }
+    indicators.forEach(indicator => {
+        const placeHolders = extractTextsWithFormat(replacedText, indicator)
+        if (doReplaceText) {
+            data.forEach(element => {
+                const friendlyName = form.formElements.find(fe => fe.key === element.elementKey)?.displayName
+
+                if (friendlyName && placeHolders.indexOf(friendlyName) !== -1) {
+                    replacedText = replacedText.replace(`${indicator}${friendlyName}${indicator}`, element.value as string ?? "")
+                }
+            });
+        }
+    });
 
     return useMemo(() => (
         <ElementWrapper className={`FormParagraphText Form__Element--NonData ${validatorClasses}`} validationResults={validationResults} isVisible={isVisible}>
@@ -52,8 +55,8 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
             <>
                 <div id={formKey} >
                     <div dangerouslySetInnerHTML={{
-                        __html: text
-                    }}/>
+                        __html: replacedText
+                    }} />
                 </div>
                 <div id={formKey + "__OriginalText"} className="Form__Original__ParagraphText">
 
