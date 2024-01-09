@@ -124,7 +124,7 @@ export const useElement = (element: FormElementBase) => {
 
     //disable submit button when form submitting
     useEffect(()=>{
-        if(equals(element.contentType, "SubmitButtonElementBlock")){
+        if(equals(element.contentType, "SubmitButtonElementBlock") && elementRef.current){
             elementRef.current.disabled = formContext?.isSubmitting ?? false;
         }
     },[formContext?.isSubmitting])
