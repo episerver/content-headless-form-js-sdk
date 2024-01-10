@@ -38,9 +38,9 @@ export class DispatchFunctions {
         });
     }
 
-    resetedForm = () => {
+    resetFormDone = () => {
         this._dispatch({
-            type: ActionType.ResetedForm
+            type: ActionType.ResetFormDone
         });
     }
 
