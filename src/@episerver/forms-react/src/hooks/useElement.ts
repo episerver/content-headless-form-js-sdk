@@ -72,7 +72,7 @@ export const useElement = (element: FormElementBase) => {
     useEffect(()=>{
         if(formContext?.isReset){
             //update form state
-            dispatchFuncs.resetedForm();
+            dispatchFuncs.resetFormDone();
         }
     },[formContext?.isReset]);
 

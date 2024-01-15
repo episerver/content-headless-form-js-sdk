@@ -8,7 +8,7 @@ export enum ActionType {
     UpdateValidation = "UpdateValidation",
     UpdateDependencies = "UpdateDependencies",
     ResetForm = "ResetForm",
-    ResetedForm = "ResetedForm",
+    ResetFormDone = "ResetFormDone",
     UpdateAllValidation = "UpdateAllValidation",
     UpdateFocusOn = "UpdateFocusOn",
     UpdateIdentityInfo = "UpdateIdentityInfo",
@@ -55,7 +55,7 @@ export function formReducer(formState: FormState, action: any) {
           ...action.formState
         };
       }
-      case ActionType.ResetedForm: {
+      case ActionType.ResetFormDone: {
         return {
           ...formState,
           isReset: false
