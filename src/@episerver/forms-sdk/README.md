@@ -60,14 +60,21 @@ var isSatisfied = formDependConditions.checkConditions(formSubmissions);
 This class is an API client service, that is used to get a form by formKey from Headless Form API. The main function getForm() will return an object of type FormContainer.
 ### Method:
 * getForm - Function to get a form with GUID key, return a promise with a form
+* queryForm - Function to query a form with GUID key, return a promise with a form
 
 ### Usage:
 ```js
 //init
 var formLoader = new FormLoader({baseUrl: “http://yourdomain.com/”});
-//receive a form
+//receive a form from Headless Form API
 var form =  formLoader.getForm(formKey, formLanguage);
 /* Parameters:
+	- formKey is a GUID identifier of form
+	- formLanguage is locale of form. For example: en, sv, …*/
+//Or receive a form from Optimizely Graph
+var form =  formLoader.queryForm(optiGraphUrl, formKey, formLanguage);
+/* Parameters:
+	- optiGraphUrl is this endpoint url with your singlekey, "https://cg.optimizely.com/content/v2?auth={singlekey}"
 	- formKey is a GUID identifier of form
 	- formLanguage is locale of form. For example: en, sv, …*/
 ```

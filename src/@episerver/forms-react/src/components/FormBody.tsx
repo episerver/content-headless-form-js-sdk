@@ -220,7 +220,7 @@ export const FormBody = (props: FormBodyProps) => {
         }
     },[]);
 
-    isMalFormSteps && showError("Improperly formed FormStep configuration. Some steps are attached to pages, while some steps are not attached, or attached to content with no public URL.");
+    isMalFormSteps && showError(form.localizations["malformstepconfigruationErrorMessage"]);
 
     return (
         <form method="post"

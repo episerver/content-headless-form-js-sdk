@@ -82,3 +82,19 @@ export function htmlDecodeEntities(encodedString: string) : string{
     textArea.innerHTML = encodedString;
     return textArea.value;
 }
+
+/**
+ * Parse a string key to GUID to work with OptiGraph
+ * @param key 
+ * @returns 
+ */
+export function parseKeyToGuid(key: string): string {
+    if(key.includes("-")){
+        return key;
+    }
+
+    var rxGetGuidGroups = /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/,
+        guidValue = key.replace(rxGetGuidGroups, '$1-$2-$3-$4-$5');
+        
+    return guidValue;
+}

@@ -137,6 +137,21 @@ namespace Alloy.ManagementSite
                     Authority = ClientEndpoint
                 });
             });
+
+            //Register ContentGraph for HeadlessForm
+            services.AddContentDeliveryApi(op =>
+            {
+                op.DisableScopeValidation = true;
+                op.RequiredRole = null;
+            });
+            services.ConfigureContentApiOptions(o =>
+            {
+                o.FlattenPropertyModel = true;
+                o.IncludeNumericContentIdentifier = true;
+            });
+            services.AddContentGraph();
+
+            services.AddOptimizelyHeadlessFormContentGraph();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -154,6 +169,7 @@ namespace Alloy.ManagementSite
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapContent();
             });
         }
