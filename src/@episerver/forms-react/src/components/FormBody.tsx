@@ -150,17 +150,14 @@ export const FormBody = (props: FormBodyProps) => {
         formSubmitter.doSubmit(model).then((response: FormSubmitResult)=>{
             //go here, response.success always is true
             isSuccess.current = response.success;
-            isFormFinalized.current = isLastStep && response.success;
+            isFormFinalized.current = (isProgressiveSubmit.current || isLastStep) && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             localFormCache.set(submissionStorageKey, response.submissionKey);
-
-            if (isFormFinalized.current || isProgressiveSubmit.current) {
-                message.current = response.messages.map(m => m.message).join("<br>");
-            }
 
             if (isFormFinalized.current) {
                 formCache.remove(FormConstants.FormCurrentStep + form.key);
                 localFormCache.remove(submissionStorageKey);
+                message.current = response.messages.map(m => m.message).join("<br>");
                 //redirect after submit
                 let redirectToPage = submitButton?.properties?.redirectToPage ?? form.properties?.redirectToPage;
                 if(!isNullOrEmpty(redirectToPage)){
