@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition, FormSubmission, FormStorage } from "@episerver/forms-sdk";
+import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition, FormSubmission } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -85,8 +85,7 @@ export const FormBody = (props: FormBodyProps) => {
         let confimStatus = true;
 
         if (!isNullOrEmpty(confirmationMessage) && form.properties.showSummarizedData) {
-            const formStorage = new FormStorage(form);
-            const data = formStorage.loadFormDataFromStorage();
+            const data = formContext?.formSubmissions ?? []
             const confirmationMessageWithData = buildConfirmMessage(confirmationMessage, data, form)
             confimStatus = confirm(confirmationMessageWithData);
         }

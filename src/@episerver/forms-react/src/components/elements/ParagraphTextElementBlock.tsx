@@ -1,4 +1,4 @@
-import { FormContainer, FormStorage, ParagraphText } from "@episerver/forms-sdk"
+import { FormContainer, ParagraphText } from "@episerver/forms-sdk"
 import React, { useMemo } from "react";
 import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
@@ -16,9 +16,8 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
     const formContext = useForms();
     const form = formContext?.formContainer as FormContainer
     const formKey = form.key;
-
-    const formStorage = new FormStorage(form);
-    const data = formStorage.loadFormDataFromStorage();
+    
+    const data = formContext?.formSubmissions ?? []
 
     const doReplaceText = element.properties.disablePlaceholdersReplacement ?? true
 
