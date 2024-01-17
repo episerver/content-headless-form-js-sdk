@@ -11,7 +11,8 @@ This is the main component that will be used to render the form from the metadat
     baseUrl={"/"}
     identityInfo={identityInfo} 
     history={history}
-    currentPageUrl={pageUrl}
+    currentPageUrl={"http://yourdomain/en/"}
+    optiGraphUrl={"https://cg.optimizely.com/content/v2?auth={singlekey}"}
 />
 ```
 ### Propperties
@@ -21,6 +22,7 @@ This is the main component that will be used to render the form from the metadat
 * identityInfo - Access token for form submit
 * history - The instance of useHistory() received from react-router-dom
 * currentPageUrl - The public url of current page
+* optiGraphUrl - The endpoint url of Optimizely Graph with your singlekey
 
 ## FormLogin
 ### Description

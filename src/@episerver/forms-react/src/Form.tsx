@@ -29,10 +29,14 @@ interface FormProps {
      * The public url of current page
      */
     currentPageUrl?: string;
+    /**
+     * The endpoint url of Optimizely Graph 
+     */
+    optiGraphUrl?: string;
 }
 
-export const Form = ({formKey, language, baseUrl, identityInfo, history, currentPageUrl}: FormProps) => {
-  const {data: formData } = useFormLoader({ formKey, language, baseUrl } as UseFormLoaderProps)
+export const Form = ({formKey, language, baseUrl, identityInfo, history, currentPageUrl, optiGraphUrl}: FormProps) => {
+  const {data: formData } = useFormLoader({ formKey, language, baseUrl, optiGraphUrl } as UseFormLoaderProps)
 
   return (
     <>

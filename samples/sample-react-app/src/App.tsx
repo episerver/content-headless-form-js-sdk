@@ -41,6 +41,7 @@ function App() {
                                     identityInfo={identityInfo} 
                                     history={history}
                                     currentPageUrl={pageData.pageUrl}
+                                    optiGraphUrl={process.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL}
                                 />
                             ))}
                         </div>
