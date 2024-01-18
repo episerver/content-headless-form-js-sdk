@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition, FormSubmission } from "@episerver/forms-sdk";
+import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition, FormSubmission, buildConfirmMessage } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -61,40 +61,6 @@ export const FormBody = (props: FormBodyProps) => {
         submissionWarning.current = !isNullOrEmpty(error);
         message.current = error;
     }
-
-    const getValueAsString = (element: FormSubmission): string => {
-        let value = element.value ?? ""
-        if (Object.getPrototypeOf(value) === FileList.prototype) {
-            let fileList = value as FileList
-            let fileNames = ""
-            for (let i = 0; i < fileList.length; i++) {
-                const file = fileList[i]
-                fileNames += `${file.name}`
-                if (fileList.length > 0) {
-                    fileNames += " | "
-                }
-            }
-            return fileNames
-        }
-        return `${value}`
-    }
-
-    const buildConfirmMessage = (confirmationMessage: string, data: FormSubmission[], form: FormContainer): string => {
-        const fieldsToIgnore = ["FormStepBlock", "SubmitButtonElementBlock"]
-        const newLine = "\n"
-        let message = confirmationMessage + newLine;
-
-        data.forEach(element => {
-            let formElement = form.formElements.find(fe => fe.key === element.elementKey)
-            if (formElement && fieldsToIgnore.indexOf(formElement.contentType) === -1) {
-                message += `${formElement.displayName}: ${getValueAsString(element)}${newLine}`;
-            }
-
-        });
-
-        return message
-    }
-
     const handleConfirm = () => {
         const form = formContext?.formContainer ?? {} as FormContainer;
         const confirmationMessage = form.properties.confirmationMessage;
