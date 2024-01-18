@@ -64,15 +64,14 @@ export const FormBody = (props: FormBodyProps) => {
     }
 
     const buildConfirmMessage = (confirmationMessage: string, data: FormSubmission[], form: FormContainer): string => {
-        const fieldsToIgnore  = ["FormStepBlock"]
+        const fieldsToIgnore  = ["FormStepBlock","SubmitButtonElementBlock"]
         const newLine = "\n"
         let message = confirmationMessage + newLine;
 
         data.forEach(element => {
             let formElement = form.formElements.find(fe => fe.key === element.elementKey)
-            
             if (formElement && fieldsToIgnore.indexOf(formElement.contentType) === -1){
-                message += `${formElement.displayName}: ${element.value}${newLine}`;
+                message += `${formElement.displayName}: ${element.value ?? ""}${newLine}`;
             }
         });
 
