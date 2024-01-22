@@ -38,8 +38,8 @@ export class StepDependCondition {
         }
 
         let dependField = step.properties?.dependField,
-            storedData = this._formStorage.loadFormDataFromStorage().filter(fs => fs.elementKey === dependField?.key)[0],
-            funcOfDependCondition = ConditionFunctions[step.properties.dependCondition]; 
+            storedData = this._formStorage.loadFormDataFromStorage().find(fs => fs.elementKey === dependField?.key),
+            funcOfDependCondition = ConditionFunctions[step.properties?.dependCondition]; 
 
         if (!dependField || !funcOfDependCondition || !storedData) { // no input to check, consider it's OK
             return true;
