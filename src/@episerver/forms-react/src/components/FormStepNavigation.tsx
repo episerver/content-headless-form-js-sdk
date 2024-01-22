@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { FormCache, FormConstants, FormContainer, StepDependCondition, SubmitButtonType, isNull, isNullOrEmpty } from "@episerver/forms-sdk";
+import { FormCache, FormConstants, FormContainer, FormStorage, StepDependCondition, SubmitButtonType, isNull, isNullOrEmpty } from "@episerver/forms-sdk";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 
 interface FormStepNavigationProps {
@@ -21,6 +21,7 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
     const dispatchFuncs = new DispatchFunctions();
     const stepLocalizations = useRef<Record<string, string>>(form.steps?.filter(s => !isNull(s.formStep.localizations))[0]?.formStep.localizations).current;
     const isNextStep = useRef<boolean>(false);
+    const formStorage = new FormStorage(form);
 
     const submittable = true
     const stepCount = form.steps.length;
@@ -35,6 +36,8 @@ export const FormStepNavigation = (props: FormStepNavigationProps) => {
 
     const handlePrevStep = (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault()
+        // when go back, we don't need to validate, just save the state
+        formStorage.saveFormDataToStorage(formContext?.formSubmissions ?? []); // save form state before changing step
         goToStep(depend.findPreviousStep(currentStepIndex) ?? 0)
     }
 
