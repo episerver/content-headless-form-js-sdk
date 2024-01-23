@@ -128,15 +128,15 @@ export class FormSubmitter {
 
                 // checking file upload elements, item must be File if any,
                 // for using Object.getPrototypeOf(variable) variable must be object type
-                if(Object.getPrototypeOf(ovalue) === FileList.prototype && (ovalue as FileList).length > 0) {
-                        let files = ovalue as FileList,
+                if (Array.isArray(ovalue) && ovalue.length > 0 &&
+                        ovalue[0] !== null && typeof ovalue[0] === "object") {
+                        let files = ovalue,
                             fileNames = "";
                     // append each upload file with a unique key (bases on element's key) so that the server side can see it through the Request.Files,
                     // concat all the files' name and assign with the element's Id
                     for (var idx = 0; idx < files.length; idx++) {
-                        let ofile = ovalue[idx];
+                        let ofile = files[idx].file;
                         if (ofile && Object.getPrototypeOf(ofile) === File.prototype) {
-                            ofile = files[idx] as File;
                             formData.append(key + "_file_" + idx, ofile);
                         }
 

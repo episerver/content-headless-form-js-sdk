@@ -150,7 +150,16 @@ export const useElement = (element: FormElementBase) => {
         }
 
         if (/file/.test(type)) {
-            submissionValue = files;
+            let arrFile: any[] = [];
+            for (var fileIdx = 0; fileIdx < files.length; fileIdx++) {
+                var oFile = files[fileIdx];
+
+                arrFile.push({
+                    name: oFile.name,
+                    file: oFile
+                });
+            }
+            submissionValue = arrFile;
             dispatchFuncs.updateValidation(element.key, formValidation.validate(files));
         }
 
