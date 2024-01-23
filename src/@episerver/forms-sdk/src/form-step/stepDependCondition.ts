@@ -66,7 +66,9 @@ export class StepDependCondition {
                 ? nextStepIndex 
                 : this.findNextStep(nextStepIndex);
         }
-        return undefined;
+        //go here in case: Form there are 2 steps, and last step depend on an element on step 1, but it's not satisfied. 
+        //The next step will be never found, so we will return the last step.
+        return this._form.steps.length - 1;
     }
 
     /**
