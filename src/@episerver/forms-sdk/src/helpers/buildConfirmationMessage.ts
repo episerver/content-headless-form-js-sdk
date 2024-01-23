@@ -1,5 +1,6 @@
 import { FormContainer } from "../models/FormContainer";
 import { FormSubmission } from "../models/states/FormSubmission";
+import { isNullOrEmpty } from "./utils";
 
 export const FieldsToIgnore = [
     "FormStepBlock",
@@ -30,8 +31,9 @@ export function buildConfirmMessage(confirmationMessage: string, data: FormSubmi
     let _fieldsToIgnore = fieldsToIgnore ?? FieldsToIgnore;
     data.forEach(element => {
         let formElement = form.formElements.find(fe => fe.key === element.elementKey)
-        if (formElement && _fieldsToIgnore.indexOf(formElement.contentType) === -1) {
-            message += `${formElement.displayName}: ${getValueAsString(element)}${newLine}`;
+        let value = getValueAsString(element);
+        if (formElement && _fieldsToIgnore.indexOf(formElement.contentType) === -1 && !isNullOrEmpty(value)) {
+            message += `${formElement.displayName}: ${value}${newLine}`;
         }
     });
 
