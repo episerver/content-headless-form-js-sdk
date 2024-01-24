@@ -46,7 +46,7 @@ export const useElement = (element: FormElementBase) => {
 
     //build element state
     const value = (formContext?.formSubmissions ?? [])
-        .filter(s => equals(s.elementKey, element.key))[0]?.value ?? defaultValue ?? "";
+        .filter(s => equals(s.elementKey, element.key))[0]?.value ?? "";
     const validationResults = (formContext?.formValidationResults ?? [])
         .filter(s => equals(s.elementKey, element.key))[0] ?? {elementKey: element.key, result: {valid: true}};
 
