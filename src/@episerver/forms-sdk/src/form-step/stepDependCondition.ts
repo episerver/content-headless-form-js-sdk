@@ -38,8 +38,8 @@ export class StepDependCondition {
         }
 
         let dependField = step.properties?.dependField,
-            storedData = this._formStorage.loadFormDataFromStorage().filter(fs => fs.elementKey === dependField?.key)[0],
-            funcOfDependCondition = ConditionFunctions[step.properties.dependCondition]; 
+            storedData = this._formStorage.loadFormDataFromStorage().find(fs => fs.elementKey === dependField?.key),
+            funcOfDependCondition = ConditionFunctions[step.properties?.dependCondition]; 
 
         if (!dependField || !funcOfDependCondition || !storedData) { // no input to check, consider it's OK
             return true;
@@ -66,7 +66,9 @@ export class StepDependCondition {
                 ? nextStepIndex 
                 : this.findNextStep(nextStepIndex);
         }
-        return undefined;
+        //go here in case: Form there are 2 steps, and last step depend on an element on step 1, but it's not satisfied. 
+        //The next step will be never found, so we will return the last step.
+        return this._form.steps.length - 1;
     }
 
     /**
