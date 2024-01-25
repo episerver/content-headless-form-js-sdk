@@ -9,11 +9,12 @@ export const FieldsToIgnore = [
 
 export function getValueAsString(element: FormSubmission) {
     let value = element.value ?? ""
-    if (Object.getPrototypeOf(value) === FileList.prototype) {
-        let fileList = value as FileList
+    if (Array.isArray(value) && value.length > 0 &&
+        value[0] !== null && typeof value[0] === "object") {
+        let fileList = value
         let fileNames = ""
         for (let i = 0; i < fileList.length; i++) {
-            const file = fileList[i]
+            const file = fileList[i].file
             fileNames += `${file.name}`
             if (fileList.length > 0) {
                 fileNames += " | "
