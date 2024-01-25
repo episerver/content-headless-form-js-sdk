@@ -69,7 +69,9 @@ export const FormBody = (props: FormBodyProps) => {
         if (!isNullOrEmpty(confirmationMessage) && form.properties.showSummarizedData) {
             const data = formContext?.formSubmissions ?? []
             const confirmationMessageWithData = buildConfirmMessage(confirmationMessage, data, form)
-            confimStatus = confirm(confirmationMessageWithData);
+            if (!isNullOrEmpty(confirmationMessage)) {
+                confimStatus = confirm(confirmationMessageWithData);
+            }
         }
 
         return confimStatus
