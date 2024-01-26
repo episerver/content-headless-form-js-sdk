@@ -27,20 +27,17 @@ export function getValueAsString(element: FormSubmission) {
     return `${value}`
 }
 
-export function buildConfirmMessage(confirmationMessage: string, data: FormSubmission[], form: FormContainer, fieldsToIgnore?: string[]): string {
+export function getConfirmationData(data: FormSubmission[], form: FormContainer, fieldsToIgnore?: string[]): string {
     let message = "";
     let _fieldsToIgnore = fieldsToIgnore ?? FieldsToIgnore;
+
     data.forEach(element => {
         let formElement = form.formElements.find(fe => fe.key === element.elementKey)
         let value = getValueAsString(element)
-        if (formElement && !isNullOrEmpty(value) && _fieldsToIgnore.indexOf(formElement.contentType) !== -1) {
+        if (formElement && !isNullOrEmpty(value) && _fieldsToIgnore.indexOf(formElement.contentType) === -1) {
             message += `${formElement.displayName}: ${value}${"\n"}`;
         }
     });
 
-    if (isNullOrEmpty(message) && isNullOrEmpty(confirmationMessage)) {
-        return message
-    }
-
-    return confirmationMessage + "\n" + message
+    return message
 }
