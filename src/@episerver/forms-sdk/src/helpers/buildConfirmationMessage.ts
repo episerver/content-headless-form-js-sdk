@@ -5,7 +5,8 @@ import { isNullOrEmpty } from "./utils";
 export const FieldsToIgnore = [
     "FormStepBlock",
     "SubmitButtonElementBlock",
-    "PredefinedHiddenElementBlock"
+    "PredefinedHiddenElementBlock",
+    "ParagraphTextElementBlock"
 ]
 
 export function getValueAsString(element: FormSubmission) {
@@ -26,15 +27,15 @@ export function getValueAsString(element: FormSubmission) {
     return `${value}`
 }
 
-export function buildConfirmMessage(confirmationMessage: string, data: FormSubmission[], form: FormContainer, fieldsToIgnore?: string[]): string {
-    const newLine = "\n"
-    let message = confirmationMessage + newLine;
+export function getConfirmationData(data: FormSubmission[], form: FormContainer, fieldsToIgnore?: string[]): string {
+    let message = "";
     let _fieldsToIgnore = fieldsToIgnore ?? FieldsToIgnore;
+
     data.forEach(element => {
         let formElement = form.formElements.find(fe => fe.key === element.elementKey)
         let value = getValueAsString(element)
         if (formElement && !isNullOrEmpty(value) && _fieldsToIgnore.indexOf(formElement.contentType) === -1) {
-            message += `${formElement.displayName}: ${value}${newLine}`;
+            message += `${formElement.displayName}: ${value}${"\n"}`;
         }
     });
 

@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { useForms } from "../context/store";
-import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, FormConstants, ProblemDetail, StepDependCondition, buildConfirmMessage } from "@episerver/forms-sdk";
+import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, 
+    isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, 
+    FormConstants, ProblemDetail, StepDependCondition, getConfirmationData } from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -61,15 +63,20 @@ export const FormBody = (props: FormBodyProps) => {
         submissionWarning.current = !isNullOrEmpty(error);
         message.current = error;
     }
+    
     const handleConfirm = () => {
-        const confirmationMessage = form.properties.confirmationMessage;
+        const form = formContext?.formContainer ?? {} as FormContainer;
+        const confirmationMessage = form.properties.confirmationMessage ?? "";
         let confimStatus = true;
 
-        if (!isNullOrEmpty(confirmationMessage) && form.properties.showSummarizedData) {
+        if (form.properties.showSummarizedData) {
             const data = formContext?.formSubmissions ?? []
-            const confirmationMessageWithData = buildConfirmMessage(confirmationMessage, data, form)
-            confimStatus = confirm(confirmationMessageWithData);
-        }
+            const messageData = getConfirmationData(data, form)
+            const showConfirmationMessage = !(isNullOrEmpty(confirmationMessage) && isNullOrEmpty(messageData))
+            if (showConfirmationMessage) {
+                confimStatus = confirm(confirmationMessage + "\n\n" + messageData);
+            }
+        } 
 
         return confimStatus
     }
@@ -90,7 +97,6 @@ export const FormBody = (props: FormBodyProps) => {
         }
 
         let isLastStep = currentStepIndex === form.steps.length - 1;
-
 
         //filter submissions by active elements and current step
         let formSubmissions = (formContext?.formSubmissions ?? [])
