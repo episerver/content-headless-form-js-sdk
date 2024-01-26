@@ -18,7 +18,7 @@ export const FormBody = (props: FormBodyProps) => {
     const formContext = useForms();
     const form = formContext?.formContainer ?? {} as FormContainer;
     const inactiveElements = formContext?.dependencyInactiveElements ?? [];
-    const formSubmitter = new FormSubmitter(formContext?.formContainer ?? {} as FormContainer, props.baseUrl);
+    const formSubmitter = new FormSubmitter(form, props.baseUrl);
     const dispatchFunctions = new DispatchFunctions();
     const stepDependCondition = new StepDependCondition(form, inactiveElements);
     const stepHelper = new StepHelper(form);
@@ -114,7 +114,7 @@ export const FormBody = (props: FormBodyProps) => {
         }
 
         // Confirm if user want to submit the form
-        if (submitButton?.properties?.finalizeForm || isLastStep) {
+        if (!isNull(submitButton) || isLastStep) {
             if (!handleConfirm()) {
                 return
             }
