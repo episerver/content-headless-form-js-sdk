@@ -1,4 +1,4 @@
-import { FormContainer, ParagraphText, getValueAsString } from "@episerver/forms-sdk"
+import { FormContainer, ParagraphText, getStringValue } from "@episerver/forms-sdk"
 import React, { useMemo } from "react";
 import ElementWrapper from "./shared/ElementWrapper";
 import { useElement } from "../../hooks/useElement";
@@ -42,7 +42,7 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
                 const friendlyName = form.formElements.find(fe => fe.key === element.elementKey)?.displayName
 
                 if (friendlyName && placeHolders.indexOf(friendlyName) !== -1) {
-                    replacedText = replacedText.replaceAll(`${indicator}${friendlyName}${indicator}`, getValueAsString(element))
+                    replacedText = replacedText.replaceAll(`${indicator}${friendlyName}${indicator}`, getStringValue(element))
                 }
             });
         }
