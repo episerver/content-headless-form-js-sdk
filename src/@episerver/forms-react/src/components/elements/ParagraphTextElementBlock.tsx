@@ -42,7 +42,7 @@ export const ParagraphTextElementBlock = (props: ParagraphTextElementBlockProps)
                 const friendlyName = form.formElements.find(fe => fe.key === element.elementKey)?.displayName
 
                 if (friendlyName && placeHolders.indexOf(friendlyName) !== -1) {
-                    replacedText = replacedText.replace(`${indicator}${friendlyName}${indicator}`, getValueAsString(element))
+                    replacedText = replacedText.replaceAll(`${indicator}${friendlyName}${indicator}`, getValueAsString(element))
                 }
             });
         }
