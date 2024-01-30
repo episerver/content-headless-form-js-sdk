@@ -52,25 +52,6 @@ export function getValidStepsElement(elementKey: string, form: FormContainer, cu
     return formElement
 }
 /**
- * Check if the element is visible or not
- * @param elementKey The form element key
- * @param form The form container
- * @returns
- */
-export function checkElementIsVisible(formElement: FormElementBase, data: FormSubmission[]): boolean {
-    const conditionProps = (formElement.properties as unknown) as ConditionProperties;
-    if (isNull(conditionProps.satisfiedAction)) {
-        return true;
-    }
-    const formDependConditions = new FormDependConditions(formElement)
-    if (formDependConditions.checkConditions(data)) {
-        return equals(conditionProps.satisfiedAction, SatisfiedActionType.Show);
-    }
-    else {
-        return equals(conditionProps.satisfiedAction, SatisfiedActionType.Hide);
-    }
-}
-/**
  * Get confirmation summary data from the start to the current step
  * @param data The current form data
  * @param form The form container
