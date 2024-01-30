@@ -136,7 +136,7 @@ export const FormBody = (props: FormBodyProps) => {
         formSubmitter.doSubmit(model).then((response: FormSubmitResult) => {
             //go here, response.success always is true
             isSuccess.current = response.success;
-            isFormFinalized.current = (isProgressiveSubmit.current || isLastStep) && response.success;
+            isFormFinalized.current = (submitButton?.properties?.finalizeForm || isLastStep) && response.success;
             dispatchFunctions.updateSubmissionKey(response.submissionKey);
             localFormCache.set(submissionStorageKey, response.submissionKey);
 
