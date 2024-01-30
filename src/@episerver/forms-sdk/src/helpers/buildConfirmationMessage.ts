@@ -75,19 +75,22 @@ export function checkElementIsVisible(formElement: FormElementBase, data: FormSu
  * @param data The current form data
  * @param form The form container
  * @param currentStepIndex The current form step index
+ * @param inactiveElements The key of element that are inactive (hidden)
  * @param fieldsToIgnore Fields that you dont want to show up in the message
  * @returns
  */
-export function getConfirmationData(data: FormSubmission[], form: FormContainer, currentStepIndex: number, fieldsToIgnore?: string[]): string {
+export function getConfirmationData(data: FormSubmission[], form: FormContainer, currentStepIndex: number, inactiveElements: string[], fieldsToIgnore?: string[]): string {
     let message = "";
-    const _fieldsToIgnore = fieldsToIgnore ?? FieldsToIgnore;
+    const ignoreFields = fieldsToIgnore ?? FieldsToIgnore;
     data.forEach(elementData => {
         const formElement = getValidStepsElement(elementData.elementKey, form, currentStepIndex)
-        if (formElement && _fieldsToIgnore.indexOf(formElement.contentType) === -1) {
-            const value = getStringValue(elementData)
-            if (checkElementIsVisible(formElement,data) && !isNullOrEmpty(value)) {
-                message += `${formElement.displayName}: ${value}${"\n"}`;
-            }
+        const value = getStringValue(elementData)
+        if (formElement
+            && ignoreFields.indexOf(formElement.contentType) === -1
+            && inactiveElements.indexOf(formElement.key) === -1
+            && !isNullOrEmpty(value)
+        ) {
+            message += `${formElement.displayName}: ${value}${"\n"}`;
         }
     });
     return message
