@@ -20,11 +20,12 @@ export function getStringValue(element: FormSubmission) {
     if (Array.isArray(value) && value.length > 0 &&
         value[0] !== null && typeof value[0] === "object") {
         const fileList = value
+        const numberOfFiles = fileList.length
         let fileNames = ""
-        for (let i = 0; i < fileList.length; i++) {
-            const file = fileList[i].file
-            fileNames += `${file.name}`
-            if (fileList.length > 0) {
+        for (let i = 0; i < numberOfFiles; i++) {
+            const file = fileList[i]
+            fileNames += `${file.name ?? ""}`
+            if (i != 1 && i != numberOfFiles - 1) {
                 fileNames += " | "
             }
         }
