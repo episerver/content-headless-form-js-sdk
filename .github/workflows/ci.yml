@@ -55,4 +55,5 @@ jobs:
           ${{ github.workspace}}/build/get-versionSuffix.ps1 ${{env.BRANCH_NAME}} ${{github.RUN_NUMBER}}
 
       - name: Publish
+        if: ${{ github.ref == 'refs/heads/master' }}
         run: npm run publish
