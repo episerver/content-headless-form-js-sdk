@@ -10,16 +10,16 @@ function Header() {
     const formCache = new FormCache();
 
     useEffect(() => {
-        authService.getUser().then((user) => {
+        authService.getUser().then((user: any) => {
             if(user && user.expired) {
-                authService.refreshAccessToken().then((_) => {
-                    authService.getUser().then((_user) => { user = _user })
+                authService.refreshAccessToken().then((_: any) => {
+                    authService.getUser().then((_user: any) => { user = _user })
                 })
             }
 
-            if (user && !user.expired) {
+            if (user && user.authenticated && !user.expired) {
                 setIsLoggedIn(true);
-                setUsername(user.profile.name || "");
+                setUsername(user.username || "");
                 formCache.set<string>(FormConstants.FormAccessToken, user.access_token);
             }
         });

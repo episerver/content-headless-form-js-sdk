@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useFetch } from '../useFetch';
 import SearchButton from '../components/SearchButton';
 import { getImageUrl } from '../helpers/urlHelper';
-import authService from '../authService';
 
 type BuyTicketPageProps = {
     content: any,

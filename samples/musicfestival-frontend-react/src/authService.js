@@ -1,26 +1,14 @@
-import { UserManager, WebStorageStateStore } from 'oidc-client';
+import AuthProvider from './authProvider';
 
 class AuthService {
   constructor() {
-    const settings = {
-      userStore: new WebStorageStateStore({ store: window.localStorage }),
-      authority: `${process.env.REACT_APP_LOGIN_AUTHORITY}`,
-      client_id: `${process.env.REACT_APP_LOGIN_CLIENT_ID}`,
-      redirect_uri: `${window.location.origin}/login-callback`,
-      automaticSilentRenew: true,
-      silent_redirect_uri: `${window.location.origin}/login-renewal`,
-      response_type: 'code',
-      scope: 'openid profile offline_access email roles',
-      post_logout_redirect_uri: window.location.origin,
-      filterProtocolClaims: true,
-      loadUserInfo: true,
-    };
-
-    this.userManager = new UserManager(settings);
+    this.authProvider = new AuthProvider();
   }
 
   getUser() {
-    return this.userManager.getUser();
+    let user = this.authProvider.getUser();
+
+    return {...user, expired: Date.now() > user.exp};
   }
 
   login() {
@@ -28,19 +16,19 @@ class AuthService {
       state: window.location.href,
     };
 
-    return this.userManager.signinRedirect(args);
+    return this.authProvider.signinRedirect(args);
   }
 
   logout() {
-    return this.userManager.signoutRedirect();
+    return this.authProvider.signoutRedirect();
   }
 
   getAccessToken() {
-    return this.userManager.getUser().then((data) => (data ? data.access_token : null));
+    return this.authProvider.getUser().then((data) => (data ? data.access_token : null));
   }
 
   refreshAccessToken() {
-    return this.userManager.signinSilent().then((data) => (data ? data.access_token : null))
+    return this.authProvider.generateJwtToken().then((data) => (data ? data.access_token : null))
   }
 }
 

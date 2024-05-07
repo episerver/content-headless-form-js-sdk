@@ -3,7 +3,6 @@ import Header from './components/Header';
 import LandingPage from './pages/LandingPage';
 import ArtistContainerPage from './pages/ArtistContainerPage';
 import ArtistDetailsPage from './pages/ArtistDetailsPage';
-import authService from './authService';
 import { useState } from 'react';
 import { isEditOrPreviewMode, getPreviewTokenFromUrl } from './helpers/urlHelper'
 import './App.css';

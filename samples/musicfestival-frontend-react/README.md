@@ -61,7 +61,7 @@ This project uses:
         - `...`
     - `models/` contains models retrieving messages from CMS
     - `pages/` contains all pages of the site
-    - `authService.js` contains OIDC config
+    - `authService.js` contains fake authentication provider for jwt token
     - `generated.ts` is generated file on folder `graphql/`
     - `...`
 

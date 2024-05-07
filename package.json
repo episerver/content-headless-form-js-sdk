@@ -21,6 +21,7 @@
     "setup-react-app": "npm install -w sample-react-app",
     "setup-forms-sdk": "npm install -w @episerver/forms-sdk",
     "setup-forms-react": "npm install -w @episerver/forms-react",
+    "setup-musicfestival": "npm install -w music-festival",
     "setup": "npm run setup-forms-sdk && npm run setup-forms-react && npm run setup-react-app && npm run setup-backend && npm run setup-database",
     "build-backend": "npm run build -w managementsite",
     "build-forms-sdk": "npm run build -w @episerver/forms-sdk",
