@@ -15,6 +15,12 @@ using Microsoft.Extensions.Options;
 using OpenIddict.Server;
 using Optimizely.Headless.Form;
 using Optimizely.Headless.Form.DependencyInjection;
+using Optimizely.Cms.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Unicode;
+using Microsoft.IdentityModel.Logging;
 
 // using Optimizely.ContentGraph.Cms.NetCore.ProxyUtils;
 
@@ -25,11 +31,7 @@ public class Startup
     private readonly IWebHostEnvironment _webHostingEnvironment;
     private readonly string _frontendUri;
     private readonly IConfiguration _configuration;
-
-    private readonly string _allowedOrigins = "_allowedOrigins";
-    private const string TestClientId = "TestClient";
-    private const string TestClientSecret = "TestClientSecret";
-    private const string ClientEndpoint = "http://localhost:8082";
+    private readonly string SecretKey = "6e13c68325f0379c2a6b1277e4eb9b97";
 
     public Startup(IWebHostEnvironment webHostingEnvironment, IConfiguration configuration)
     {
@@ -54,12 +56,15 @@ public class Startup
         {
             o.SetConnectionString(connectionstring);
         });
+        IdentityModelEventSource.ShowPII = true;
         AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(_webHostingEnvironment.ContentRootPath, "App_Data"));
 
         services
             .AddCmsAspNetIdentity<ApplicationUser>()
             .AddCms()
-            .AddAdminUserRegistration()
+            .AddAdminUserRegistration(o => {
+                o.Behavior = EPiServer.Cms.Shell.UI.RegisterAdminUserBehaviors.Enabled | EPiServer.Cms.Shell.UI.RegisterAdminUserBehaviors.LocalRequestsOnly;
+            })
             .AddEmbeddedLocalization<Program>()
             .ConfigureForExternalTemplates()
             .Configure<ExternalApplicationOptions>(options => options.OptimizeForDelivery = true)
@@ -70,43 +75,6 @@ public class Startup
                     .Add("wide", "Wide", "u-md-size2of3", string.Empty, "epi -icon__layout--two-thirds")
                     .Add("half", "Half", "u-md-size1of2", string.Empty, "epi-icon__layout--half")
                     .Add("narrow", "Narrow", "u-md-size1of3", string.Empty, "epi-icon__layout--one-third");
-            });
-
-        // services.AddOpenIddict();
-
-        Console.WriteLine("Adding OpenID Connect");
-        services.AddOpenIDConnect<ApplicationUser>(
-            useDevelopmentCertificate: true,
-            signingCertificate: null,
-            encryptionCertificate: null,
-            createSchema: true,
-            options =>
-            {
-                var baseUri = new Uri(_frontendUri);
-                options.RequireHttps = !_webHostingEnvironment.IsDevelopment();
-                options.DisableTokenPruning = true;
-                options.DisableSlidingRefreshTokenExpiration = true;
-
-                options.Applications.Add(new OpenIDConnectApplication
-                {
-                    ClientId = "frontend",
-                    Scopes = { "openid", "offline_access", "profile", "email", "roles", ContentDeliveryApiOptionsDefaults.Scope },
-                    PostLogoutRedirectUris = { baseUri },
-                    RedirectUris =
-                    {
-                        new Uri(baseUri, "/"),
-                        new Uri(baseUri, "/login-callback"),
-                        new Uri(baseUri, "/login-renewal"),
-                        new Uri(baseUri, "/api/auth/callback/optimizely_cms"),
-                    },
-                });
-
-                options.Applications.Add(new OpenIDConnectApplication
-                {
-                    ClientId = "cli",
-                    ClientSecret = "cli",
-                    Scopes = { ContentDefinitionsApiOptionsDefaults.Scope },
-                });
             });
 
         services.AddOpenIDConnectUI();
@@ -126,12 +94,6 @@ public class Startup
         });
         // services.AddContentManagementApi(string.Empty);
 
-        services.AddOpenIddict()
-            .AddServer(options =>
-            {
-                options.DisableAccessTokenEncryption();
-            });
-
         services.ConfigureForContentDeliveryClient();
 
         services.ConfigureContentApiOptions(o =>
@@ -143,7 +105,10 @@ public class Startup
             o.IncludeInternalContentRoots = true;
             o.IncludeNumericContentIdentifier = true;
         });
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<HeadlessFormServiceOptions>, HeadlessFormServiceOptionsPostConfigure>());
+
+        var clientJWTProvider = new OpenIDConnectClient();
+
+        //clientJWTProvider.EncryptionKeys.Add(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecretKey)));
 
         // Register the Optimizely Headless Form API Services
         services.AddOptimizelyHeadlessFormService(options =>
@@ -154,14 +119,13 @@ public class Startup
                 AllowOrigins = new string[] { _frontendUri }, //Enter '*' to allow any origins, multiple origins separate by comma
                 AllowCredentials = true
             };
-            options.OpenIDConnectClients.Add(new()
-            {
-                Authority = ClientEndpoint
-            });
+            options.OpenIDConnectClients.Add(clientJWTProvider);
         });
 
         services.AddContentGraph(OpenIDConnectOptionsDefaults.AuthenticationScheme);
         services.AddHostedService<ProvisionDatabase>();
+
+        services.AddOptimizelyCmsContentOnEPiServerPreview1();
 
         services.AddOptimizelyHeadlessFormContentGraph();
     }
@@ -208,26 +172,5 @@ public class Startup
 
             return Task.CompletedTask;
         });
-    }
-
-    public class HeadlessFormServiceOptionsPostConfigure : IPostConfigureOptions<HeadlessFormServiceOptions>
-    {
-        private readonly OpenIddictServerOptions _options;
-
-        public HeadlessFormServiceOptionsPostConfigure(IOptions<OpenIddictServerOptions> options)
-        {
-            _options = options.Value;
-        }
-
-        public void PostConfigure(string name, HeadlessFormServiceOptions options)
-        {
-            foreach (var client in options.OpenIDConnectClients)
-            {
-                foreach (var key in _options.EncryptionCredentials.Select(c => c.Key))
-                {
-                    client.EncryptionKeys.Add(key);
-                }
-            }
-        }
     }
 }

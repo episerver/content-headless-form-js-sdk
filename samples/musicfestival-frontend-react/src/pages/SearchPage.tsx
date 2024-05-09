@@ -70,18 +70,18 @@ function SearchPage() {
     })
 
     useEffect(() => {
-        authService.getUser().then((user: any) => {
-            if (user && user.expired) {
-                authService.refreshAccessToken().then((_token: string) => {
-                    _token && setToken(_token)
-                })
-            }
-        });
+        // authService.getUser().then((user: any) => {
+        //     if (user && user.expired) {
+        //         authService.refreshAccessToken().then((_token) => {
+        //             _token && setToken(_token)
+        //         })
+        //     }
+        // });
 
-        authService.getAccessToken().then((_token: string) => {
-            _token && setToken(_token)
-            modeEdit && !_token && !artistData && authService.login()
-        })
+        // authService.getAccessToken().then((_token: string) => {
+        //     _token && setToken(_token)
+        //     modeEdit && !_token && !artistData && authService.login()
+        // })
     }, [])
 
     if (modeEdit) {

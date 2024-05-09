@@ -2,11 +2,8 @@ using EPiServer.Cms.Shell;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Mvc;
-using Optimizely.Cms.Preview2.Content;
-using Optimizely.Cms.Preview2.Content.Models;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Optimizely.Cms.Preview1.Content;
+using Optimizely.Cms.Preview1.Content.Models;
 
 namespace AlloyMvcTemplates.Controllers;
 [Route("api/[controller]")]

@@ -17,8 +17,8 @@ function Header() {
                 })
             }
 
-            if (user && user.authenticated && !user.expired) {
-                setIsLoggedIn(true);
+            if (user && !user.expired) {
+                setIsLoggedIn(user.authenticated);
                 setUsername(user.username || "");
                 formCache.set<string>(FormConstants.FormAccessToken, user.access_token);
             }

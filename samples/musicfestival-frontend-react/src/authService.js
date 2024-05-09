@@ -6,9 +6,12 @@ class AuthService {
   }
 
   getUser() {
-    let user = this.authProvider.getUser();
-
-    return {...user, expired: Date.now() > user.exp};
+    return new Promise( (resolve, reject) => {
+      this.authProvider.getUser().then(user => {
+        console.log(`JWT Bearer token for ${user.username}: ${user.access_token}`)
+        resolve({...user, expired: Math.floor(Date.now() / 1000) > user.exp}) 
+      })
+    })
   }
 
   login() {
@@ -24,11 +27,11 @@ class AuthService {
   }
 
   getAccessToken() {
-    return this.authProvider.getUser().then((data) => (data ? data.access_token : null));
+    return this.authProvider.getUser();
   }
 
   refreshAccessToken() {
-    return this.authProvider.generateJwtToken().then((data) => (data ? data.access_token : null))
+    return this.authProvider.generateJwtToken()
   }
 }
 
