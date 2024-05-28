@@ -56,11 +56,13 @@ To setup musicfestival:
 
 4. Start management site
 
+Make sure to enter your Content Graph settings in appsettings.json file of the project you want to run
+
 ```sh
    npm run start-backend
 ```
 
-for musicfestival sample site
+For musicfestival sample site
 
 ```sh
    npm run start-musicfestival-backend
