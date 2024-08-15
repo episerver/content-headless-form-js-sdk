@@ -37,3 +37,48 @@
         transform: rotate(360deg);
     }
 }
+
+.form_error_message,
+.form_success_message {
+    text-align: center;
+    font: bold !important;
+    font-size: xx-large;
+    border: 1px gray solid;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+}
+
+.form_error_message {
+    color: red !important;
+    /* background-color: ; */
+}
+
+.form_success_message {
+    color: white !important;
+}
+
+.form_submit_btn {
+    background-color: #d8d8d8;
+    color: #000;
+}
+
+.form_submit_btn:hover {
+    background-color: slateblue;
+    color: white;
+}
+
+.form_title {
+    font-weight: bolder !important;
+    font-size: xx-large;
+    margin-bottom: 10px;
+}
+
+.FormElement_Error {
+    border: 1px red solid !important;
+}
+
+.FormElement_Error_Message {
+    color: red;
+    font-weight: bolder !important;
+}
