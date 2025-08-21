@@ -1,6 +1,6 @@
 {
   "name": "content-headless-form-js-sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Workspace root",
   "workspaces": [
     "src/@episerver/forms-react",
@@ -26,7 +26,9 @@
     "build-backend": "npm run build -w managementsite",
     "build-forms-sdk": "npm run build -w @episerver/forms-sdk",
     "build-forms-react": "npm run build -w @episerver/forms-react",
-    "build": "npm run build-forms-sdk && npm run build-forms-react",
+    "build-forms-react-dev": "npm run dev -w @episerver/forms-react",
+    "build": "npm run build-forms-sdk && npm run build-forms-react-dev",
+    "build-release": "npm run build-forms-sdk && npm run build-forms-react",
     "test-forms-sdk": "npm run test -w @episerver/forms-sdk",
     "test": "npm run test-forms-sdk",
     "start-backend": "npm start -w managementsite",
