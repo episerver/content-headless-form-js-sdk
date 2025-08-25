@@ -1,13 +1,26 @@
 ﻿# Headless Form JS SDK (beta release)
 
-This is a JS SDK package that helps render a form based on metadata taken from the Headless Form API. In this package, there are 2 main parts:
+This JS SDK package helps render a form based on metadata taken from the Headless Form API. In this package, there are 2 main parts:
 
 | Project                         | Description             | Doc                     |
 | --------------------------------| ------------------------| ------------------------|
 | @episerver/forms-sdk           | JS SDK for models, client validation, form loader, form dependencies, form submit | https://github.com/episerver/content-headless-form-js-sdk/tree/develop/src/%40episerver/forms-sdk#readme
 | @episerver/forms-react         | React SDK for rendering a form as a React component | https://github.com/episerver/content-headless-form-js-sdk/tree/develop/src/%40episerver/forms-react#readme
 
-ref: https://docs.developers.optimizely.com/content-management-system/v1.2.0-forms/docs/get-started-with-headless-optimizely-forms
+ref: 
+
+   https://docs.developers.optimizely.com/content-management-system/v1.2.0-forms/docs/get-started-with-headless-optimizely-forms
+   
+   https://world.optimizely.com/blogs/linh-hoang/dates/2024/8/optimizely-headless-form-setup/
+   
+Wiki:
+
+   [Setup AAD with Form Headless API](https://github.com/episerver/content-headless-form-js-sdk/wiki/Setup-AAD-with-Form-Headless-API)
+   
+   [Setup Anonymous token provider with Headless Forms](https://github.com/episerver/content-headless-form-js-sdk/wiki/Setup-Anonymous-token-provider-with-Headless-Form)
+   
+   [Setup Form Headless API with OIDC](https://github.com/episerver/content-headless-form-js-sdk/wiki/Setup-Form-Headless-API-with-OIDC)
+   
 ## Getting Started
 
 ### Installation

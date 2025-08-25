@@ -5,8 +5,8 @@
 		<CmsUIVersion>12.30.0</CmsUIVersion>
 		<CmsCoreVersion>12.21.4</CmsCoreVersion>
 		<HeadlessFormVersion>1.0.0</HeadlessFormVersion>
-		<ContentApiVersion>12.20.1</ContentApiVersion>
 		<FormVersion>5.9.0</FormVersion>
+		<ContentApiVersion>3.10.2</ContentApiVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="EPiServer.CMS.AspNetCore" Version="$(CmsCoreVersion)" />
@@ -30,7 +30,9 @@
 		<PackageReference Include="Optimizely.Cms.Forms.ContentGraph" Version="$(HeadlessFormVersion)" />
 		<PackageReference Include="Optimizely.Cms.Forms.Core" Version="$(HeadlessFormVersion)" />
 		<PackageReference Include="Optimizely.Cms.Forms.Service" Version="$(HeadlessFormVersion)" />
-		<PackageReference Include="Optimizely.ContentGraph.Cms" Version="3.5.1" />
+		<PackageReference Include="Optimizely.ContentGraph.Cms" Version="3.9.0" />
+		<PackageReference Include="EPiServer.ContentDeliveryApi.Cms" Version="$(ContentApiVersion)" />
+		<PackageReference Include="EPiServer.ContentDeliveryApi.Core" Version="$(ContentApiVersion)" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />

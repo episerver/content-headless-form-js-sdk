@@ -23,6 +23,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using EPiServer.DependencyInjection;
 using Optimizely.Cms.Forms.DependencyInjection;
 using Optimizely.Cms.Forms;
+using EPiServer.Cms.Shell.UI;
 
 namespace Alloy.ManagementSite
 {
@@ -46,7 +47,6 @@ namespace Alloy.ManagementSite
             if (_environment.IsDevelopment())
             {
                 //NETCORE: Consider add appsettings support for this
-
                 services.Configure<StaticFileOptions>(o =>
                 {
                     o.OnPrepareResponse = context =>
@@ -88,7 +88,9 @@ namespace Alloy.ManagementSite
                 .Configure<ExternalApplicationOptions>(options => options.OptimizeForDelivery = true)
                 .ConfigureDisplayOptions()
                 .AddContentDelivery(managementSiteOptions)
-                .ConfigureDxp(managementSiteOptions, _configuration);
+                .ConfigureDxp(managementSiteOptions, _configuration)
+                .AddAdminUserRegistration(options => options.Behavior = RegisterAdminUserBehaviors.Enabled |
+                                                                    RegisterAdminUserBehaviors.LocalRequestsOnly);
 
             services.AddCors(opts =>
             {
@@ -192,6 +194,14 @@ namespace Alloy.ManagementSite
                 foreach (var key in _options.EncryptionCredentials.Select(c => c.Key))
                 {
                     client.EncryptionKeys.Add(key);
+                }
+            }
+
+            foreach (var client in options.OpenIDConnectClients)
+            {
+                foreach (var key in _options.SigningCredentials.Select(c => c.Key))
+                {
+                    client.SigningKeys.Add(key);
                 }
             }
         }
