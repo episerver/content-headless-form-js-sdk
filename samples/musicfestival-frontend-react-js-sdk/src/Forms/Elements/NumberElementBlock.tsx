@@ -50,7 +50,7 @@ const NumberElementBlock: React.FC<NumberElementBlockProps> = ({ element, update
                 placeholder={element.properties.placeHolder}
                 type="number"
                 step="1"
-                className= {`${validationClassName} FormTextbox__Input`}
+                className= {`input-text__field --horizontal-padding${validationResults.result.valid ? '' : ' --error'}`}
                 onChange={(e) => {
                     updateData(element.key, e.target.value)
                 }}
