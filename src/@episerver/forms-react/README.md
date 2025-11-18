@@ -1,4 +1,4 @@
-# Headless Form React Documentation
+# Headless Form React SDK Documentation
 There are two components can be used when install package `@episerver/forms-react`:
 ## Form 
 ### Description
