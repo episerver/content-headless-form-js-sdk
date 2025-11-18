@@ -1,4 +1,4 @@
-﻿# Headless Form JS SDK (beta release)
+﻿# Optimizely Headless Form JS SDK
 
 This JS SDK package helps render a form based on metadata taken from the Headless Form API. In this package, there are 2 main parts:
 
