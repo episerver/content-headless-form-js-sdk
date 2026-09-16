@@ -1,60 +1,59 @@
 using EPiServer;
 using EPiServer.Core;
 using EPiServer.Forms.Implementation.Elements;
-using EPiServer.ServiceLocation;
 using EPiServer.SpecializedProperties;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace AlloyMvcTemplates.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class ReactController : ControllerBase
 {
-    public ReactController()
+    private readonly IUrlResolver _urlResolver;
+    private readonly IContentLoader _contentLoader;
+
+    public ReactController(IUrlResolver urlResolver, IContentLoader contentLoader)
     {
+        _urlResolver = urlResolver;
+        _contentLoader = contentLoader;
     }
 
     [HttpGet("GetFormInPageByUrl")]
-    public async Task<IActionResult> GetFormInPageByUrl(string url)
+    public IActionResult GetFormInPageByUrl(string url)
     {
-        var builder = new EPiServer.UrlBuilder(url);
-        var content = UrlResolver.Current.Route(builder, ContextMode.Default);
+        var builder = new UrlBuilder(url);
 
-        if (content is null)
+        var routeData = _urlResolver.Route(builder, new RouteArguments
+        {
+            ContextMode = ContextMode.Default,
+            MatchHost = HostMatching.Default
+        });
+
+        var pageContent = routeData?.Content;
+
+        if (pageContent is null)
         {
             return NoContent();
         }
-        CancellationTokenSource source = new CancellationTokenSource();
-        CancellationToken token = source.Token;
 
-        var contentLoader = ServiceLocator.Current.GetInstance<IContentLoader>();
-
-        var pageContent = contentLoader.Get<IContent>(content.ContentGuid);
-
-        var pageModel = new PageModel();
-
-        if (pageContent is not null)
+        var pageModel = new PageModel
         {
-            pageModel.Title = pageContent.Name;
-            pageModel.PageUrl = UrlResolver.Current.GetUrl(content.ContentLink);
+            Title = pageContent.Name,
+            PageUrl = _urlResolver.GetUrl(pageContent.ContentLink, null, null)
+        };
 
-            if (pageContent.Property.Keys.Contains("MainContentArea"))
+        var contentArea = (pageContent.Property["MainContentArea"] as PropertyContentArea)?.ContentArea;
+        foreach (var item in contentArea?.Items ?? Enumerable.Empty<ContentAreaItem>())
+        {
+            var contentItem = _contentLoader.Get<IContent>(item.ContentLink);
+
+            if (contentItem is FormContainerBlock)
             {
-                var contentArea = pageContent.Property["MainContentArea"] as PropertyContentArea;
-                foreach (var item in contentArea.PublicContentArea.FilteredItems)
-                {
-                    var contentItem = contentLoader.Get<IContent>(item.ContentLink);
-
-                    if(contentItem is FormContainerBlock)
-                    {
-                        pageModel.FormKeys.Add(contentItem.ContentGuid.ToString("N"));
-                    }
-                }
+                pageModel.FormKeys.Add(contentItem.ContentGuid.ToString("N"));
             }
         }
 

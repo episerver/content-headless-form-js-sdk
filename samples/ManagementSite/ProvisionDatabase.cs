@@ -4,41 +4,41 @@ using EPiServer.DataAbstraction;
 using EPiServer.Security;
 using EPiServer.Logging;
 using EPiServer.Shell.Security;
-using EPiServer.Web;
-using System.Linq;
 using System.Threading.Tasks;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
-using EPiServer.ServiceLocation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Alloy.ManagementSite
 {
     /// <summary>
-    /// Provision the database for easier development by:
-    ///  * Enabling project mode
-    ///  * Adding some default users
-    ///
-    /// This file is preferably deployed in the App_Code folder, where it will be picked up and executed automatically.
+    /// Provision the database for easier development by adding some default users.
+    /// The delivery site application is provisioned by <see cref="DeliveryApplicationInitializer"/>,
+    /// which has to run on the first request rather than at startup because the default site content
+    /// is not imported until then.
     /// </summary>
     [InitializableModule]
     [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
     public class ProvisionDatabase : IInitializableModule
     {
         private static readonly ILogger _logger = LogManager.GetLogger(typeof(ProvisionDatabase));
-        private ISiteDefinitionRepository _siteDefinitionRepository => ServiceLocator.Current.GetInstance<ISiteDefinitionRepository>();
-        private IContentSecurityRepository _contentSecurityRepository => ServiceLocator.Current.GetInstance<IContentSecurityRepository>();
-        private UIUserProvider _userProvider => ServiceLocator.Current.GetInstance<UIUserProvider>();
-        private UIRoleProvider _roleProvider => ServiceLocator.Current.GetInstance<UIRoleProvider>();
+        private IContentSecurityRepository _contentSecurityRepository;
+        private UIUserProvider _userProvider;
+        private UIRoleProvider _roleProvider;
 
         public void Initialize(InitializationEngine context)
         {
+            var services = context.Services;
+
+            _contentSecurityRepository = services.GetRequiredService<IContentSecurityRepository>();
+            _userProvider = services.GetRequiredService<UIUserProvider>();
+            _roleProvider = services.GetRequiredService<UIRoleProvider>();
+
             AddUsersAndRolesAsync();
-            ServiceLocator.Current.GetInstance<ISiteDefinitionEvents>().SiteCreated += ProvisionDatabase_SiteCreated;
         }
 
         public void Uninitialize(InitializationEngine context)
         {
-            ServiceLocator.Current.GetInstance<ISiteDefinitionEvents>().SiteCreated -= ProvisionDatabase_SiteCreated;
         }
 
         private async void AddUsersAndRolesAsync()
@@ -88,40 +88,6 @@ namespace Alloy.ManagementSite
 
             _contentSecurityRepository.Save(ContentReference.RootPage, permissions, SecuritySaveType.Replace);
             _contentSecurityRepository.Save(ContentReference.WasteBasket, permissions, SecuritySaveType.Replace);
-        }
-
-        private void ProvisionDatabase_SiteCreated(object sender, SiteDefinitionEventArgs e)
-        {
-            _logger.Information("Provisioning primary site host.");
-
-            var site = _siteDefinitionRepository
-                .List()
-                .FirstOrDefault();
-
-            if (site is null)
-            {
-                _logger.Information("Primary site host already exists.");
-
-                return;
-            }
-            else
-            {
-                site = site.CreateWritableClone();
-            }
-
-            if (!site.Hosts.Any(x => x.Type == HostDefinitionType.Primary))
-            {
-                var editHost = site.Hosts.First(x => x.Name != "*");
-                editHost.Type = HostDefinitionType.Edit;
-
-                site.Hosts.Add(new HostDefinition
-                {
-                    Type = HostDefinitionType.Primary,
-                    Name = "localhost:3000"
-                });
-            }
-
-            _siteDefinitionRepository.Save(site);
         }
     }
 }

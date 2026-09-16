@@ -1,7 +1,7 @@
 using System;
 using EPiServer.Core;
+using EPiServer.DataAnnotations;
 using EPiServer.Framework.DataAnnotations;
-using EPiServer.PlugIn;
 
 namespace Alloy.ManagementSite.Models.Properties
 {
@@ -9,7 +9,7 @@ namespace Alloy.ManagementSite.Models.Properties
     /// Property type for storing a list of strings
     /// </summary>
     /// <remarks>For an example, see <see cref="Alloy.ManagementSite.Models.Pages.SitePageData"/> where this property type is used for the MetaKeywords property</remarks>
-    [PropertyDefinitionTypePlugIn(Description = "A property for list of strings", DisplayName = "String List")]
+    [PropertyDefinitionType(Description = "A property for list of strings", DisplayName = "StringList")]
     public class PropertyStringList : PropertyLongString
     {
         protected string Separator { get; set; } = "\n";
@@ -18,7 +18,7 @@ namespace Alloy.ManagementSite.Models.Properties
 
         public override Type PropertyValueType => typeof(string[]);
 
-        public override object SaveData(PropertyDataCollection properties) => LongString;
+        public override object SaveData() => LongString;
 
         public override object Value
         {

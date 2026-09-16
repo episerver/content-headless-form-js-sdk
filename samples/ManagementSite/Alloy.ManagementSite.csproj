@@ -1,12 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<NoWarn>NU5100;NU1803;NU1605;NU1504;</NoWarn>
-		<CmsUIVersion>12.30.0</CmsUIVersion>
-		<CmsCoreVersion>12.21.4</CmsCoreVersion>
-		<HeadlessFormVersion>1.0.0</HeadlessFormVersion>
-		<FormVersion>5.9.0</FormVersion>
-		<ContentApiVersion>3.10.2</ContentApiVersion>
+		<CmsUIVersion>13.1.3</CmsUIVersion>
+		<CmsCoreVersion>13.1.3</CmsCoreVersion>
+		<HeadlessFormVersion>2.0.0-ci-720</HeadlessFormVersion>
+		<FormVersion>6.0.1</FormVersion>
+		<ContentApiVersion>13.0.0</ContentApiVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="EPiServer.CMS.AspNetCore" Version="$(CmsCoreVersion)" />
@@ -19,32 +19,30 @@
 		<PackageReference Include="EPiServer.Framework" Version="$(CmsCoreVersion)" />
 		<PackageReference Include="EPiServer.Framework.AspNetCore" Version="$(CmsCoreVersion)" />
 		<PackageReference Include="EPiServer.Hosting" Version="$(CmsCoreVersion)" />
-		<PackageReference Include="EPiServer.CMS.TinyMce" Version="4.4.2" />
+		<PackageReference Include="EPiServer.CMS.TinyMce" Version="$(CmsCoreVersion)" />
 		<PackageReference Include="EPiServer.CMS.UI" Version="$(CmsUIVersion)" />
 		<PackageReference Include="EPiServer.CMS.UI.Core" Version="$(CmsUIVersion)" />
 		<PackageReference Include="EPiServer.CMS.UI.VisitorGroups" Version="$(CmsUIVersion)" />
 		<PackageReference Include="EPiServer.CMS.UI.AspNetIdentity" Version="$(CmsUIVersion)" />
-		<PackageReference Include="EPiServer.ImageLibrary.ImageSharp" Version="2.0.1" />
+		<PackageReference Include="EPiServer.ImageLibrary.ImageSharp" Version="$(CmsCoreVersion)" />
 	</ItemGroup>
 	<ItemGroup Label="HeadlessForm">
-		<PackageReference Include="Optimizely.Cms.Forms.ContentGraph" Version="$(HeadlessFormVersion)" />
+		<!-- Optimizely.Cms.Forms.ContentGraph is discontinued in the CMS 13 line, see episerver/content-headless-form#173 -->
 		<PackageReference Include="Optimizely.Cms.Forms.Core" Version="$(HeadlessFormVersion)" />
 		<PackageReference Include="Optimizely.Cms.Forms.Service" Version="$(HeadlessFormVersion)" />
-		<PackageReference Include="Optimizely.ContentGraph.Cms" Version="3.9.0" />
 		<PackageReference Include="EPiServer.ContentDeliveryApi.Cms" Version="$(ContentApiVersion)" />
 		<PackageReference Include="EPiServer.ContentDeliveryApi.Core" Version="$(ContentApiVersion)" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http.Polly" Version="10.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="EPiServer.ContentDefinitionsApi" Version="3.3.0" />
-		<PackageReference Include="EPiServer.ContentDeliveryApi.Cms" Version="3.9.1" />
-		<PackageReference Include="EPiServer.OpenIDConnect" Version="3.3.0" />
-		<PackageReference Include="EPiServer.CloudPlatform.Cms" Version="1.2.0" />
+		<!-- EPiServer.ContentDefinitionsApi has no CMS 13 build; its endpoints are superseded by the in-box CMS Service API v1 (Optimizely.Cms.Service.V1.*). -->
+		<PackageReference Include="EPiServer.OpenIDConnect" Version="$(ContentApiVersion)" />
+		<PackageReference Include="EPiServer.CloudPlatform.Cms" Version="$(CmsCoreVersion)" />
 	</ItemGroup>
 	<PropertyGroup>
 		<ApplicationIcon />

@@ -5,7 +5,6 @@ using EPiServer.Cms.UI.Admin;
 using EPiServer.Cms.UI.VisitorGroups;
 using EPiServer.ContentApi.Core.DependencyInjection;
 using EPiServer.Core;
-using EPiServer.Shell.Telemetry;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Builder;
@@ -57,11 +56,6 @@ namespace Alloy.ManagementSite
                 });
             }
 
-            services.Configure<TelemetryOptions>(o =>
-            {
-                o.Enabled = false;
-            });
-
             services.AddCmsAspNetIdentity<ApplicationUser>(configureIdentity: options =>
             {
                 // Use sane passwords
@@ -82,8 +76,8 @@ namespace Alloy.ManagementSite
                 .AddAdmin()
                 .AddTinyMce()
                 .AddVisitorGroupsUI()
+                .AddCmsImageSharpImageLibrary()
                 .AddEmbeddedLocalization<Startup>()
-                .ConfigureForExternalTemplates()
                 .ConfigureDataAccess(_configuration, _environment.ContentRootPath)
                 .Configure<ExternalApplicationOptions>(options => options.OptimizeForDelivery = true)
                 .ConfigureDisplayOptions()
@@ -92,13 +86,17 @@ namespace Alloy.ManagementSite
                 .AddAdminUserRegistration(options => options.Behavior = RegisterAdminUserBehaviors.Enabled |
                                                                     RegisterAdminUserBehaviors.LocalRequestsOnly);
 
+            services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<EPiServer.Web.IFirstRequestInitializer, DeliveryApplicationInitializer>());
+
+            services.Configure<RoutingOptions>(options => options.StrictLanguageRouting = false);
+
             services.AddCors(opts =>
             {
                 opts.AddPolicy(name: _allowedOrigins, builder =>
                 {
                     builder.WithOrigins(managementSiteOptions.DeliverySite.Url)
                     .WithExposedContentDeliveryApiHeaders()
-                    .WithExposedContentDefinitionApiHeaders()
                     .WithHeaders("Authorization")
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -142,9 +140,6 @@ namespace Alloy.ManagementSite
                 });
             });
 
-            services.AddContentGraph(OpenIDConnectOptionsDefaults.AuthenticationScheme);
-
-            //Register ContentGraph for HeadlessForm
             services.AddContentDeliveryApi(op =>
             {
                 op.DisableScopeValidation = true;
