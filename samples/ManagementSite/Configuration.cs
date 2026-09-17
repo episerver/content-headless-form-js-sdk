@@ -1,9 +1,10 @@
 using System;
 using System.IO;
 using EPiServer.Cms.UI.AspNetIdentity;
+using EPiServer.DependencyInjection;
 using EPiServer.ContentApi.Cms;
 using EPiServer.ContentApi.Core.DependencyInjection;
-using EPiServer.ContentDefinitionsApi;
+
 using EPiServer.Data;
 using EPiServer.OpenIDConnect;
 using EPiServer.Web;
@@ -24,6 +25,9 @@ namespace Alloy.ManagementSite
             services.Configure<DataAccessOptions>(options =>
             {
                 options.SetConnectionString(connectionstring);
+
+                // Allow the database compatibility level to be updated automatically when upgrading to CMS 13.
+                options.UpdateDatabaseCompatibilityLevel = true;
             });
 
             return services;
@@ -66,15 +70,8 @@ namespace Alloy.ManagementSite
                         },
                     }); ;
 
-                    options.Applications.Add(new OpenIDConnectApplication
-                    {
-                        ClientId = managementSiteOptions.OpenIdConnect.ContentDefinitionsApi.ClientId,
-                        ClientSecret = managementSiteOptions.OpenIdConnect.ContentDefinitionsApi.ClientSecret,
-                        Scopes = { ContentDefinitionsApiOptionsDefaults.Scope },
-                    });
                 });
 
-            services.AddContentDefinitionsApi(OpenIDConnectOptionsDefaults.AuthenticationScheme);
             services.AddContentDeliveryApi(OpenIDConnectOptionsDefaults.AuthenticationScheme);
             services.ConfigureForContentDeliveryClient();
 

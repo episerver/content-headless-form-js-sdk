@@ -11,7 +11,7 @@
     "Kestrel (Env: Development)": {
         "commandName": "Project",
         "launchBrowser": true,
-        "launchUrl": "episerver/cms",
+        "launchUrl": "Optimizely/CMS",
         "applicationUrl": "https://localhost:8082",
         "environmentVariables": {
             "ASPNETCORE_ENVIRONMENT": "Development"
