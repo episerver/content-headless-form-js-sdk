@@ -14,7 +14,7 @@ import { isEditOrPreviewMode } from './helpers/urlHelper';
 import SearchPage from './pages/SearchPage';
 
 const queryClient = new QueryClient();
-const backendUrl = process.env.REACT_APP_LOGIN_AUTHORITY as string
+const backendUrl = import.meta.env.REACT_APP_LOGIN_AUTHORITY as string
 
 export default function WrapApp() {
   useEffect(() => {

@@ -9,7 +9,7 @@ const isEditOrPreviewMode = () => {
 }
 
 const getImageUrl = (path = "") => {
-    const siteUrl = process.env.REACT_APP_LOGIN_AUTHORITY as string
+    const siteUrl = import.meta.env.REACT_APP_LOGIN_AUTHORITY as string
     if (!path) {
         return ""
     }

@@ -49,6 +49,13 @@ This repository contains two sample sites
 * Site render using Content Graph
    - `/samples/musicfestival-backend-dotnet` Backend site that fully index using Content Graph
    - `/samples/musicfestival-frontend-react` Frontend React site that renders the full site, including the Form, using Content Graph
+   - `/samples/musicfestival-frontend-react-js-sdk` Same as above, but renders the Form with its own components built on `@episerver/forms-sdk` only
+
+The frontend sample sites use [Vite](https://vite.dev/) and run on `http://localhost:3000`.
+
+#### Prerequisites
+- Node.js 22.18 or later
+- .NET SDK for the backend sites
 
 #### Installing and running sample sites
 1. Clone repo
@@ -97,6 +104,12 @@ for musicfestival sample site
 
 ```sh
    npm run start-musicfestival
+```
+
+for musicfestival sample site that uses `@episerver/forms-sdk` only
+
+```sh
+   npm run start-musicfestival-graphql
 ``` 
 
 ### View site on browser

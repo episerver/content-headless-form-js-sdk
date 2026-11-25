@@ -5,7 +5,7 @@ import App from './App';
 import {
     BrowserRouter as Router,
     Route,
-    Switch
+    Routes
 } from "react-router-dom";
 
 
@@ -15,11 +15,9 @@ const root = ReactDOM.createRoot(
 root.render(
     <React.StrictMode>
         <Router>
-            <Switch>
-                <Route path="/">
-                    <App/>
-                </Route>
-            </Switch>
+            <Routes>
+                <Route path="*" element={<App/>} />
+            </Routes>
         </Router>
     </React.StrictMode>
 );

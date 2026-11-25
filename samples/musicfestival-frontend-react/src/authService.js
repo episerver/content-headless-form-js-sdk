@@ -4,8 +4,8 @@ class AuthService {
   constructor() {
     const settings = {
       userStore: new WebStorageStateStore({ store: window.localStorage }),
-      authority: `${process.env.REACT_APP_LOGIN_AUTHORITY}`,
-      client_id: `${process.env.REACT_APP_LOGIN_CLIENT_ID}`,
+      authority: `${import.meta.env.REACT_APP_LOGIN_AUTHORITY}`,
+      client_id: `${import.meta.env.REACT_APP_LOGIN_CLIENT_ID}`,
       redirect_uri: `${window.location.origin}/login-callback`,
       automaticSilentRenew: true,
       silent_redirect_uri: `${window.location.origin}/login-renewal`,

@@ -12,7 +12,11 @@ coverage/
 
 /samples/netcoreapp/
 /samples/epiCloud/
-/samples/musicfestival-frontend-react/build/
+/samples/*/build/
+
+# npm workspaces use the root package-lock.json only
+/samples/*/package-lock.json
+/samples/*/yarn.lock
 /samples/musicfestival-backend-dotnet/App_Data/
 
 .env.local

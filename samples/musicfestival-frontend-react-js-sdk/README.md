@@ -19,7 +19,7 @@ Content is fetched from Optimizely using the Content Graph: https://docs.develop
 ## Prerequisites
 
 This project uses:
-* Node.js 16.8.1
+* Node.js 22.18 or later
 
 ## Setup and Run
 
@@ -38,10 +38,10 @@ This project uses:
         ```
     * Run the job `Content Graph content synchronization job` to index whole contents into the Content Graph for the first time if you have not done so.  
     
-4. Open terminal for `./samples/musicfestival-frontend-react`.
-    * Run `npm install` or `yarn` (only needed in first run) to install dependencies.  
-    * Run `npm run generate:local` or `yarn generate:local` to generate typescript code from GraphQL queries.
-    * Run `npm start` or `yarn start`.
+4. Open terminal for `./samples/musicfestival-frontend-react-js-sdk`.
+    * Run `npm install` (only needed in first run) to install dependencies.  
+    * Run `npm run generate:local` to generate typescript code from GraphQL queries.
+    * Run `npm start`.
     * Navigate to http://localhost:3000/ to browse the site as a public visitor.
 
 5. From backend site, navigate to CMS UI at http://localhost:8082/episerver/cms , login if prompted.
@@ -77,7 +77,7 @@ Use two convenient commands (in `package.json`) to work with the SDK.
 
 To use more options of the SDK, please click [here](https://www.npmjs.com/package/@episerver/content-definitions).  
 
->*Note: When running the commands, please update the folder permission if you face with Permission denied issue on folder `[RootPath]/samples/musicfestival-frontend-react/node_modules/.bin/content-definitions`*  
+>*Note: When running the commands, please update the folder permission if you face with Permission denied issue on folder `[RootPath]/node_modules/.bin/content-definitions`*  
 
 After updating contentTypes, we need to  
 1. Wait until the contentTypes would be synced into Content Graph (By checking schema at the [address](http://localhost:8082/EPiServer/ContentGraph/GraphiQL)).  
@@ -105,5 +105,5 @@ ContentArea {
     }
 }
 ```
-- Run yarn/npm generate:local command to update the query if you are in local machine, else run generate instead
+- Run `npm run generate:local` to update the query if you are in local machine, else run generate instead
 You can take a look at src/pages/ArtistDetailsPage.tsx for the example of rendering a form with said data.
