@@ -25,8 +25,8 @@
     "preview": "vite preview",
     "generate": "graphql-codegen",
     "generate:local": "cross-env DOTENV_CONFIG_PATH=./.env npm run generate -- -r dotenv/config",
-    "content-definitions:push": "content-definitions push manifest.json -s http://localhost:8082 --authority http://localhost:8082 --client-id cli --client-secret cli --allowed-upgrades major",
-    "content-definitions:pull": "content-definitions pull manifest.json -s http://localhost:8082 --authority http://localhost:8082 --client-id cli --client-secret cli"
+    "content-definitions:push": "npm exec --yes --@episerver:registry=https://registry.npmjs.org/ --package=@episerver/content-definitions@^1.1.0 -- content-definitions push manifest.json -s https://localhost:8082 --authority https://localhost:8082 --client-id cli --client-secret cli --allowed-upgrades major",
+    "content-definitions:pull": "npm exec --yes --@episerver:registry=https://registry.npmjs.org/ --package=@episerver/content-definitions@^1.1.0 -- content-definitions pull manifest.json -s https://localhost:8082 --authority https://localhost:8082 --client-id cli --client-secret cli"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^8.0.0",

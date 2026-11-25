@@ -78,7 +78,7 @@ Use two convenient commands (in `package.json`) to work with the SDK.
 
 To use more options of the SDK, please click [here](https://www.npmjs.com/package/@episerver/content-definitions).  
 
->*Note: When running the commands, please update the folder permission if you face with Permission denied issue on folder `[RootPath]/node_modules/.bin/content-definitions`*  
+>*Note: The CLI is not a project dependency. The commands download `@episerver/content-definitions` from npmjs with `npm exec`, because the `@episerver` scope in `.npmrc` points to an Azure feed that does not have this package.*  
 
 After updating contentTypes, we need to  
 1. Wait until the contentTypes would be synced into Content Graph (By checking schema at the [address](http://localhost:8082/EPiServer/ContentGraph/GraphiQL)).  
