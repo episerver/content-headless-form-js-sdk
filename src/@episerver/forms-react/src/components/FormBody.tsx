@@ -3,7 +3,7 @@ import { useForms } from "../context/store";
 import { StepHelper, FormContainer, FormSubmitter, IdentityInfo, isInArray, isNull, 
     isNullOrEmpty, FormSubmitModel, FormSubmitResult, SubmitButton, FormCache, 
     FormConstants, ProblemDetail, StepDependCondition, getConfirmationData, 
-    SatisfiedActionType} from "@episerver/forms-sdk";
+    SatisfiedActionType, resolveRedirectUrl} from "@episerver/forms-sdk";
 import { RenderElementInStep } from "./RenderElementInStep";
 import { DispatchFunctions } from "../context/dispatchFunctions";
 import { FormStepNavigation } from "./FormStepNavigation";
@@ -166,9 +166,7 @@ export const FormBody = (props: FormBodyProps) => {
             if (submitButton) {
                 let redirectToPage = submitButton?.properties?.redirectToPage ?? form.properties?.redirectToPage;
                 if (!isNullOrEmpty(redirectToPage)) {
-                    var cmsUrl = process.env.REACT_APP_HEADLESS_FORM_BASE_URL ?? "http://temp";
-                    let url = new URL(redirectToPage, cmsUrl);
-                    window.location.href = url.href;
+                    window.location.href = resolveRedirectUrl(redirectToPage, props.baseUrl);
                 }
             }
         }).catch((e: ProblemDetail) => {

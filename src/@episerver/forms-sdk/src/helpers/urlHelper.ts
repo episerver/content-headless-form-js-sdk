@@ -37,3 +37,24 @@ export const extractParams = (urlPath: string) => {
 
     return { relativePath, locales: language, language, contentId, workId }
 }
+
+/**
+ * Resolves the "redirect after submit" URL of a form.
+ * The API returns it relative to the CMS site (for example `/globalassets/image.jpg`),
+ * and the CMS site is the host of the Headless Form API, so it is resolved against `baseUrl`.
+ * Absolute URLs are returned unchanged.
+ *
+ * @param redirectToPage URL returned by the API
+ * @param baseUrl Base URL of the Headless Form API, the same value passed to the Form component
+ * @param origin Used when `baseUrl` is relative (for example "/" when the frontend proxies the API) or invalid
+ */
+export const resolveRedirectUrl = (redirectToPage: string, baseUrl?: string, origin: string = window.location.origin): string => {
+    let base: URL;
+    try {
+        base = new URL(baseUrl || "/", origin);
+    } catch {
+        base = new URL(origin);
+    }
+
+    return new URL(redirectToPage, base).href;
+}

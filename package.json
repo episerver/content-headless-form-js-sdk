@@ -1,6 +1,6 @@
 {
   "name": "content-headless-form-js-sdk",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Workspace root",
   "workspaces": [
     "src/@episerver/forms-react",
@@ -8,6 +8,7 @@
     "samples/sample-react-app",
     "samples/managementsite",
     "samples/musicfestival-frontend-react",
+    "samples/musicfestival-frontend-react-js-sdk",
     "samples/musicfestival-backend-dotnet"
   ],
   "author": "Optimizely",
@@ -38,13 +39,18 @@
     "publish": "npm run publish-forms-sdk && npm run publish-forms-react",
     "build-musicfestival": "npm run build -w music-festival",
     "start-musicfestival": "npm start -w music-festival",
+    "build-musicfestival-graphql": "npm run build -w music-festival-graphql",
+    "start-musicfestival-graphql": "npm start -w music-festival-graphql",
     "build-musicfestival-backend": "npm run build -w musicfestival-backend",
     "start-musicfestival-backend": "npm start -w musicfestival-backend"
-    
   },
-  "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
-    "@mui/material": "^5.15.15"
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.3",
+    "minimatch@9": "^9.0.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }

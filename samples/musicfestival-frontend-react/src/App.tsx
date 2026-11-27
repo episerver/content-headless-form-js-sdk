@@ -16,8 +16,8 @@ import { BlockPage } from './pages/BlockPage';
 import BuyTicketPage from './pages/BuyTicketPage';
 
 let previousSavedMessage: any = null;
-const singleKeyUrl = process.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL as string
-const previewUrl = process.env.REACT_APP_CG_PREVIEW_URL as string
+const singleKeyUrl = import.meta.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL as string
+const previewUrl = import.meta.env.REACT_APP_CG_PREVIEW_URL as string
 
 const App = () => {
     const queryClient = useQueryClient();

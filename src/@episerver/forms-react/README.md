@@ -18,7 +18,7 @@ This is the main component that will be used to render the form from the metadat
 ### Propperties
 * formKey - The form key that identifies the form
 * language - The code of the form language
-* baseUrl - The base url of Headless Form API
+* baseUrl - The base url of Headless Form API. It is also used to resolve the "Display page after submission" URL, because that URL is relative to the CMS site. A relative value such as "/" is resolved against the current origin.
 * identityInfo - Access token for form submit
 * history - The instance of useHistory() received from react-router-dom
 * currentPageUrl - The public url of current page
@@ -40,7 +40,7 @@ This is the main component that will be used to render the form from data receiv
 ### Propperties
 * form - The form data to render form
 * identityInfo - Access token for form submit
-* baseUrl - The base url of Headless Form API
+* baseUrl - The base url of Headless Form API. It is also used to resolve the "Display page after submission" URL, because that URL is relative to the CMS site. A relative value such as "/" is resolved against the current origin.
 * history - The instance of useHistory() received from react-router-dom
 * currentPageUrl - The public url of current page
 

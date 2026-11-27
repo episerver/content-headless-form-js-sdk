@@ -8,7 +8,7 @@ type CustomString = string | number | readonly string[] | undefined
 
 function SearchButton({filterValue}: any): JSX.Element {
     const isFirstLoad = useRef(true);
-    const singleKeyUrl = process.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL as string
+    const singleKeyUrl = import.meta.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL as string
     const ARTIST = "Artist"
     const [searchParams] = useSearchParams()
     const [token, setToken] = useState("")

@@ -57,10 +57,10 @@ function BuyTicketPage({ content }: BuyTicketPageProps) {
                                     key={key}
                                     formKey={key}
                                     language={c.ContentLink.Expanded.Language.Name}
-                                    baseUrl={process.env.REACT_APP_HEADLESS_FORM_BASE_URL ?? "/"}
+                                    baseUrl={import.meta.env.REACT_APP_HEADLESS_FORM_BASE_URL ?? "/"}
                                     identityInfo={identityInfo}
                                     history={history}
-                                    optiGraphUrl={process.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL}
+                                    optiGraphUrl={import.meta.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL}
                                 />
                             )
                         })}

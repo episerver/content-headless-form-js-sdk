@@ -1,6 +1,6 @@
 {
   "name": "@episerver/forms-react",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Forms react components render a form from JSON data",
   "author": "Optimizely",
   "license": "ISC",
@@ -17,7 +17,7 @@
   },
   "keywords": [],
   "dependencies": {
-    "@episerver/forms-sdk": "^1.0.1"
+    "@episerver/forms-sdk": "^1.1.0"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.4",
@@ -30,6 +30,7 @@
     "rollup": "^3.29.1",
     "rollup-plugin-dts": "^6.0.2",
     "rollup-plugin-postcss": "^4.0.2",
+    "sass": "^1.108.2",
     "typescript": "^5.2.2"
   }
 }

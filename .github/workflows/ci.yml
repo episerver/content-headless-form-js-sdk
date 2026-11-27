@@ -32,15 +32,18 @@ jobs:
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [24.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          # No later step runs git commands, so do not keep the token in .git/config.
+          persist-credentials: false
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -61,6 +64,8 @@ jobs:
 
       - name: Publish
         if: ${{ contains(github.ref,'release/') || github.ref == 'refs/heads/master'}}
+        env:
+          npm_config_tag: ${{ github.ref == 'refs/heads/master' && 'latest' || 'next' }}
         run: npm run publish
 
   jira-release:

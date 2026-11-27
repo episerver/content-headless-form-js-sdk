@@ -19,8 +19,8 @@ import authService from "../authService";
 import { subcribeContentSavedEvent } from "../helpers/contentSavedEvent";
 
 let previousSavedMessage: any = null;
-const singleKeyUrl = process.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL as string
-const previewUrl = process.env.REACT_APP_CG_PREVIEW_URL as string
+const singleKeyUrl = import.meta.env.REACT_APP_CONTENT_GRAPH_GATEWAY_URL as string
+const previewUrl = import.meta.env.REACT_APP_CG_PREVIEW_URL as string
 
 function SearchPage() {
     const queryClient = useQueryClient()
