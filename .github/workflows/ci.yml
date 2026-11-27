@@ -64,6 +64,8 @@ jobs:
 
       - name: Publish
         if: ${{ contains(github.ref,'release/') || github.ref == 'refs/heads/master'}}
+        env:
+          npm_config_tag: ${{ github.ref == 'refs/heads/master' && 'latest' || 'next' }}
         run: npm run publish
 
   jira-release:
